@@ -26,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -153,6 +154,20 @@ fun SettingsScreen(navController: NavController) {
             ) {
                 Text("Theme (${UserSettings.currentTheme.value.label})")
                 ThemeDropdownIcon()
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Start on Launch")
+                Switch(
+                    checked = UserSettings.startOnLaunch.value,
+                    onCheckedChange = { newValue ->
+                        UserSettings.setStartOnLaunch(context, newValue)
+                    },
+                )
             }
 
             Spacer(Modifier.height(48.dp))

@@ -15,8 +15,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        UserSettings.loadTheme(this)
+        UserSettings.init(this)
 
         screenCaptureManager = ScreenCaptureManager(this) { resultCode, data ->
             val serviceIntent = Intent(this, MirrorService::class.java)
@@ -49,13 +49,18 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val context = LocalContext.current
             val themeOption by UserSettings.currentTheme
             val isDarkTheme = resolveTheme(themeOption)
             val navController = rememberNavController()
 
             val insetsController = remember(window) {
                 window?.let { WindowInsetsControllerCompat(it, it.decorView) }
+            }
+
+            LaunchedEffect(Unit) {
+                if (UserSettings.startOnLaunch.value) {
+                    startMirrorOverlay(navController, screenCaptureManager)
+                }
             }
 
             LaunchedEffect(isDarkTheme) {
@@ -73,17 +78,10 @@ class MainActivity : ComponentActivity() {
                             LandingScreen(
                                 navController = navController,
                                 onStartClick = {
-                                    if (!Settings.canDrawOverlays(context)) {
-                                        ToastManager.show(
-                                            context,
-                                            "Error: please grant ${context.getString(R.string.app_name)} overlay permissions in settings.",
-                                        )
-                                        navController.navigate(Screen.Settings.route)
-                                    } else {
-                                        screenCaptureManager.requestCapture()
-                                    }
+                                    startMirrorOverlay(navController, screenCaptureManager)
                                 },
                             )
+
                         }
                         composable(Screen.Settings.route) {
                             SettingsScreen(navController)
@@ -109,6 +107,18 @@ class MainActivity : ComponentActivity() {
             ThemeOption.SYSTEM -> isSystemInDarkTheme()
             ThemeOption.DARK -> true
             ThemeOption.LIGHT -> false
+        }
+    }
+
+    private fun startMirrorOverlay(navController: NavController, screenCaptureManager: ScreenCaptureManager) {
+        if (!Settings.canDrawOverlays(this)) {
+            ToastManager.show(
+                this,
+                "Error: please grant ${this.getString(R.string.app_name)} overlay permissions in settings."
+            )
+            navController.navigate(Screen.Settings.route)
+        } else {
+            screenCaptureManager.requestCapture()
         }
     }
 }
