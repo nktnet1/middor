@@ -25,6 +25,7 @@ import uk.nktnet.middor.config.ThemeOption
 import uk.nktnet.middor.config.UserSettings
 import uk.nktnet.middor.managers.ScreenCaptureManager
 import uk.nktnet.middor.managers.ToastManager
+import uk.nktnet.middor.ui.screens.HelpScreen
 import uk.nktnet.middor.ui.screens.LandingScreen
 import uk.nktnet.middor.ui.screens.SettingsScreen
 import uk.nktnet.middor.ui.theme.MiddorTheme
@@ -75,7 +76,7 @@ class MainActivity : ComponentActivity() {
                                     if (!Settings.canDrawOverlays(context)) {
                                         ToastManager.show(
                                             context,
-                                            "Error: please grant ${context.getString(R.string.app_name)} overlay permissions in settings",
+                                            "Error: please grant ${context.getString(R.string.app_name)} overlay permissions in settings.",
                                         )
                                         navController.navigate(Screen.Settings.route)
                                     } else {
@@ -86,6 +87,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Screen.Settings.route) {
                             SettingsScreen(navController)
+                        }
+                        composable(Screen.Help.route) {
+                            HelpScreen(navController)
                         }
                     }
                 }

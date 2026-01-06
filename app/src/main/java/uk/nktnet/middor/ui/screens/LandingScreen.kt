@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import uk.nktnet.middor.R
@@ -33,20 +35,34 @@ fun LandingScreen(
     Box(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeDrawing)
-            .padding(4.dp)
+            .padding(top = 8.dp, start = 4.dp, end = 4.dp)
             .fillMaxSize()
     ) {
         ThemeDropdownIcon()
 
-        IconButton(
-            onClick = { navController.navigate(Screen.Settings.route) },
+        Column(
             modifier = Modifier.align(Alignment.TopEnd)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.settings_24px),
-                contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.onBackground
-            )
+            IconButton(
+                onClick = { navController.navigate(Screen.Settings.route) },
+                modifier = Modifier.size(42.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.settings_24px),
+                    contentDescription = "Settings",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            IconButton(
+                onClick = { navController.navigate(Screen.Help.route) },
+                modifier = Modifier.size(42.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.help_24px),
+                    contentDescription = "Help",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
 
         Column(
@@ -63,7 +79,7 @@ fun LandingScreen(
                 modifier = Modifier
                     .height(60.dp)
             ) {
-                Text("Start Screen Mirroring")
+                Text(stringResource(R.string.button_start_mirror_overlay))
             }
         }
     }

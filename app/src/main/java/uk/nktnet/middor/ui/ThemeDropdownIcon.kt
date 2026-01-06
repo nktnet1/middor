@@ -58,7 +58,16 @@ fun ThemeDropdownIcon() {
         ) {
             ThemeOption.entries.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option.label) },
+                    text = {
+                        Text(
+                            option.label,
+                            color = if (option == currentTheme) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            }
+                        )
+                    },
                     onClick = {
                         UserSettings.setTheme(context, option)
                         expanded = false
