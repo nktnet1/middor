@@ -32,6 +32,7 @@ fun LandingScreen(
     Box(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeContent)
+            .padding(4.dp)
             .fillMaxSize()
     ) {
         ThemeDropdownIcon()

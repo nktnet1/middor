@@ -115,13 +115,13 @@ fun SettingsScreen(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Overlay Permission")
+                    Text("Overlay")
                     TextButton(
                         onClick = {
                             if (!overlayGranted) {
                                 ToastManager.show(
                                     context,
-                                    "Please grant overlay permission."
+                                    "Please grant the overlay permission to ${context.getString(R.string.app_name)}"
                                 )
                             }
                             val intent = Intent(
@@ -150,7 +150,7 @@ fun SettingsScreen(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Notifications")
+                    Text("Notification")
                     TextButton(
                         onClick = {
                             val intent = Intent().apply {
