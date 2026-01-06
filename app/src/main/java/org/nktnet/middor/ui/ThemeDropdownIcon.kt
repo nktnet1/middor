@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import org.nktnet.middor.R
 import org.nktnet.middor.config.ThemeOption
 import org.nktnet.middor.config.UserSettings
@@ -46,7 +47,10 @@ fun ThemeDropdownIcon() {
                         }
                     }
                 ),
-                contentDescription = "Theme Icon",
+                contentDescription = stringResource(
+                    R.string.settings_theme_label,
+                    stringResource(currentTheme.labelResId)
+                ),
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -60,7 +64,7 @@ fun ThemeDropdownIcon() {
                 DropdownMenuItem(
                     text = {
                         Text(
-                            option.label,
+                            stringResource(option.labelResId),
                             color = if (option == currentTheme) {
                                 MaterialTheme.colorScheme.primary
                             } else {

@@ -50,7 +50,7 @@ fun HelpScreen(navController: NavController) {
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_back_24px),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.screen_back),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }

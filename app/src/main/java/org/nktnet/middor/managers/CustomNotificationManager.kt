@@ -50,11 +50,13 @@ object CustomNotificationManager {
 
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.flip_24px)
-            .setContentTitle("Screen mirroring active")
+            .setContentTitle(
+                context.getString(R.string.notification_content_title)
+            )
             .setContentIntent(pendingApp)
             .addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
-                "Exit",
+                context.getString(R.string.notification_exit_action),
                 pendingExit
             )
             .setOngoing(true)

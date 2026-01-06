@@ -4,10 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import org.nktnet.middor.R
 
 class ScreenCaptureManager(
     private val activity: ComponentActivity,
@@ -30,8 +30,14 @@ class ScreenCaptureManager(
             ) as MediaProjectionManager
             launcher.launch(mpm.createScreenCaptureIntent())
         } catch (e: Exception) {
-            Log.e(javaClass.simpleName, "Failed to launch screen capture", e)
-            ToastManager.show(activity, "Error: ${e.message}")
+            ToastManager.show(
+                activity,
+                activity.getString(
+                    R.string.toast_error,
+                    e.message
+                )
+            )
+
         }
     }
 }

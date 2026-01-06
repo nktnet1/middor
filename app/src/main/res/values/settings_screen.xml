@@ -12,7 +12,5 @@
     <string name="settings_notifications_permission_label">Notifications</string>
     <string name="settings_granted_text_button">Granted</string>
     <string name="settings_request_text_button">Request</string>
-    <string name="settings_back">Back</string>
-    <string name="settings_back_content_description">Navigate back</string>
     <string name="settings_app_info_error">Error: %1$s</string>
 </resources>

@@ -104,9 +104,7 @@ fun SettingsScreen(navController: NavController) {
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_back_24px),
-                    contentDescription = stringResource(
-                        R.string.settings_back_content_description
-                    ),
+                    contentDescription = stringResource(R.string.screen_back),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -181,7 +179,7 @@ fun SettingsScreen(navController: NavController) {
                 Text(
                     stringResource(
                         R.string.settings_theme_label,
-                        UserSettings.currentTheme.value.label
+                        stringResource(UserSettings.currentTheme.value.labelResId)
                     )
                 )
                 ThemeDropdownIcon()
@@ -243,7 +241,10 @@ fun SettingsScreen(navController: NavController) {
                     if (granted || shouldShowRationale) {
                         val intent = Intent().apply {
                             action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                            putExtra(
+                                Settings.EXTRA_APP_PACKAGE,
+                                context.packageName
+                            )
                         }
                         activity.startActivity(intent)
                     } else {
