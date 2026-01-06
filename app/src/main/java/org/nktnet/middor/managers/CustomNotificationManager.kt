@@ -1,4 +1,4 @@
-package uk.nktnet.middor.managers
+package org.nktnet.middor.managers
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -7,9 +7,9 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import uk.nktnet.middor.MainActivity
-import uk.nktnet.middor.MirrorService
-import uk.nktnet.middor.R
+import org.nktnet.middor.MainActivity
+import org.nktnet.middor.MirrorService
+import org.nktnet.middor.R
 
 object CustomNotificationManager {
     private const val CHANNEL_ID = "mirror"

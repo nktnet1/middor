@@ -1,4 +1,4 @@
-package uk.nktnet.middor.config
+package org.nktnet.middor.config
 
 sealed class Screen(val route: String) {
     object Landing : Screen("landing")

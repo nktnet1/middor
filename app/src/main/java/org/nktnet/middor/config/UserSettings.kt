@@ -1,4 +1,4 @@
-package uk.nktnet.middor.config
+package org.nktnet.middor.config
 
 import android.content.Context
 import androidx.compose.runtime.MutableState

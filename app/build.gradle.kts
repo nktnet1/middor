@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.nktnet.middor"
+    namespace = "org.nktnet.middor"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "uk.nktnet.middor"
+        applicationId = "org.nktnet.middor"
         minSdk = 34
         targetSdk = 36
         versionCode = 1

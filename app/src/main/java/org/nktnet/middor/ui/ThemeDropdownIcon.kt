@@ -1,4 +1,4 @@
-package uk.nktnet.middor.ui
+package org.nktnet.middor.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -18,9 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import uk.nktnet.middor.R
-import uk.nktnet.middor.config.ThemeOption
-import uk.nktnet.middor.config.UserSettings
+import org.nktnet.middor.R
+import org.nktnet.middor.config.ThemeOption
+import org.nktnet.middor.config.UserSettings
 
 @Composable
 fun ThemeDropdownIcon() {

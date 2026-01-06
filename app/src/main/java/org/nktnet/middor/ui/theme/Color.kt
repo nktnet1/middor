@@ -1,4 +1,4 @@
-package uk.nktnet.middor.ui.theme
+package org.nktnet.middor.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

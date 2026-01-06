@@ -1,4 +1,4 @@
-package uk.nktnet.middor.ui.screens
+package org.nktnet.middor.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -28,9 +28,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import uk.nktnet.middor.R
-import uk.nktnet.middor.config.Screen
-import uk.nktnet.middor.ui.ThemeDropdownIcon
+import org.nktnet.middor.R
+import org.nktnet.middor.config.Screen
+import org.nktnet.middor.ui.ThemeDropdownIcon
 
 @Composable
 fun LandingScreen(

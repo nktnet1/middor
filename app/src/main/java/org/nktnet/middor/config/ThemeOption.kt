@@ -1,4 +1,4 @@
-package uk.nktnet.middor.config
+package org.nktnet.middor.config
 
 enum class ThemeOption(val label: String) {
     SYSTEM("System"),

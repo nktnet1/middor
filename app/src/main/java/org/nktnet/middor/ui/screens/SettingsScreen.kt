@@ -1,4 +1,4 @@
-package uk.nktnet.middor.ui.screens
+package org.nktnet.middor.ui.screens
 
 import android.app.NotificationManager
 import android.content.Context
@@ -45,11 +45,11 @@ import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import uk.nktnet.middor.R
-import uk.nktnet.middor.config.Screen
-import uk.nktnet.middor.config.UserSettings
-import uk.nktnet.middor.managers.ToastManager
-import uk.nktnet.middor.ui.ThemeDropdownIcon
+import org.nktnet.middor.R
+import org.nktnet.middor.config.Screen
+import org.nktnet.middor.config.UserSettings
+import org.nktnet.middor.managers.ToastManager
+import org.nktnet.middor.ui.ThemeDropdownIcon
 
 @Composable
 fun SettingsScreen(navController: NavController) {

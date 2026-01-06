@@ -1,4 +1,4 @@
-package uk.nktnet.middor
+package org.nktnet.middor
 
 import android.app.Activity
 import android.app.Service
@@ -20,8 +20,8 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
-import uk.nktnet.middor.config.UserSettings
-import uk.nktnet.middor.managers.CustomNotificationManager
+import org.nktnet.middor.config.UserSettings
+import org.nktnet.middor.managers.CustomNotificationManager
 
 val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
 

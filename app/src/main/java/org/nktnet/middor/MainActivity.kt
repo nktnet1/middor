@@ -1,4 +1,4 @@
-package uk.nktnet.middor
+package org.nktnet.middor
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,15 +20,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import uk.nktnet.middor.config.Screen
-import uk.nktnet.middor.config.ThemeOption
-import uk.nktnet.middor.config.UserSettings
-import uk.nktnet.middor.managers.ScreenCaptureManager
-import uk.nktnet.middor.managers.ToastManager
-import uk.nktnet.middor.ui.screens.HelpScreen
-import uk.nktnet.middor.ui.screens.LandingScreen
-import uk.nktnet.middor.ui.screens.SettingsScreen
-import uk.nktnet.middor.ui.theme.MiddorTheme
+import org.nktnet.middor.config.Screen
+import org.nktnet.middor.config.ThemeOption
+import org.nktnet.middor.config.UserSettings
+import org.nktnet.middor.managers.ScreenCaptureManager
+import org.nktnet.middor.managers.ToastManager
+import org.nktnet.middor.ui.screens.HelpScreen
+import org.nktnet.middor.ui.screens.LandingScreen
+import org.nktnet.middor.ui.screens.SettingsScreen
+import org.nktnet.middor.ui.theme.MiddorTheme
 
 class MainActivity : ComponentActivity() {
     private lateinit var screenCaptureManager: ScreenCaptureManager

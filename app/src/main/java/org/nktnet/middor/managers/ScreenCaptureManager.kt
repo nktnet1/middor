@@ -1,4 +1,4 @@
-package uk.nktnet.middor.managers
+package org.nktnet.middor.managers
 
 import android.app.Activity
 import android.content.Context
