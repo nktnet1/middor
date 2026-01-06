@@ -55,7 +55,7 @@ fun HelpScreen(navController: NavController) {
                 )
             }
             Text(
-                "Help",
+                stringResource(R.string.help_title),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(start = 8.dp)
             )
@@ -71,53 +71,55 @@ fun HelpScreen(navController: NavController) {
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                "Instructions",
+                stringResource(R.string.instructions_title),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
             )
             HorizontalDivider(
-                Modifier.padding(bottom = 8.dp),
+                Modifier.padding(top = 6.dp, bottom = 12.dp),
                 DividerDefaults.Thickness,
                 DividerDefaults.color
             )
             SelectionContainer {
-
                 Text(
-                    text = """
-                1. Open settings and grant the overlay permission (display over other apps).
-
-                2. Grant the notification permission (optional). ${stringResource(R.string.app_name)} will be re-opened when the notification is tapped.
-
-                3. On the starting page, tap on the "${stringResource(R.string.button_start_mirror_display_overlay)}" button.
-
-                4. Ensure that "Single App" is used, then click start. Do not cast the "Entire Screen", as this will also capture the overlay.
-
-                5. Select the application you want to mirror. This will launch the application, then create an overlay on top that mirrors the application screen.
-
-                6. To exit, click the red cross icon at the top-right corner of the overlay.
-            """.trimIndent(),
+                    text = listOf(
+                        stringResource(R.string.help_overlay_step),
+                        stringResource(
+                            R.string.help_notification_step,
+                            stringResource(R.string.app_name)),
+                        stringResource(
+                            R.string.help_start_button_step,
+                            stringResource(
+                                R.string.button_start_mirror_display_overlay
+                            )
+                        ),
+                        stringResource(R.string.help_single_app_step),
+                        stringResource(R.string.help_select_app_step),
+                        stringResource(R.string.help_exit_overlay_step)
+                    ).joinToString("\n\n"),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             Spacer(Modifier.height(36.dp))
             Text(
-                "Notes",
+                stringResource(R.string.notes_title),
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
             )
             HorizontalDivider(
-                Modifier.padding(bottom = 8.dp),
+                Modifier.padding(top = 6.dp, bottom = 12.dp),
                 DividerDefaults.Thickness,
                 DividerDefaults.color
             )
+
             SelectionContainer {
                 Text(
-                    text = """
-                1. You won't be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. starting the navigation in Google Maps) prior to creating the mirror overlay.
-
-                2. There will be padding between the application and the overlay. This amount of padding is outside the control of ${stringResource(R.string.button_start_mirror_display_overlay)}.
-            """.trimIndent(),
+                    text = listOf(
+                        stringResource(R.string.help_overlay_note),
+                        stringResource(
+                            R.string.help_padding_note,
+                            stringResource(R.string.app_name)
+                        )
+                    ).joinToString("\n\n"),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
