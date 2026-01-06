@@ -1,10 +1,6 @@
 package uk.nktnet.middor
 
 import android.app.Activity
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -24,8 +20,8 @@ import android.view.TextureView
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
-import androidx.core.app.NotificationCompat
 import androidx.core.graphics.toColorInt
+import uk.nktnet.middor.managers.CustomNotificationManager
 
 class MirrorService : Service() {
     private var projection: MediaProjection? = null
@@ -44,16 +40,16 @@ class MirrorService : Service() {
             return START_NOT_STICKY
         }
 
-        createNotificationChannel()
+        CustomNotificationManager.createNotificationChannel(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             startForeground(
                 1,
-                buildNotification(),
+                CustomNotificationManager.buildNotification(this),
                 ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
             )
         } else {
-            startForeground(1, buildNotification())
+            startForeground(1, CustomNotificationManager.buildNotification(this))
         }
 
         val resultCode = intent.getIntExtra("code", Activity.RESULT_CANCELED)
@@ -124,8 +120,8 @@ class MirrorService : Service() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         )
         wm.addView(overlayView, params)
@@ -147,41 +143,6 @@ class MirrorService : Service() {
             override fun onSurfaceTextureDestroyed(st: SurfaceTexture) = true
             override fun onSurfaceTextureUpdated(st: SurfaceTexture) {}
         }
-    }
-
-    private fun buildNotification(): Notification {
-        val exitIntent = Intent(this, MirrorService::class.java)
-            .apply { action = "ACTION_STOP_SERVICE" }
-        val pendingExit = PendingIntent.getService(
-            this,
-            0,
-            exitIntent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                PendingIntent.FLAG_MUTABLE
-            else
-                PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        return NotificationCompat.Builder(this, "mirror")
-            .setSmallIcon(android.R.drawable.ic_menu_view)
-            .setContentTitle("Screen mirroring active")
-            .addAction(
-                android.R.drawable.ic_menu_close_clear_cancel,
-                "Exit",
-                pendingExit
-            )
-            .build()
-    }
-
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            "mirror",
-            "Screen Mirroring",
-            NotificationManager.IMPORTANCE_LOW
-        )
-        getSystemService(
-            NotificationManager::class.java
-        ).createNotificationChannel(channel)
     }
 
     override fun onDestroy() {
