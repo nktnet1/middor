@@ -3,20 +3,23 @@ package uk.nktnet.middor.ui.screens
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Button
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -66,111 +70,147 @@ fun SettingsScreen(navController: NavController) {
         }
     }
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(horizontal = 16.dp)
             .windowInsetsPadding(WindowInsets.safeContent)
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_back_24px),
-                        contentDescription = "Back",
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Text(
-                    "Settings",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+        ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_back_24px),
+                    contentDescription = "Back",
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
+            Text(
+                "Settings",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(start = 8.dp)
+            )
 
-            HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+        }
+        HorizontalDivider(
+            Modifier.padding(bottom = 12.dp),
+            2.dp,
+        )
 
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { }
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Theme (${UserSettings.currentTheme.value.label})")
-                    ThemeDropdownIcon()
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
                 }
+                try {
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    Log.e("SettingsScreen", "Failed to start activity", e)
+                    ToastManager.show(context, "Error: ${e.message}")
+                }
+            }
+        ) {
+            Text(
+                text = "App Info",
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
 
-                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+        Spacer(Modifier.height(32.dp))
+        Text(
+            "User Preferences",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        HorizontalDivider(
+            Modifier.padding(bottom = 8.dp),
+            DividerDefaults.Thickness,
+            DividerDefaults.color
+        )
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Overlay")
-                    TextButton(
-                        onClick = {
-                            if (!overlayGranted) {
-                                ToastManager.show(
-                                    context,
-                                    "Please grant the overlay permission to ${context.getString(R.string.app_name)}"
-                                )
-                            }
-                            val intent = Intent(
-                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                "package:${context.packageName}".toUri()
-                            )
-                            activity?.startActivity(intent)
-                        }
-                    ) {
-                        Text(
-                            if (overlayGranted) "Granted" else "Request",
-                            color = if (overlayGranted)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.error
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Theme (${UserSettings.currentTheme.value.label})")
+            ThemeDropdownIcon()
+        }
+
+        Spacer(Modifier.height(48.dp))
+        Text(
+            "Permissions",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        HorizontalDivider(
+            Modifier.padding(bottom = 8.dp),
+            DividerDefaults.Thickness,
+            DividerDefaults.color
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Overlay")
+            TextButton(
+                onClick = {
+                    if (!overlayGranted) {
+                        ToastManager.show(
+                            context,
+                            "Please grant overlay permission to ${context.getString(R.string.app_name)}"
                         )
                     }
+                    val intent = Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        "package:${context.packageName}".toUri()
+                    )
+                    activity?.startActivity(intent)
                 }
+            ) {
+                Text(
+                    if (overlayGranted) "Granted" else "Request",
+                    color = if (overlayGranted)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.error
+                )
+            }
+        }
 
-                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Notification")
-                    TextButton(
-                        onClick = {
-                            val intent = Intent().apply {
-                                action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                            }
-                            activity?.startActivity(intent)
-                        }
-                    ) {
-                        Text(
-                            if (notificationsGranted) "Granted" else "Request",
-                            color = if (notificationsGranted)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.error
-                        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Notifications")
+            TextButton(
+                onClick = {
+                    val intent = Intent().apply {
+                        action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                     }
+                    activity?.startActivity(intent)
                 }
-
-                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+            ) {
+                Text(
+                    if (notificationsGranted) "Granted" else "Request",
+                    color = if (notificationsGranted)
+                        MaterialTheme.colorScheme.primary
+                    else
+                        MaterialTheme.colorScheme.error
+                )
             }
         }
     }
