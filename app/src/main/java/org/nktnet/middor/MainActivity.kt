@@ -120,7 +120,10 @@ class MainActivity : ComponentActivity() {
         if (!Settings.canDrawOverlays(this)) {
             ToastManager.show(
                 this,
-                "Error: please grant ${this.getString(R.string.app_name)} overlay permissions in settings."
+                getString(
+                    R.string.settings_overlay_permission_error,
+                    getString(R.string.app_name)
+                )
             )
             navController.navigate(Screen.Settings.route)
         } else {
