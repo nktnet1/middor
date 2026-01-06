@@ -9,6 +9,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import uk.nktnet.middor.MainActivity
 import uk.nktnet.middor.MirrorService
+import uk.nktnet.middor.R
 
 object CustomNotificationManager {
     private const val CHANNEL_ID = "mirror"
@@ -46,7 +47,7 @@ object CustomNotificationManager {
         )
 
         return NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_menu_view)
+            .setSmallIcon(R.drawable.flip_24px)
             .setContentTitle("Screen mirroring active")
             .setContentIntent(pendingApp)
             .addAction(
