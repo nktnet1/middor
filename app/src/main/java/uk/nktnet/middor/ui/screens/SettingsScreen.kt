@@ -43,6 +43,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import uk.nktnet.middor.R
+import uk.nktnet.middor.config.Screen
 import uk.nktnet.middor.config.UserSettings
 import uk.nktnet.middor.managers.ToastManager
 import uk.nktnet.middor.ui.ThemeDropdownIcon
@@ -80,7 +81,11 @@ fun SettingsScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth(),
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = {
+                if (!navController.popBackStack()) {
+                    navController.navigate(Screen.Landing.route)
+                }
+            }) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_back_24px),
                     contentDescription = "Back",

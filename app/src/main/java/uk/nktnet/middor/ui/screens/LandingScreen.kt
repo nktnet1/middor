@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import uk.nktnet.middor.R
+import uk.nktnet.middor.config.Screen
 import uk.nktnet.middor.ui.ThemeDropdownIcon
 
 @Composable
@@ -38,7 +39,7 @@ fun LandingScreen(
         ThemeDropdownIcon()
 
         IconButton(
-            onClick = { navController.navigate("settings") },
+            onClick = { navController.navigate(Screen.Settings.route) },
             modifier = Modifier.align(Alignment.TopEnd)
         ) {
             Icon(

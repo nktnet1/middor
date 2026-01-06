@@ -20,6 +20,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import uk.nktnet.middor.config.Screen
 import uk.nktnet.middor.config.ThemeOption
 import uk.nktnet.middor.config.UserSettings
 import uk.nktnet.middor.managers.ScreenCaptureManager
@@ -66,24 +67,24 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(navController = navController, startDestination = "landing") {
-                        composable("landing") {
+                    NavHost(navController = navController, startDestination = Screen.Landing.route) {
+                        composable(Screen.Landing.route) {
                             LandingScreen(
                                 navController = navController,
                                 onStartClick = {
                                     if (!Settings.canDrawOverlays(context)) {
                                         ToastManager.show(
                                             context,
-                                            "Error: please grant overlay permissions in settings",
+                                            "Error: please grant ${context.getString(R.string.app_name)} overlay permissions in settings",
                                         )
-                                        navController.navigate("settings")
+                                        navController.navigate(Screen.Settings.route)
                                     } else {
                                         screenCaptureManager.requestCapture()
                                     }
                                 },
                             )
                         }
-                        composable("settings") {
+                        composable(Screen.Settings.route) {
                             SettingsScreen(navController)
                         }
                     }
