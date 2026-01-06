@@ -73,7 +73,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(navController = navController, startDestination = Screen.Landing.route) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.Landing.route
+                    ) {
                         composable(Screen.Landing.route) {
                             LandingScreen(
                                 navController = navController,
@@ -110,7 +113,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun startMirrorOverlay(navController: NavController, screenCaptureManager: ScreenCaptureManager) {
+    private fun startMirrorOverlay(
+        navController: NavController,
+        screenCaptureManager: ScreenCaptureManager
+    ) {
         if (!Settings.canDrawOverlays(this)) {
             ToastManager.show(
                 this,

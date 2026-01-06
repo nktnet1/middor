@@ -1,12 +1,16 @@
 package org.nktnet.middor.ui.screens
 
+import android.Manifest
 import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,7 +63,14 @@ fun SettingsScreen(navController: NavController) {
     var overlayGranted by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
     var notificationsGranted by remember { mutableStateOf(checkNotificationPermission(context)) }
 
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        notificationsGranted = isGranted
+    }
+
     val lifecycle = activity?.lifecycle
+
     DisposableEffect(lifecycle) {
         if (lifecycle == null) onDispose {} else {
             val observer = object : DefaultLifecycleObserver {
@@ -194,12 +205,27 @@ fun SettingsScreen(navController: NavController) {
                 activity?.startActivity(intent)
             }
             PermissionSetting("Notifications", notificationsGranted) {
-                val intent = Intent().apply {
-                    action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-                    putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                activity?.let {
+                    val granted = activity.checkSelfPermission(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
+
+                    val shouldShowRationale = activity.shouldShowRequestPermissionRationale(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )
+
+                    if (granted || shouldShowRationale) {
+                        val intent = Intent().apply {
+                            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        }
+                        activity.startActivity(intent)
+                    } else {
+                        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
                 }
-                activity?.startActivity(intent)
             }
+
             Spacer(Modifier.height(32.dp))
         }
     }
