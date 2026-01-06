@@ -54,7 +54,9 @@ fun LandingScreen(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.settings_24px),
-                    contentDescription = "Settings",
+                    contentDescription = stringResource(
+                        R.string.landing_settings_content_description
+                    ),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -64,7 +66,9 @@ fun LandingScreen(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.help_24px),
-                    contentDescription = "Help",
+                    contentDescription = stringResource(
+                        R.string.landing_help_content_description
+                    ),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -79,7 +83,9 @@ fun LandingScreen(
         ) {
             Image(
                 painter = painterResource(R.drawable.monochrome_icon),
-                contentDescription = "App Icon",
+                contentDescription = stringResource(
+                    R.string.landing_app_icon_content_description
+                ),
                 modifier = Modifier.size(160.dp),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
             )
