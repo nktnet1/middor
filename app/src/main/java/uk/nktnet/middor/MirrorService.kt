@@ -22,6 +22,8 @@ import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
 import uk.nktnet.middor.managers.CustomNotificationManager
 
+val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
+
 class MirrorService : Service() {
     private var projection: MediaProjection? = null
     private var overlayView: FrameLayout? = null
@@ -29,7 +31,7 @@ class MirrorService : Service() {
     private lateinit var params: WindowManager.LayoutParams
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == "ACTION_STOP_SERVICE") {
+        if (intent?.action == CustomNotificationManager.ACTION_STOP_SERVICE) {
             stopSelf()
             return START_NOT_STICKY
         }
@@ -85,7 +87,7 @@ class MirrorService : Service() {
         val closeButton = ImageButton(this).apply {
             val shape = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
-                setColor("#80FF0000".toColorInt())
+                setColor(CLOSE_BUTTON_COLOUR)
             }
             background = shape
             setImageResource(android.R.drawable.ic_menu_close_clear_cancel)

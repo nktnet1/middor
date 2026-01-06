@@ -15,6 +15,8 @@ object CustomNotificationManager {
     private const val CHANNEL_ID = "mirror"
     private const val CHANNEL_NAME = "Screen Mirroring"
 
+    const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
+
     fun createNotificationChannel(context: Context) {
         val channel = NotificationChannel(
             CHANNEL_ID,
@@ -37,7 +39,7 @@ object CustomNotificationManager {
             context,
             MirrorService::class.java,
         ).apply {
-            action = "ACTION_STOP_SERVICE"
+            action = ACTION_STOP_SERVICE
         }
         val pendingExit = PendingIntent.getService(
             context,
