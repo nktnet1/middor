@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("settings") {
-                            SettingsScreen()
+                            SettingsScreen(navController)
                         }
                     }
                 }
