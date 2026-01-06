@@ -11,12 +11,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsControllerCompat
 import uk.nktnet.middor.config.ThemeOption
+import uk.nktnet.middor.config.UserSettings
 import uk.nktnet.middor.managers.ScreenCaptureManager
-import uk.nktnet.middor.states.ThemeStateSingleton
 import uk.nktnet.middor.ui.screens.LandingScreen
 import uk.nktnet.middor.ui.theme.MiddorTheme
 
@@ -28,6 +29,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // Load saved theme from DataStore
+        UserSettings.loadTheme(this)
+
         screenCaptureManager = ScreenCaptureManager(this) { resultCode, data ->
             val serviceIntent = Intent(this, MirrorService::class.java)
                 .apply {
@@ -38,7 +42,8 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            val isDarkTheme = resolveTheme(ThemeStateSingleton.currentTheme.value)
+            val themeOption by UserSettings.currentTheme
+            val isDarkTheme = resolveTheme(themeOption)
 
             val insetsController = remember(window) {
                 window?.let { WindowInsetsControllerCompat(it, it.decorView) }

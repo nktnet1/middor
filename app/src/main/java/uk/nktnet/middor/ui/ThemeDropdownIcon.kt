@@ -17,15 +17,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import uk.nktnet.middor.R
 import uk.nktnet.middor.config.ThemeOption
-import uk.nktnet.middor.states.ThemeStateSingleton
+import uk.nktnet.middor.config.UserSettings
 
 @Composable
 fun ThemeDropdownIcon() {
-    val currentTheme by ThemeStateSingleton.currentTheme
+    val context = LocalContext.current
+    val currentTheme by UserSettings.currentTheme
     var expanded by remember { mutableStateOf(false) }
     val isSystemDark = isSystemInDarkTheme()
 
@@ -61,7 +63,7 @@ fun ThemeDropdownIcon() {
                 DropdownMenuItem(
                     text = { androidx.compose.material3.Text(option.label) },
                     onClick = {
-                        ThemeStateSingleton.setTheme(option)
+                        UserSettings.setTheme(context, option)
                         expanded = false
                     }
                 )
