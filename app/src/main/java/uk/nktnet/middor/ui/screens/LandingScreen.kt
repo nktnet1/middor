@@ -1,12 +1,12 @@
 package uk.nktnet.middor.ui.screens
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -38,13 +37,6 @@ fun LandingScreen(
     navController: NavController,
     onStartClick: () -> Unit,
 ) {
-    val configuration = LocalConfiguration.current
-    val topPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        32.dp
-    } else {
-        128.dp
-    }
-
     Box(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.safeDrawing)
@@ -80,10 +72,10 @@ fun LandingScreen(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .padding(top = topPadding)
-                .fillMaxSize()
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f)
         ) {
             Image(
                 painter = painterResource(R.drawable.monochrome_icon),
@@ -91,7 +83,7 @@ fun LandingScreen(
                 modifier = Modifier.size(160.dp),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
             Button(
                 onClick = { onStartClick() },
                 modifier = Modifier

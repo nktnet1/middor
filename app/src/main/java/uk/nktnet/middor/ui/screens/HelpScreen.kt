@@ -70,7 +70,6 @@ fun HelpScreen(navController: NavController) {
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
         ) {
-            Spacer(Modifier.height(12.dp))
             Text(
                 "Instructions",
                 style = MaterialTheme.typography.titleLarge,
@@ -115,7 +114,7 @@ fun HelpScreen(navController: NavController) {
             SelectionContainer {
                 Text(
                     text = """
-                1. You won't be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. for Google Maps, start the navigation) prior to creating the mirror overlay.
+                1. You won't be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. starting the navigation in Google Maps) prior to creating the mirror overlay.
 
                 2. There will be padding between the application and the overlay. This amount of padding is outside the control of ${stringResource(R.string.button_start_mirror_display_overlay)}.
             """.trimIndent(),
