@@ -230,10 +230,7 @@ fun SettingsScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    stringResource(
-                        R.string.settings_theme_label,
-                        stringResource(UserSettings.currentTheme.value.labelResId)
-                    )
+                    stringResource(R.string.settings_theme_label)
                 )
                 ThemeDropdownIcon()
             }
