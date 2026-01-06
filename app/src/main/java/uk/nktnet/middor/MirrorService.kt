@@ -20,6 +20,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
+import uk.nktnet.middor.config.UserSettings
 import uk.nktnet.middor.managers.CustomNotificationManager
 
 val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
@@ -78,7 +79,11 @@ class MirrorService : Service() {
         }
 
         overlayView = FrameLayout(this)
-        val textureView = TextureView(this).apply { scaleX = -1f }
+        val textureView = TextureView(this).apply {
+            scaleX = if (UserSettings.flipHorizontally.value) -1f else 1f
+            rotation = if (UserSettings.rotate180.value) 180f else 0f
+        }
+
         overlayView?.addView(textureView, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT

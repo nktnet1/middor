@@ -155,19 +155,23 @@ fun SettingsScreen(navController: NavController) {
                 Text("Theme (${UserSettings.currentTheme.value.label})")
                 ThemeDropdownIcon()
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Start on Launch")
-                Switch(
-                    checked = UserSettings.startOnLaunch.value,
-                    onCheckedChange = { newValue ->
-                        UserSettings.setStartOnLaunch(context, newValue)
-                    },
-                )
+            BooleanSetting(
+                "Start on Launch",
+                UserSettings.startOnLaunch.value
+            ) { newValue ->
+                UserSettings.setStartOnLaunch(context, newValue)
+            }
+            BooleanSetting(
+                "Flip Horizontally",
+                UserSettings.flipHorizontally.value
+            ) { newValue ->
+                UserSettings.setFlipHorizontally(context, newValue)
+            }
+            BooleanSetting(
+                "Rotate 180°",
+                UserSettings.rotate180.value
+            ) { newValue ->
+                UserSettings.setRotate180(context, newValue)
             }
 
             Spacer(Modifier.height(48.dp))
@@ -182,56 +186,19 @@ fun SettingsScreen(navController: NavController) {
                 DividerDefaults.color
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Overlay")
-                TextButton(
-                    onClick = {
-                        val intent = Intent(
-                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            "package:${context.packageName}".toUri()
-                        )
-                        activity?.startActivity(intent)
-                    }
-                ) {
-                    Text(
-                        if (overlayGranted) "Granted" else "Request",
-                        color = if (overlayGranted)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.error
-                    )
-                }
+            PermissionSetting("Overlay", overlayGranted) {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    "package:${context.packageName}".toUri()
+                )
+                activity?.startActivity(intent)
             }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Notifications")
-                TextButton(
-                    onClick = {
-                        val intent = Intent().apply {
-                            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
-                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                        }
-                        activity?.startActivity(intent)
-                    }
-                ) {
-                    Text(
-                        if (notificationsGranted) "Granted" else "Request",
-                        color = if (notificationsGranted)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.error
-                    )
+            PermissionSetting("Notifications", notificationsGranted) {
+                val intent = Intent().apply {
+                    action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                    putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
                 }
+                activity?.startActivity(intent)
             }
             Spacer(Modifier.height(32.dp))
         }
@@ -241,4 +208,45 @@ fun SettingsScreen(navController: NavController) {
 private fun checkNotificationPermission(context: Context): Boolean {
     val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     return nm.areNotificationsEnabled()
+}
+
+@Composable
+fun BooleanSetting(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+fun PermissionSetting(label: String, granted: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label)
+        TextButton(onClick = onClick) {
+            Text(
+                if (granted) "Granted" else "Request",
+                color = if (granted)
+                    MaterialTheme.colorScheme.primary
+                else
+                    MaterialTheme.colorScheme.error
+            )
+        }
+    }
 }
