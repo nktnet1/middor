@@ -165,12 +165,27 @@ fun SettingsScreen(navController: NavController) {
                 )
             }
 
-            Spacer(Modifier.height(32.dp))
-            Text(
-                stringResource(R.string.settings_permissions_title),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            Spacer(Modifier.height(16.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    stringResource(R.string.settings_permissions_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(
+                    onClick = { navController.navigate(Screen.Help.route) },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.help_24px),
+                        contentDescription = stringResource(
+                            R.string.help_icon_content_description
+                        )
+                    )
+                }
+            }
             HorizontalDivider(
                 Modifier.padding(bottom = 8.dp),
                 DividerDefaults.Thickness,
@@ -218,9 +233,7 @@ fun SettingsScreen(navController: NavController) {
             Spacer(Modifier.height(48.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
                     stringResource(R.string.settings_preferences_title),

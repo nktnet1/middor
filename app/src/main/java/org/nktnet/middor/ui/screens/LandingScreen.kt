@@ -67,7 +67,7 @@ fun LandingScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.help_24px),
                     contentDescription = stringResource(
-                        R.string.landing_help_content_description
+                        R.string.help_icon_content_description
                     ),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
