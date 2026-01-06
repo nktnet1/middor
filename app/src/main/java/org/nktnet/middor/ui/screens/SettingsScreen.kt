@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -103,12 +104,14 @@ fun SettingsScreen(navController: NavController) {
             }) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_back_24px),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(
+                        R.string.settings_back_content_description
+                    ),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
             }
             Text(
-                "Settings",
+                stringResource(R.string.settings_title),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(start = 8.dp)
             )
@@ -127,19 +130,31 @@ fun SettingsScreen(navController: NavController) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                        data = Uri.fromParts("package", context.packageName, null)
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    ).apply {
+                        data = Uri.fromParts(
+                            "package",
+                            context.packageName,
+                            null
+                        )
                     }
                     try {
                         context.startActivity(intent)
                     } catch (e: Exception) {
                         Log.e("SettingsScreen", "Failed to start activity", e)
-                        ToastManager.show(context, "Error: ${e.message}")
+                        ToastManager.show(
+                            context,
+                            context.getString(
+                                R.string.settings_app_info_error,
+                                e.message
+                            )
+                        )
                     }
                 }
             ) {
                 Text(
-                    text = "App Info",
+                    stringResource(R.string.settings_app_info),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.labelMedium
                 )
@@ -147,7 +162,7 @@ fun SettingsScreen(navController: NavController) {
 
             Spacer(Modifier.height(32.dp))
             Text(
-                "Preferences",
+                stringResource(R.string.settings_preferences_title),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -163,23 +178,28 @@ fun SettingsScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Theme (${UserSettings.currentTheme.value.label})")
+                Text(
+                    stringResource(
+                        R.string.settings_theme_label,
+                        UserSettings.currentTheme.value.label
+                    )
+                )
                 ThemeDropdownIcon()
             }
             BooleanSetting(
-                "Start on Launch",
+                stringResource(R.string.settings_start_on_launch_label),
                 UserSettings.startOnLaunch.value
             ) { newValue ->
                 UserSettings.setStartOnLaunch(context, newValue)
             }
             BooleanSetting(
-                "Flip Horizontally",
+                stringResource(R.string.settings_flip_horizontally_label),
                 UserSettings.flipHorizontally.value
             ) { newValue ->
                 UserSettings.setFlipHorizontally(context, newValue)
             }
             BooleanSetting(
-                "Rotate 180°",
+                stringResource(R.string.settings_rotate_180_label),
                 UserSettings.rotate180.value
             ) { newValue ->
                 UserSettings.setRotate180(context, newValue)
@@ -187,7 +207,7 @@ fun SettingsScreen(navController: NavController) {
 
             Spacer(Modifier.height(48.dp))
             Text(
-                "Permissions",
+                stringResource(R.string.settings_permissions_title),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -197,14 +217,20 @@ fun SettingsScreen(navController: NavController) {
                 DividerDefaults.color
             )
 
-            PermissionSetting("Overlay", overlayGranted) {
+            PermissionSetting(
+                stringResource(R.string.settings_overlay_permission_label),
+                overlayGranted
+            ) {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     "package:${context.packageName}".toUri()
                 )
                 activity?.startActivity(intent)
             }
-            PermissionSetting("Notifications", notificationsGranted) {
+            PermissionSetting(
+                stringResource(R.string.settings_notifications_permission_label),
+                notificationsGranted
+            ) {
                 activity?.let {
                     val granted = activity.checkSelfPermission(
                         Manifest.permission.POST_NOTIFICATIONS
@@ -267,7 +293,11 @@ fun PermissionSetting(label: String, granted: Boolean, onClick: () -> Unit) {
         Text(label)
         TextButton(onClick = onClick) {
             Text(
-                if (granted) "Granted" else "Request",
+                if (granted) {
+                    stringResource(R.string.settings_granted_text_button)
+                } else {
+                    stringResource(R.string.settings_request_text_button)
+                },
                 color = if (granted)
                     MaterialTheme.colorScheme.primary
                 else

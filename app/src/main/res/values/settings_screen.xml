@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_app_info">App Info</string>
+    <string name="settings_preferences_title">Preferences</string>
+    <string name="settings_permissions_title">Permissions</string>
+    <string name="settings_theme_label">Theme (%1$s)</string>
+    <string name="settings_start_on_launch_label">Start on Launch</string>
+    <string name="settings_flip_horizontally_label">Flip Horizontally</string>
+    <string name="settings_rotate_180_label">Rotate 180°</string>
+    <string name="settings_overlay_permission_label">Overlay</string>
+    <string name="settings_notifications_permission_label">Notifications</string>
+    <string name="settings_granted_text_button">Granted</string>
+    <string name="settings_request_text_button">Request</string>
+    <string name="settings_back">Back</string>
+    <string name="settings_back_content_description">Navigate back</string>
+    <string name="settings_app_info_error">Error: %1$s</string>
+</resources>
