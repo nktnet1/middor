@@ -1,6 +1,10 @@
 package uk.nktnet.middor
 
-import android.app.*
+import android.app.Activity
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.Color
@@ -13,7 +17,10 @@ import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
 import android.util.DisplayMetrics
-import android.view.*
+import android.view.Gravity
+import android.view.Surface
+import android.view.TextureView
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
@@ -92,8 +99,8 @@ class MirrorService : Service() {
             120
         ).apply {
             gravity = Gravity.END or Gravity.TOP
-            topMargin = 80
-            rightMargin = 80
+            topMargin = 40
+            rightMargin = 40
         }
         overlayView?.addView(closeButton, closeParams)
 
@@ -101,9 +108,9 @@ class MirrorService : Service() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         )
         wm.addView(overlayView, params)

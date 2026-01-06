@@ -115,7 +115,7 @@ fun LandingScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = { onStartClick() },
@@ -126,7 +126,6 @@ fun LandingScreen(
             ) {
                 Text(
                     "Start Screen Mirroring",
-                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
