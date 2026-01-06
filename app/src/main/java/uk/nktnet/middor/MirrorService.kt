@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -23,6 +24,7 @@ import android.view.TextureView
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import androidx.core.app.NotificationCompat
 import androidx.core.graphics.toColorInt
 
 class MirrorService : Service() {
@@ -32,6 +34,11 @@ class MirrorService : Service() {
     private lateinit var params: WindowManager.LayoutParams
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == "ACTION_STOP_SERVICE") {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
         if (intent == null) {
             stopSelf()
             return START_NOT_STICKY
@@ -73,9 +80,20 @@ class MirrorService : Service() {
     }
 
     private fun startFullScreenOverlay() {
-        val metrics = DisplayMetrics()
-        @Suppress("DEPRECATION")
-        wm.defaultDisplay.getMetrics(metrics)
+        val metrics = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics = wm.currentWindowMetrics
+            val bounds = windowMetrics.bounds
+            DisplayMetrics().apply {
+                widthPixels = bounds.width()
+                heightPixels = bounds.height()
+                densityDpi = resources.displayMetrics.densityDpi
+            }
+        } else {
+            DisplayMetrics().also {
+                @Suppress("DEPRECATION")
+                wm.defaultDisplay.getMetrics(it)
+            }
+        }
 
         overlayView = FrameLayout(this)
         val textureView = TextureView(this).apply { scaleX = -1f }
@@ -94,10 +112,7 @@ class MirrorService : Service() {
             setColorFilter(Color.WHITE)
             setOnClickListener { stopSelf() }
         }
-        val closeParams = FrameLayout.LayoutParams(
-            120,
-            120
-        ).apply {
+        val closeParams = FrameLayout.LayoutParams(120, 120).apply {
             gravity = Gravity.END or Gravity.TOP
             topMargin = 40
             rightMargin = 40
@@ -134,11 +149,29 @@ class MirrorService : Service() {
         }
     }
 
-    private fun buildNotification(): Notification =
-        Notification.Builder(this, "mirror")
+    private fun buildNotification(): Notification {
+        val exitIntent = Intent(this, MirrorService::class.java)
+            .apply { action = "ACTION_STOP_SERVICE" }
+        val pendingExit = PendingIntent.getService(
+            this,
+            0,
+            exitIntent,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                PendingIntent.FLAG_MUTABLE
+            else
+                PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        return NotificationCompat.Builder(this, "mirror")
             .setSmallIcon(android.R.drawable.ic_menu_view)
             .setContentTitle("Screen mirroring active")
+            .addAction(
+                android.R.drawable.ic_menu_close_clear_cancel,
+                "Exit",
+                pendingExit
+            )
             .build()
+    }
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(

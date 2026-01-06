@@ -79,8 +79,7 @@ fun SettingsScreen(navController: NavController) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
+                .fillMaxWidth(),
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
@@ -97,7 +96,7 @@ fun SettingsScreen(navController: NavController) {
 
         }
         HorizontalDivider(
-            Modifier.padding(bottom = 12.dp),
+            Modifier.padding(top = 8.dp, bottom = 12.dp),
             2.dp,
         )
 
@@ -165,12 +164,6 @@ fun SettingsScreen(navController: NavController) {
             Text("Overlay")
             TextButton(
                 onClick = {
-                    if (!overlayGranted) {
-                        ToastManager.show(
-                            context,
-                            "Please grant overlay permission to ${context.getString(R.string.app_name)}"
-                        )
-                    }
                     val intent = Intent(
                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         "package:${context.packageName}".toUri()
