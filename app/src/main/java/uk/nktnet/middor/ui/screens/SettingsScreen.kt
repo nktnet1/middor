@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.DividerDefaults
@@ -73,7 +73,7 @@ fun SettingsScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.safeContent)
+            .windowInsetsPadding(WindowInsets.safeDrawing)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
