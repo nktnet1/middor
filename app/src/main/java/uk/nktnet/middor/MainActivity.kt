@@ -1,43 +1,73 @@
 package uk.nktnet.middor
 
 import android.content.Intent
-import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.core.view.WindowInsetsControllerCompat
+import uk.nktnet.middor.config.ThemeOption
+import uk.nktnet.middor.managers.ScreenCaptureManager
+import uk.nktnet.middor.states.ThemeStateSingleton
+import uk.nktnet.middor.ui.screens.LandingScreen
+import uk.nktnet.middor.ui.theme.MiddorTheme
 
 class MainActivity : ComponentActivity() {
-    private val screenCaptureLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.StartActivityForResult()
-        ) { result ->
-            if (result.resultCode != RESULT_OK || result.data == null) {
-                finish()
-                return@registerForActivityResult
-            }
 
-            val serviceIntent = Intent(this, MirrorService::class.java).apply {
-                putExtra("code", result.resultCode)
-                putExtra("data", result.data)
-            }
-
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                startForegroundService(serviceIntent)
-            } else {
-                startService(serviceIntent)
-            }
-            finish()
-        }
+    private lateinit var screenCaptureManager: ScreenCaptureManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        requestScreenCapture()
+
+        screenCaptureManager = ScreenCaptureManager(this) { resultCode, data ->
+            val serviceIntent = Intent(this, MirrorService::class.java)
+                .apply {
+                    putExtra("code", resultCode)
+                    putExtra("data", data)
+                }
+            startForegroundService(serviceIntent)
+        }
+
+        setContent {
+            val isDarkTheme = resolveTheme(ThemeStateSingleton.currentTheme.value)
+
+            val insetsController = remember(window) {
+                window?.let { WindowInsetsControllerCompat(it, it.decorView) }
+            }
+
+            LaunchedEffect(isDarkTheme) {
+                insetsController?.isAppearanceLightStatusBars = !isDarkTheme
+                insetsController?.isAppearanceLightNavigationBars = !isDarkTheme
+            }
+
+            MiddorTheme(darkTheme = isDarkTheme) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    LandingScreen(
+                        onStartClick = { screenCaptureManager.requestCapture() }
+                    )
+                }
+            }
+        }
     }
 
-    private fun requestScreenCapture() {
-        val mpm = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        screenCaptureLauncher.launch(mpm.createScreenCaptureIntent())
+    @Composable
+    private fun resolveTheme(theme: ThemeOption): Boolean {
+        return when (theme) {
+            ThemeOption.SYSTEM -> isSystemInDarkTheme()
+            ThemeOption.DARK -> true
+            ThemeOption.LIGHT -> false
+        }
     }
 }
