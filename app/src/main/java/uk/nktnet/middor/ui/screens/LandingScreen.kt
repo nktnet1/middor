@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -41,7 +42,7 @@ fun LandingScreen(
     val topPadding = if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
         32.dp
     } else {
-        64.dp
+        128.dp
     }
 
     Box(
@@ -94,11 +95,12 @@ fun LandingScreen(
             Button(
                 onClick = { onStartClick() },
                 modifier = Modifier
-                    .fillMaxWidth(0.8f)
                     .height(60.dp)
+                    .widthIn(max = 300.dp)
+                    .fillMaxWidth(0.9f)
             ) {
                 Text(
-                    stringResource(R.string.button_start_mirror_overlay),
+                    stringResource(R.string.button_start_mirror_display_overlay),
                     style = MaterialTheme.typography.titleMedium,
                 )
             }

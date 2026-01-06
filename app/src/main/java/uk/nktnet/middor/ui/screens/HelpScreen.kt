@@ -89,7 +89,7 @@ fun HelpScreen(navController: NavController) {
 
                 2. Grant the notification permission (optional). ${stringResource(R.string.app_name)} will be re-opened when the notification is tapped.
 
-                3. On the starting page, tap on the "${stringResource(R.string.button_start_mirror_overlay)}" button.
+                3. On the starting page, tap on the "${stringResource(R.string.button_start_mirror_display_overlay)}" button.
 
                 4. Ensure that "Single App" is used, then click start. Do not cast the "Entire Screen", as this will also capture the overlay.
 
@@ -117,7 +117,7 @@ fun HelpScreen(navController: NavController) {
                     text = """
                 1. You won't be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. for Google Maps, start the navigation) prior to creating the mirror overlay.
 
-                2. There will be padding between the application and the overlay. This amount of padding is outside the control of ${stringResource(R.string.button_start_mirror_overlay)}.
+                2. There will be padding between the application and the overlay. This amount of padding is outside the control of ${stringResource(R.string.button_start_mirror_display_overlay)}.
             """.trimIndent(),
                     style = MaterialTheme.typography.bodyMedium
                 )

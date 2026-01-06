@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Middor</string>
 
-    <string name="button_start_mirror_overlay">Start Mirror Overlay</string>
+    <string name="button_start_mirror_display_overlay">Start Mirror Display Overlay</string>
 </resources>
