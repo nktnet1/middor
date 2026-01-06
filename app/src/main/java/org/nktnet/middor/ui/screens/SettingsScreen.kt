@@ -61,8 +61,12 @@ fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
     val activity = context as? ComponentActivity
 
-    var overlayGranted by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
-    var notificationsGranted by remember { mutableStateOf(checkNotificationPermission(context)) }
+    var overlayGranted by remember {
+        mutableStateOf(Settings.canDrawOverlays(context))
+    }
+    var notificationsGranted by remember {
+        mutableStateOf(checkNotificationPermission(context)
+        ) }
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -160,51 +164,6 @@ fun SettingsScreen(navController: NavController) {
 
             Spacer(Modifier.height(32.dp))
             Text(
-                stringResource(R.string.settings_preferences_title),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            HorizontalDivider(
-                Modifier.padding(bottom = 8.dp),
-                DividerDefaults.Thickness,
-                DividerDefaults.color
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    stringResource(
-                        R.string.settings_theme_label,
-                        stringResource(UserSettings.currentTheme.value.labelResId)
-                    )
-                )
-                ThemeDropdownIcon()
-            }
-            BooleanSetting(
-                stringResource(R.string.settings_start_on_launch_label),
-                UserSettings.startOnLaunch.value
-            ) { newValue ->
-                UserSettings.setStartOnLaunch(context, newValue)
-            }
-            BooleanSetting(
-                stringResource(R.string.settings_flip_horizontally_label),
-                UserSettings.flipHorizontally.value
-            ) { newValue ->
-                UserSettings.setFlipHorizontally(context, newValue)
-            }
-            BooleanSetting(
-                stringResource(R.string.settings_rotate_180_label),
-                UserSettings.rotate180.value
-            ) { newValue ->
-                UserSettings.setRotate180(context, newValue)
-            }
-
-            Spacer(Modifier.height(48.dp))
-            Text(
                 stringResource(R.string.settings_permissions_title),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -253,6 +212,50 @@ fun SettingsScreen(navController: NavController) {
                 }
             }
 
+            Spacer(Modifier.height(48.dp))
+            Text(
+                stringResource(R.string.settings_preferences_title),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            HorizontalDivider(
+                Modifier.padding(bottom = 8.dp),
+                DividerDefaults.Thickness,
+                DividerDefaults.color
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    stringResource(
+                        R.string.settings_theme_label,
+                        stringResource(UserSettings.currentTheme.value.labelResId)
+                    )
+                )
+                ThemeDropdownIcon()
+            }
+            BooleanSetting(
+                stringResource(R.string.settings_start_on_launch_label),
+                UserSettings.startOnLaunch.value
+            ) { newValue ->
+                UserSettings.setStartOnLaunch(context, newValue)
+            }
+            BooleanSetting(
+                stringResource(R.string.settings_flip_horizontally_label),
+                UserSettings.flipHorizontally.value
+            ) { newValue ->
+                UserSettings.setFlipHorizontally(context, newValue)
+            }
+            BooleanSetting(
+                stringResource(R.string.settings_rotate_180_label),
+                UserSettings.rotate180.value
+            ) { newValue ->
+                UserSettings.setRotate180(context, newValue)
+            }
+
             Spacer(Modifier.height(32.dp))
         }
     }
@@ -270,8 +273,7 @@ fun BooleanSetting(
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -286,8 +288,7 @@ fun BooleanSetting(
 @Composable
 fun PermissionSetting(label: String, granted: Boolean, onClick: () -> Unit) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
