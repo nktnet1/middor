@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -58,15 +60,16 @@ fun HelpScreen(navController: NavController) {
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
+        HorizontalDivider(
+            Modifier.padding(top = 6.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
+            2.dp
+        )
 
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
         ) {
-            HorizontalDivider(
-                Modifier.padding(top = 8.dp, bottom = 16.dp),
-                2.dp
-            )
-
             Spacer(Modifier.height(12.dp))
             Text(
                 "Instructions",
@@ -114,15 +117,12 @@ fun HelpScreen(navController: NavController) {
                     text = """
                 1. You won't be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. for Google Maps, start the navigation) prior to creating the mirror overlay.
 
-                2. For some devices, there will be padding between the application and the overlay. This is outside the control of ${
-                        stringResource(
-                            R.string.button_start_mirror_overlay
-                        )
-                    }.
+                2. There will be padding between the application and the overlay. This amount of padding is outside the control of ${stringResource(R.string.button_start_mirror_overlay)}.
             """.trimIndent(),
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+            Spacer(Modifier.height(32.dp))
         }
     }
 }

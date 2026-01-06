@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -100,15 +102,16 @@ fun SettingsScreen(navController: NavController) {
             )
 
         }
+        HorizontalDivider(
+            Modifier.padding(top = 6.dp, bottom = 16.dp, start = 16.dp, end = 16.dp),
+            2.dp,
+        )
 
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
         ) {
-            HorizontalDivider(
-                Modifier.padding(top = 8.dp, bottom = 12.dp),
-                2.dp,
-            )
-
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
@@ -215,6 +218,7 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
             }
+            Spacer(Modifier.height(32.dp))
         }
     }
 }
