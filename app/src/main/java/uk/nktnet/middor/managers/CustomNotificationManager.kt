@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import uk.nktnet.middor.MainActivity
 import uk.nktnet.middor.MirrorService
 
 object CustomNotificationManager {
@@ -24,7 +25,17 @@ object CustomNotificationManager {
     }
 
     fun buildNotification(context: Context): Notification {
-        val exitIntent = Intent(context, MirrorService::class.java).apply {
+        val appIntent = Intent(context, MainActivity::class.java)
+        val pendingApp = PendingIntent.getActivity(
+            context,
+            0,
+            appIntent,
+            PendingIntent.FLAG_MUTABLE
+        )
+        val exitIntent = Intent(
+            context,
+            MirrorService::class.java,
+        ).apply {
             action = "ACTION_STOP_SERVICE"
         }
         val pendingExit = PendingIntent.getService(
@@ -37,11 +48,13 @@ object CustomNotificationManager {
         return NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_menu_view)
             .setContentTitle("Screen mirroring active")
+            .setContentIntent(pendingApp)
             .addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
                 "Exit",
                 pendingExit
             )
+            .setOngoing(true)
             .build()
     }
 }

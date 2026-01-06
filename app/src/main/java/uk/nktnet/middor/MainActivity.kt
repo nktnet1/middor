@@ -92,6 +92,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        val intent = Intent(this, MirrorService::class.java)
+        stopService(intent)
+    }
+
     @Composable
     private fun resolveTheme(theme: ThemeOption): Boolean {
         return when (theme) {
