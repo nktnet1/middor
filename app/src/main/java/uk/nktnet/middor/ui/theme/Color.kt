@@ -1,4 +1,4 @@
-package uk.nktnet.mirrordisplay.ui.theme
+package uk.nktnet.middor.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

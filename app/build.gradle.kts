@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "uk.nktnet.mirrordisplay"
+    namespace = "uk.nktnet.middor"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "uk.nktnet.mirrordisplay"
+        applicationId = "uk.nktnet.middor"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

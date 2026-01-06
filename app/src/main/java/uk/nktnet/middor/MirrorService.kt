@@ -1,4 +1,4 @@
-package uk.nktnet.mirrordisplay
+package uk.nktnet.middor
 
 import android.app.*
 import android.content.Intent
