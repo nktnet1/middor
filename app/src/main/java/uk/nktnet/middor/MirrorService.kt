@@ -11,7 +11,6 @@ import android.graphics.drawable.GradientDrawable
 import android.hardware.display.DisplayManager
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
-import android.os.Build
 import android.os.IBinder
 import android.util.DisplayMetrics
 import android.view.Gravity
@@ -42,23 +41,15 @@ class MirrorService : Service() {
 
         CustomNotificationManager.createNotificationChannel(this)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            startForeground(
-                1,
-                CustomNotificationManager.buildNotification(this),
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-            )
-        } else {
-            startForeground(1, CustomNotificationManager.buildNotification(this))
-        }
+        startForeground(
+            1,
+            CustomNotificationManager.buildNotification(this),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+        )
 
         val resultCode = intent.getIntExtra("code", Activity.RESULT_CANCELED)
-        val data = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("data", Intent::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra("data")
-        } ?: return START_NOT_STICKY
+        val data = intent.getParcelableExtra("data", Intent::class.java)
+            ?: return START_NOT_STICKY
 
         val mpm = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         projection = mpm.getMediaProjection(resultCode, data)
@@ -76,19 +67,12 @@ class MirrorService : Service() {
     }
 
     private fun startFullScreenOverlay() {
-        val metrics = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics = wm.currentWindowMetrics
-            val bounds = windowMetrics.bounds
-            DisplayMetrics().apply {
-                widthPixels = bounds.width()
-                heightPixels = bounds.height()
-                densityDpi = resources.displayMetrics.densityDpi
-            }
-        } else {
-            DisplayMetrics().also {
-                @Suppress("DEPRECATION")
-                wm.defaultDisplay.getMetrics(it)
-            }
+        val windowMetrics = wm.currentWindowMetrics
+        val bounds = windowMetrics.bounds
+        val metrics = DisplayMetrics().apply {
+            widthPixels = bounds.width()
+            heightPixels = bounds.height()
+            densityDpi = resources.displayMetrics.densityDpi
         }
 
         overlayView = FrameLayout(this)

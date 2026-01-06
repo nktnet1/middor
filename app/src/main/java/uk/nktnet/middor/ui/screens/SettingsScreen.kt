@@ -4,7 +4,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -210,10 +209,6 @@ fun SettingsScreen(navController: NavController) {
 }
 
 private fun checkNotificationPermission(context: Context): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.areNotificationsEnabled()
-    } else {
-        true
-    }
+    val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    return nm.areNotificationsEnabled()
 }
