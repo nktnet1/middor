@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -67,6 +69,7 @@ fun SettingsScreen(navController: NavController) {
     var notificationsGranted by remember {
         mutableStateOf(checkNotificationPermission(context)
         ) }
+    var showResetDialog by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -213,11 +216,28 @@ fun SettingsScreen(navController: NavController) {
             }
 
             Spacer(Modifier.height(48.dp))
-            Text(
-                stringResource(R.string.settings_preferences_title),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
+                Text(
+                    stringResource(R.string.settings_preferences_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(
+                    onClick = { showResetDialog = true },
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.reset_settings),
+                        contentDescription = stringResource(
+                            R.string.settings_reset_icon_description
+                        )
+                    )
+                }
+            }
             HorizontalDivider(
                 Modifier.padding(bottom = 8.dp),
                 DividerDefaults.Thickness,
@@ -256,30 +276,17 @@ fun SettingsScreen(navController: NavController) {
             Spacer(Modifier.height(32.dp))
         }
     }
+
+    ResetSettingsDialog(
+        showDialog = showResetDialog,
+        onDismiss = { showResetDialog = false },
+        onConfirm = { UserSettings.resetSettings(context) }
+    )
 }
 
 private fun checkNotificationPermission(context: Context): Boolean {
     val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     return nm.areNotificationsEnabled()
-}
-
-@Composable
-fun BooleanSetting(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label)
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange
-        )
-    }
 }
 
 @Composable
@@ -303,5 +310,62 @@ fun PermissionSetting(label: String, granted: Boolean, onClick: () -> Unit) {
                     MaterialTheme.colorScheme.error
             )
         }
+    }
+}
+
+@Composable
+fun BooleanSetting(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+@Composable
+fun ResetSettingsDialog(
+    showDialog: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(stringResource(R.string.settings_reset_dialog_title))
+            },
+            text = {
+                Text(stringResource(R.string.settings_reset_dialog_message))
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onConfirm()
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error,
+                    ),
+                ) {
+                    Text(stringResource(R.string.settings_reset_dialog_confirm))
+                }
+
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.settings_reset_dialog_cancel))
+                }
+            }
+        )
     }
 }

@@ -19,10 +19,17 @@ private val FLIP_DISPLAY_KEY = booleanPreferencesKey("user_settings.flip_horizon
 private val UPSIDE_DOWN_KEY = booleanPreferencesKey("user_settings.upside_down")
 
 object UserSettings {
-    val currentTheme: MutableState<ThemeOption> = mutableStateOf(ThemeOption.SYSTEM)
-    val startOnLaunch: MutableState<Boolean> = mutableStateOf(false)
-    val flipHorizontally: MutableState<Boolean> = mutableStateOf(true)
-    val rotate180: MutableState<Boolean> = mutableStateOf(false)
+    private object Defaults {
+        val THEME = ThemeOption.SYSTEM
+        const val START_ON_LAUNCH = false
+        const val FLIP_HORIZONTALLY = true
+        const val ROTATE_180 = false
+    }
+
+    val currentTheme: MutableState<ThemeOption> = mutableStateOf(Defaults.THEME)
+    val startOnLaunch: MutableState<Boolean> = mutableStateOf(Defaults.START_ON_LAUNCH)
+    val flipHorizontally: MutableState<Boolean> = mutableStateOf(Defaults.FLIP_HORIZONTALLY)
+    val rotate180: MutableState<Boolean> = mutableStateOf(Defaults.ROTATE_180)
 
     fun setTheme(context: Context, theme: ThemeOption) {
         currentTheme.value = theme
@@ -60,15 +67,23 @@ object UserSettings {
         }
     }
 
+    fun resetSettings(context: Context) {
+        setTheme(context, Defaults.THEME)
+        setStartOnLaunch(context, Defaults.START_ON_LAUNCH)
+        setFlipHorizontally(context, Defaults.FLIP_HORIZONTALLY)
+        setRotate180(context, Defaults.ROTATE_180)
+    }
+
     fun init(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             context.dataStore.data.collectLatest { prefs ->
                 currentTheme.value = ThemeOption.entries.find {
                     it.name == prefs[THEME_KEY]
-                } ?: ThemeOption.SYSTEM
-                startOnLaunch.value = prefs[START_ON_LAUNCH_KEY] ?: false
-                flipHorizontally.value = prefs[FLIP_DISPLAY_KEY] ?: true
-                rotate180.value = prefs[UPSIDE_DOWN_KEY] ?: false
+                } ?: Defaults.THEME
+
+                startOnLaunch.value = prefs[START_ON_LAUNCH_KEY] ?: Defaults.START_ON_LAUNCH
+                flipHorizontally.value = prefs[FLIP_DISPLAY_KEY] ?: Defaults.FLIP_HORIZONTALLY
+                rotate180.value = prefs[UPSIDE_DOWN_KEY] ?: Defaults.ROTATE_180
             }
         }
     }

@@ -13,4 +13,10 @@
     <string name="settings_granted_text_button">Granted</string>
     <string name="settings_request_text_button">Request</string>
     <string name="settings_app_info_error">Error: %1$s</string>
+    <string name="settings_reset_icon_description">Reset settings</string>
+
+    <string name="settings_reset_dialog_title">Reset Preferences</string>
+    <string name="settings_reset_dialog_message">Are you sure you want to reset all preferences to their defaults?</string>
+    <string name="settings_reset_dialog_confirm">Reset</string>
+    <string name="settings_reset_dialog_cancel">Cancel</string>
 </resources>
