@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.media.projection.MediaProjectionManager
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,9 +24,14 @@ class ScreenCaptureManager(
         }
 
     fun requestCapture() {
-        val mpm = activity.getSystemService(
-            Context.MEDIA_PROJECTION_SERVICE
-        ) as MediaProjectionManager
-        launcher.launch(mpm.createScreenCaptureIntent())
+        try {
+            val mpm = activity.getSystemService(
+                Context.MEDIA_PROJECTION_SERVICE
+            ) as MediaProjectionManager
+            launcher.launch(mpm.createScreenCaptureIntent())
+        } catch (e: Exception) {
+            Log.e(javaClass.simpleName, "Failed to launch screen capture", e)
+            ToastManager.show(activity, "Error: ${e.message}")
+        }
     }
 }

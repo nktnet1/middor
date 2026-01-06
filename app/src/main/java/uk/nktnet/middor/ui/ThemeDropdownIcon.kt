@@ -2,14 +2,13 @@ package uk.nktnet.middor.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import uk.nktnet.middor.R
 import uk.nktnet.middor.config.ThemeOption
 import uk.nktnet.middor.config.UserSettings
@@ -33,8 +31,6 @@ fun ThemeDropdownIcon() {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
             .wrapContentSize(Alignment.TopCenter)
     ) {
         IconButton(onClick = { expanded = true }) {
@@ -57,11 +53,12 @@ fun ThemeDropdownIcon() {
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.wrapContentSize()
         ) {
             ThemeOption.entries.forEach { option ->
                 DropdownMenuItem(
-                    text = { androidx.compose.material3.Text(option.label) },
+                    text = { Text(option.label) },
                     onClick = {
                         UserSettings.setTheme(context, option)
                         expanded = false
