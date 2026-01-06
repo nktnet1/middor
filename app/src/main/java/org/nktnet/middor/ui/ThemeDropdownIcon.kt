@@ -39,11 +39,11 @@ fun ThemeDropdownIcon() {
                 painter = painterResource(
                     id = when (currentTheme) {
                         ThemeOption.DARK -> R.drawable.dark_mode_24px
-                        ThemeOption.LIGHT -> R.drawable.sunny_24px
+                        ThemeOption.LIGHT -> R.drawable.light_mode_24px
                         ThemeOption.SYSTEM -> if (isSystemDark) {
-                            R.drawable.dark_mode_24px
+                            R.drawable.moon_stars_24px
                         } else {
-                            R.drawable.sunny_24px
+                            R.drawable.wb_sunny_24px
                         }
                     }
                 ),
