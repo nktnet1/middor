@@ -22,24 +22,10 @@ the single app screen sharing feature. For more details, see
 
 ## Contact
 
-### Questions/Feature Requests
+- support@middor.nktnet.org
 
-Create a `Q&A` for questions and `Ideas` for feature requests on GitHub discussions:
+## License
 
-- https://github.com/nktnet1/middor/discussions
+This project is licensed under the GNU Affero General Public License v3.0 or later.
 
-### Bugs/Issues
-
-Report bugs by creating a GitHub issue describing the problem and how it can be reproduced:
-
-- https://github.com/nktnet1/middor/issues
-
-Please also include your device model, app version and android version.
-
-### Other
-
-For all other enquiries, please reach out to:
-
-```
-support@middor.nktnet.org
-```
+See the [LICENSE](./LICENSE) file for details.
