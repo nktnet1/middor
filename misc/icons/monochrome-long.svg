@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 0 540 300" width="1024" height="500">
+  <!-- Icon Group -->
+  <g transform="translate(65,320) scale(0.35)">
+    <path d="M360-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h160v80H200v560h160v80Zm80 80Zm160-80v-80h80v80h-80Zm0-640v-80h80v80h-80Zm160 640v-80h80q0 33-23.5 56.5T760-120Zm0-160v-7.428571 29.142857Zm0-160h78.857143Zm0-160h-82.285714Zm0-160v-80q33 0 56.5 23.5T840-760h-80Z" fill="#000000"/>
+    <path d="M340-340v-280h80l60 120 60-120h80v280h-70v-160l-70 120-70-120v160h-60z" fill="#000000"/>
+    <line x1="478" y1="-880" x2="478" y2="-647" stroke="#000000" stroke-width="50" stroke-linecap="butt"/>
+    <line x1="478" y1="-317" x2="478" y2="-84" stroke="#000000" stroke-width="50" stroke-linecap="butt"/>
+  </g>
+
+  <!-- Text -->
+  <text x="295" y="200" font-family="Arial, Helvetica, sans-serif" font-size="135" font-weight="bold" fill="#000000">
+    iddor
+  </text>
+</svg>
