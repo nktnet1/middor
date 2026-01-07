@@ -1,0 +1,5 @@
+## Middor - First Release!
+
+- App mirroring with horizontal flip and 180° rotation
+- Supports HUD and windscreen projection
+- Compatible with Android 14+
