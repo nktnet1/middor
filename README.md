@@ -13,6 +13,10 @@ Middor only supports devices running on Android 14+ (SDK 34+), as it relies on
 the single app screen sharing feature. For more details, see
 [Android 14 - App Screen Sharing](https://developer.android.com/about/versions/14/features/app-screen-sharing).
 
+For usage instructions, visit:
+
+- https://github.com/nktnet1/middor/discussions/2
+
 ## Permissions
 
 - **SYSTEM_ALERT_WINDOW**: to draw a mirror overlay on top of other apps

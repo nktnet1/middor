@@ -7,7 +7,7 @@
     <string name="help_overlay_step">1. Open settings and grant the overlay permission (display over other apps).</string>
     <string name="help_notification_step">2. Grant the notification permission (optional). %1$s will be re-opened when the notification is tapped.</string>
     <string name="help_start_button_step">3. On the starting page, tap on the &quot;%1$s&quot; button.</string>
-    <string name="help_single_app_step">4. Ensure that &quot;Single App&quot; is used, then click start. Do not cast the &quot;Entire Screen&quot;, as this will also capture the overlay.</string>
+    <string name="help_single_app_step">4. Ensure that &quot;Single App&quot; is selected, then click start. Do not cast the &quot;Entire Screen&quot;, as this will also capture the overlay.</string>
     <string name="help_select_app_step">5. Select the application you want to mirror. This will launch the application, then create an overlay on top that mirrors the application screen.</string>
     <string name="help_exit_overlay_step">6. To exit, click the red cross icon in the top-right corner of the overlay.</string>
 
