@@ -5,7 +5,7 @@ Middor is a free and open-source Android application for mirroring apps on your 
 With built-in support for horizontal flip and 180° rotation, Middor can be used to:
 
 - Display apps on a HUD
-- Project content onto a car windshield (e.g. Google Maps navigation)
+- Project content onto a car windscreen (e.g. Google Maps navigation)
 - View mirrored images and videos
 
 Middor only supports devices running Android 14 or higher (SDK 34+), as it
