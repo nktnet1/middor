@@ -9,7 +9,7 @@
     <string name="help_start_button_step">3. On the starting page, tap on the &quot;%1$s&quot; button.</string>
     <string name="help_single_app_step">4. Ensure that &quot;Single App&quot; is selected, then click start. Do not cast the &quot;Entire Screen&quot;, as this will also capture the overlay.</string>
     <string name="help_select_app_step">5. Select the application you want to mirror. This will launch the application, then create an overlay on top that mirrors the application screen.</string>
-    <string name="help_exit_overlay_step">6. To exit, click the red cross icon in the top-right corner of the overlay.</string>
+    <string name="help_exit_overlay_step">6. To exit, tap on the red cross icon in the top-right corner of the overlay.</string>
 
     <string name="help_overlay_note">1. You won\'t be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. starting the navigation in Google Maps) prior to creating the mirror overlay.</string>
     <string name="help_padding_note">2. There will be padding between the application and the overlay. This padding is outside the control of %1$s.</string>
