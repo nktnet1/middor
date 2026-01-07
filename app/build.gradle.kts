@@ -4,12 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "org.nktnet.middor"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
         }
     }
+    namespace = "org.nktnet.middor"
 
     defaultConfig {
         applicationId = "org.nktnet.middor"
@@ -34,8 +34,32 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
+    }
+
+    dependenciesInfo {
+        // https://gitlab.com/fdroid/fdroiddata/-/issues/3330
+        includeInApk = false
+        includeInBundle = false
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore.jks")
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("KEY_ALIAS")
+            keyPassword = System.getenv("KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
 }
 

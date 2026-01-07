@@ -14,3 +14,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+/app/release
+/.vscode
+/.kotlin
+
+.env*
+*.jks
