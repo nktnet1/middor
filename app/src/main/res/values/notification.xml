@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="notification_channel_screen_mirroring">Screen Mirroring</string>
     <string name="notification_content_title">Screen mirroring active</string>
     <string name="notification_exit_action">Exit</string>
 </resources>
