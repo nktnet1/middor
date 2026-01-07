@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" height="200" width="200" viewBox="0 -960 960 960" fill="#2a96b0">
+  <!-- Mirror Border -->
+  <path d="M360-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h160v80H200v560h160v80Zm80 80Zm160-80v-80h80v80h-80Zm0-640v-80h80v80h-80Zm160 640v-80h80q0 33-23.5 56.5T760-120Zm0-160v-80h80v80h-80Zm0-160v-80h80v80h-80Zm0-160v-80h80v80h-80Zm0-160v-80q33 0 56.5 23.5T840-760h-80Z" />
+
+  <!-- M  -->
+  <path d="M340-340v-280h80l60 120 60-120h80v280h-70v-160l-70 120-70-120v160h-60z" />
+
+  <!-- Top Vertical Line -->
+  <line x1="478" y1="-880" x2="478" y2="-647" stroke="#2a96b0" stroke-width="50" stroke-linecap="butt" />
+
+  <!-- Bottom Vertical Line -->
+  <line x1="478" y1="-317" x2="478" y2="-84" stroke="#2a96b0" stroke-width="50" stroke-linecap="butt" />
+</svg>
