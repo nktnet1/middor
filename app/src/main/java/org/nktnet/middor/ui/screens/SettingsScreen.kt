@@ -44,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -61,6 +62,7 @@ import org.nktnet.middor.ui.ThemeDropdownIcon
 @Composable
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val activity = context as? ComponentActivity
 
     var overlayGranted by remember {
@@ -150,7 +152,7 @@ fun SettingsScreen(navController: NavController) {
                         Log.e("SettingsScreen", "Failed to start activity", e)
                         ToastManager.show(
                             context,
-                            context.getString(
+                            resources.getString(
                                 R.string.settings_app_info_error,
                                 e.message
                             )
