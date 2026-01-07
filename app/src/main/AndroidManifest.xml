@@ -34,7 +34,7 @@
         </activity>
 
         <service
-            android:name=".MirrorService"
+            android:name=".services.MirrorService"
             android:exported="false"
             android:foregroundServiceType="mediaProjection"
         />

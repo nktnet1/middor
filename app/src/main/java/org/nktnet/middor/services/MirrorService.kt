@@ -1,4 +1,4 @@
-package org.nktnet.middor
+package org.nktnet.middor.services
 
 import android.app.Activity
 import android.app.Service
@@ -20,6 +20,7 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
+import org.nktnet.middor.R
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.CustomNotificationManager
 
@@ -95,7 +96,7 @@ class MirrorService : Service() {
                 setColor(CLOSE_BUTTON_COLOUR)
             }
             background = shape
-            setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            setImageResource(R.drawable.close_24px)
             setColorFilter(Color.WHITE)
             setOnClickListener { stopSelf() }
         }

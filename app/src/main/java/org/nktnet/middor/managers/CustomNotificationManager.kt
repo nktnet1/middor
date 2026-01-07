@@ -8,7 +8,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import org.nktnet.middor.MainActivity
-import org.nktnet.middor.MirrorService
+import org.nktnet.middor.services.MirrorService
 import org.nktnet.middor.R
 
 object CustomNotificationManager {

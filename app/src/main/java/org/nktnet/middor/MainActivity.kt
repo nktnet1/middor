@@ -25,6 +25,7 @@ import org.nktnet.middor.config.ThemeOption
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ScreenCaptureManager
 import org.nktnet.middor.managers.ToastManager
+import org.nktnet.middor.services.MirrorService
 import org.nktnet.middor.ui.screens.HelpScreen
 import org.nktnet.middor.ui.screens.LandingScreen
 import org.nktnet.middor.ui.screens.SettingsScreen
