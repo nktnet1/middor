@@ -106,20 +106,18 @@ fun LandingScreen(
 @Composable
 fun Logo() {
     val configuration = LocalConfiguration.current
+    val (painterRes, modifier) = if (
+        configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        ) {
+            R.drawable.monochrome_long_icon to Modifier.width(200.dp).aspectRatio(1.8f)
+        } else {
+            R.drawable.monochrome_icon to Modifier.size(160.dp)
+        }
 
-    if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-        Image(
-            painter = painterResource(R.drawable.monochrome_long_icon),
-            contentDescription = stringResource(R.string.landing_app_icon_content_description),
-            modifier = Modifier.width(200.dp).aspectRatio(1.8f),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-        )
-    } else {
-        Image(
-            painter = painterResource(R.drawable.monochrome_icon),
-            contentDescription = stringResource(R.string.landing_app_icon_content_description),
-            modifier = Modifier.size(160.dp),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
-        )
-    }
+    Image(
+        painter = painterResource(painterRes),
+        contentDescription = stringResource(R.string.landing_app_icon_content_description),
+        modifier = modifier,
+        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+    )
 }
