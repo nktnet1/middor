@@ -6,9 +6,9 @@ It can be used for
 - projecting content onto a car windshield (e.g. Google Maps navigation)
 - viewing mirrored images and videos
 
-Middor only supports devices running on Android 14+ (SDK 34+), as it relies on the single app screen sharing feature. For more details, see Android 14 - App Screen Sharing:
+Middor only supports devices running on Android 14+ (SDK 34+), as it relies on the single app screen sharing feature. For more details, see Android 14 - App Screen Sharing: https://developer.android.com/about/versions/14/features/app-screen-sharing
 
-- https://developer.android.com/about/versions/14/features/app-screen-sharing
+For usage instructions, see https://github.com/nktnet1/middor/discussions/2
 
 ### Permissions
 
