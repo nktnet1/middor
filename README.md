@@ -16,10 +16,10 @@ For usage instructions, see [Discussion #2](https://github.com/nktnet1/middor/di
 
 ## Permissions
 
-- **SYSTEM_ALERT_WINDOW**: to draw a mirror overlay on top of other apps
-- **FOREGROUND_SERVICE**: to run the mirror service continuously while the overlay is active
-- **FOREGROUND_SERVICE_MEDIA_PROJECTION**: for capturing the screen content of the underlying app
-- **POST_NOTIFICATIONS**: (optional) to display the mirror service notification with additional actions
+- <b>SYSTEM_ALERT_WINDOW</b>: to draw a mirror overlay on top of other apps
+- <b>FOREGROUND_SERVICE</b>: to run the mirror service continuously while the overlay is active
+- <b>FOREGROUND_SERVICE_MEDIA_PROJECTION</b>: for capturing the screen content of the underlying app
+- <b>POST_NOTIFICATIONS</b>: (optional) to display the mirror service notification with additional actions
 
 ## Contact
 
