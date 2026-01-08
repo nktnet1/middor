@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="info_title">Info</string>
+    <string name="info_app_name">App</string>
+    <string name="info_package_name">Package</string>
+    <string name="info_app_version">Version</string>
+    <string name="info_source_url">Source Code URL</string>
+    <string name="info_android_version">Android Version</string>
+</resources>

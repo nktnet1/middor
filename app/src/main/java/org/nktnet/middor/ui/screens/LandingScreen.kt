@@ -47,7 +47,23 @@ fun LandingScreen(
             .padding(top = 8.dp, start = 4.dp, end = 4.dp)
             .fillMaxSize()
     ) {
-        ThemeDropdownIcon()
+        Column(
+            modifier = Modifier.align(Alignment.TopStart)
+        ) {
+            ThemeDropdownIcon()
+            IconButton(
+                onClick = { navController.navigate(Screen.Info.route) },
+                modifier = Modifier.size(42.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.info_24px),
+                    contentDescription = stringResource(
+                        R.string.landing_info_content_description
+                    ),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
 
         Column(
             modifier = Modifier.align(Alignment.TopEnd)

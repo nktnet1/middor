@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="landing_settings_content_description">Settings</string>
+    <string name="landing_info_content_description">Info</string>
     <string name="landing_app_icon_content_description">App Icon</string>
 </resources>
