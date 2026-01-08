@@ -2,6 +2,7 @@ package org.nktnet.middor.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import org.nktnet.middor.R
 import org.nktnet.middor.config.ThemeOption
 import org.nktnet.middor.config.UserSettings
@@ -31,10 +33,12 @@ fun ThemeDropdownIcon() {
     val isSystemDark = isSystemInDarkTheme()
 
     Box(
-        modifier = Modifier
-            .wrapContentSize(Alignment.TopCenter)
+        modifier = Modifier.wrapContentSize(Alignment.TopCenter)
     ) {
-        IconButton(onClick = { expanded = true }) {
+        IconButton(
+            modifier = Modifier.size(42.dp),
+            onClick = { expanded = true },
+        ) {
             Icon(
                 painter = painterResource(
                     id = when (currentTheme) {

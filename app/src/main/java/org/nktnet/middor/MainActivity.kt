@@ -27,6 +27,7 @@ import org.nktnet.middor.managers.ScreenCaptureManager
 import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.services.MirrorService
 import org.nktnet.middor.ui.screens.HelpScreen
+import org.nktnet.middor.ui.screens.InfoScreen
 import org.nktnet.middor.ui.screens.LandingScreen
 import org.nktnet.middor.ui.screens.SettingsScreen
 import org.nktnet.middor.ui.theme.MiddorTheme
@@ -89,6 +90,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Screen.Settings.route) {
                             SettingsScreen(navController)
+                        }
+                        composable(Screen.Info.route) {
+                            InfoScreen(navController)
                         }
                         composable(Screen.Help.route) {
                             HelpScreen(navController)
