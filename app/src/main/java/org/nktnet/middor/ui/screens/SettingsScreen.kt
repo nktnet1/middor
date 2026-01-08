@@ -24,17 +24,13 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -58,19 +54,26 @@ import org.nktnet.middor.config.Screen
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.ui.ThemeDropdownIcon
+import org.nktnet.middor.ui.components.settings.BooleanSetting
+import org.nktnet.middor.ui.components.settings.LongSetting
+import org.nktnet.middor.ui.components.settings.PermissionSetting
+import org.nktnet.middor.ui.components.settings.ResetPreferencesDialog
 
 @Composable
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
     val resources = LocalResources.current
     val activity = context as? ComponentActivity
+    val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
     var overlayGranted by remember {
         mutableStateOf(Settings.canDrawOverlays(context))
     }
     var notificationsGranted by remember {
-        mutableStateOf(checkNotificationPermission(context)
-        ) }
+        mutableStateOf(
+            nm.areNotificationsEnabled()
+        )
+    }
     var showResetDialog by remember { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -86,7 +89,7 @@ fun SettingsScreen(navController: NavController) {
             val observer = object : DefaultLifecycleObserver {
                 override fun onStart(owner: LifecycleOwner) {
                     overlayGranted = Settings.canDrawOverlays(activity)
-                    notificationsGranted = checkNotificationPermission(context)
+                    notificationsGranted = nm.areNotificationsEnabled()
                 }
             }
             lifecycle.addObserver(observer)
@@ -287,100 +290,21 @@ fun SettingsScreen(navController: NavController) {
             ) { newValue ->
                 UserSettings.setRotate180(context, newValue)
             }
+            LongSetting(
+                label = stringResource(R.string.settings_start_delay_label),
+                value = UserSettings.startDelayMs.value,
+                onValueChange = { UserSettings.setStartDelay(context, it) },
+                min = 0,
+                max = 60 * 1000
+            )
 
             Spacer(Modifier.height(32.dp))
         }
     }
 
-    ResetSettingsDialog(
+    ResetPreferencesDialog(
         showDialog = showResetDialog,
         onDismiss = { showResetDialog = false },
         onConfirm = { UserSettings.resetSettings(context) }
     )
-}
-
-private fun checkNotificationPermission(context: Context): Boolean {
-    val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    return nm.areNotificationsEnabled()
-}
-
-@Composable
-fun PermissionSetting(label: String, granted: Boolean, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label)
-        TextButton(onClick = onClick) {
-            Text(
-                if (granted) {
-                    stringResource(R.string.settings_granted_text_button)
-                } else {
-                    stringResource(R.string.settings_request_text_button)
-                },
-                color = if (granted)
-                    MaterialTheme.colorScheme.primary
-                else
-                    MaterialTheme.colorScheme.error
-            )
-        }
-    }
-}
-
-@Composable
-fun BooleanSetting(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(label)
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange
-        )
-    }
-}
-
-@Composable
-fun ResetSettingsDialog(
-    showDialog: Boolean,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit
-) {
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = {
-                Text(stringResource(R.string.settings_reset_dialog_title))
-            },
-            text = {
-                Text(stringResource(R.string.settings_reset_dialog_message))
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onConfirm()
-                        onDismiss()
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error,
-                    ),
-                ) {
-                    Text(stringResource(R.string.settings_reset_dialog_confirm))
-                }
-
-            },
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.settings_reset_dialog_cancel))
-                }
-            }
-        )
-    }
 }

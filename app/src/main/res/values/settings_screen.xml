@@ -8,6 +8,7 @@
     <string name="settings_start_on_launch_label">Start on Launch</string>
     <string name="settings_flip_horizontally_label">Flip Horizontally</string>
     <string name="settings_rotate_180_label">Rotate 180°</string>
+    <string name="settings_start_delay_label">Start Delay (ms)</string>
     <string name="settings_overlay_permission_label">Overlay</string>
     <string name="settings_notifications_permission_label">Notifications</string>
     <string name="settings_granted_text_button">Granted</string>

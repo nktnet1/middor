@@ -2,6 +2,7 @@ package org.nktnet.middor
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -132,7 +133,17 @@ class MainActivity : ComponentActivity() {
             )
             navController.navigate(Screen.Settings.route)
         } else {
-            screenCaptureManager.requestCapture()
+            val delayMs = UserSettings.startDelayMs.value
+            if (delayMs > 0) {
+                Handler(mainLooper).postDelayed(
+                    {
+                        screenCaptureManager.requestCapture()
+                    },
+                    delayMs
+                )
+            } else {
+                screenCaptureManager.requestCapture()
+            }
         }
     }
 }

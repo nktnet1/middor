@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
@@ -18,18 +19,21 @@ private val START_ON_LAUNCH_KEY = booleanPreferencesKey("user_settings.start_on_
 private val FLIP_DISPLAY_KEY = booleanPreferencesKey("user_settings.flip_horizontally")
 private val UPSIDE_DOWN_KEY = booleanPreferencesKey("user_settings.upside_down")
 
+private val START_DELAY_KEY = longPreferencesKey("user_settings.start_delay")
 object UserSettings {
     private object Defaults {
         val THEME = ThemeOption.SYSTEM
         const val START_ON_LAUNCH = false
         const val FLIP_HORIZONTALLY = true
         const val ROTATE_180 = false
+        const val START_DELAY_MS = 0L
     }
 
     val currentTheme: MutableState<ThemeOption> = mutableStateOf(Defaults.THEME)
     val startOnLaunch: MutableState<Boolean> = mutableStateOf(Defaults.START_ON_LAUNCH)
     val flipHorizontally: MutableState<Boolean> = mutableStateOf(Defaults.FLIP_HORIZONTALLY)
     val rotate180: MutableState<Boolean> = mutableStateOf(Defaults.ROTATE_180)
+    val startDelayMs: MutableState<Long> = mutableStateOf(Defaults.START_DELAY_MS)
 
     fun setTheme(context: Context, theme: ThemeOption) {
         currentTheme.value = theme
@@ -72,6 +76,16 @@ object UserSettings {
         setStartOnLaunch(context, Defaults.START_ON_LAUNCH)
         setFlipHorizontally(context, Defaults.FLIP_HORIZONTALLY)
         setRotate180(context, Defaults.ROTATE_180)
+        setStartDelay(context, 0L)
+    }
+
+    fun setStartDelay(context: Context, delayMs: Long) {
+        startDelayMs.value = delayMs
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.edit { prefs ->
+                prefs[START_DELAY_KEY] = delayMs
+            }
+        }
     }
 
     fun init(context: Context) {
@@ -84,6 +98,7 @@ object UserSettings {
                 startOnLaunch.value = prefs[START_ON_LAUNCH_KEY] ?: Defaults.START_ON_LAUNCH
                 flipHorizontally.value = prefs[FLIP_DISPLAY_KEY] ?: Defaults.FLIP_HORIZONTALLY
                 rotate180.value = prefs[UPSIDE_DOWN_KEY] ?: Defaults.ROTATE_180
+                startDelayMs.value = prefs[START_DELAY_KEY] ?: Defaults.START_DELAY_MS
             }
         }
     }
