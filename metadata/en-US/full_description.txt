@@ -2,30 +2,34 @@ Middor is a free and open-source Android application for mirroring apps on your 
 
 With built-in support for horizontal flip and 180° rotation, Middor can be used to:
 
-- Display apps on a HUD
-- Project content onto a car windscreen (e.g. Google Maps navigation)
-- View mirrored images and videos
+<ul>
+  <li>Display apps on a HUD</li>
+  <li>Project content onto a car windscreen (e.g. Google Maps navigation)</li>
+  <li>View mirrored images and videos</li>
+</ul>
 
 Middor only supports devices running Android 14 or higher (SDK 34+), as it relies on the single app screen sharing feature. For more details, see Android 14 - App Screen Sharing: https://developer.android.com/about/versions/14/features/app-screen-sharing
 
 For usage instructions, see https://github.com/nktnet1/middor/discussions/2
 
-### Permissions
+<big>Permissions</big>
 
-- <b>SYSTEM_ALERT_WINDOW</b>: to draw a mirror overlay on top of other apps
-- <b>FOREGROUND_SERVICE</b>: to run the mirror service continuously while the overlay is active
-- <b>FOREGROUND_SERVICE_MEDIA_PROJECTION</b>: for capturing the screen content of the underlying app
-- <b>POST_NOTIFICATIONS</b>: (optional) to display the mirror service notification with additional actions
+<ul>
+  <li><b>SYSTEM_ALERT_WINDOW</b>: to draw a mirror overlay on top of other apps</li>
+  <li><b>FOREGROUND_SERVICE</b>: to run the mirror service continuously while the overlay is active</li>
+  <li><b>FOREGROUND_SERVICE_MEDIA_PROJECTION</b>: for capturing the screen content of the underlying app</li>
+  <li><b>POST_NOTIFICATIONS</b>: (optional) to display the mirror service notification with additional actions</li>
+</ul>
 
-### Contact
+<big>Contact</big>
 
-#### Questions/Feature Requests
+<b>Questions/Feature Requests</b>
 
 Create a Q&A for questions and Ideas for feature requests on GitHub discussions:
 
 - https://github.com/nktnet1/middor/discussions
 
-#### Bugs/Issues
+<b>Bugs/Issues</b>
 
 Report bugs by creating a GitHub issue describing the problem and how it can be reproduced:
 
@@ -33,7 +37,7 @@ Report bugs by creating a GitHub issue describing the problem and how it can be 
 
 Please also include your device model, app version and android version.
 
-#### Other
+<b>Other</b>
 
 For all other inquiries, please reach out to:
 
