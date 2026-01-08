@@ -135,6 +135,13 @@ class MainActivity : ComponentActivity() {
         } else {
             val delayMs = UserSettings.startDelayMs.value
             if (delayMs > 0) {
+                ToastManager.show(
+                    this,
+                    this.getString(
+                        R.string.toast_start_delay_message,
+                        delayMs.toString(),
+                    )
+                )
                 Handler(mainLooper).postDelayed(
                     {
                         screenCaptureManager.requestCapture()
