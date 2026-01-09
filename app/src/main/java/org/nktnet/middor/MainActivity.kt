@@ -2,7 +2,6 @@ package org.nktnet.middor
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +15,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -24,7 +22,6 @@ import org.nktnet.middor.config.Screen
 import org.nktnet.middor.config.ThemeOption
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ScreenCaptureManager
-import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.services.MirrorService
 import org.nktnet.middor.ui.screens.HelpScreen
 import org.nktnet.middor.ui.screens.InfoScreen
@@ -59,12 +56,6 @@ class MainActivity : ComponentActivity() {
                 window?.let { WindowInsetsControllerCompat(it, it.decorView) }
             }
 
-            LaunchedEffect(Unit) {
-                if (UserSettings.startOnLaunch.value) {
-                    startMirrorOverlay(navController, screenCaptureManager)
-                }
-            }
-
             LaunchedEffect(isDarkTheme) {
                 insetsController?.isAppearanceLightStatusBars = !isDarkTheme
                 insetsController?.isAppearanceLightNavigationBars = !isDarkTheme
@@ -82,9 +73,7 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Landing.route) {
                             LandingScreen(
                                 navController = navController,
-                                onStartClick = {
-                                    startMirrorOverlay(navController, screenCaptureManager)
-                                },
+                                screenCaptureManager = screenCaptureManager,
                             )
 
                         }
@@ -115,24 +104,6 @@ class MainActivity : ComponentActivity() {
             ThemeOption.SYSTEM -> isSystemInDarkTheme()
             ThemeOption.DARK -> true
             ThemeOption.LIGHT -> false
-        }
-    }
-
-    private fun startMirrorOverlay(
-        navController: NavController,
-        screenCaptureManager: ScreenCaptureManager
-    ) {
-        if (!Settings.canDrawOverlays(this)) {
-            ToastManager.show(
-                this,
-                getString(
-                    R.string.settings_overlay_permission_error,
-                    getString(R.string.app_name)
-                )
-            )
-            navController.navigate(Screen.Settings.route)
-        } else {
-            screenCaptureManager.requestCapture()
         }
     }
 }

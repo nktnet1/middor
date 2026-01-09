@@ -2,4 +2,4 @@
 
 - feat: added info screen
 - chore: explicitly set NDK version
-- chore: use html for app description
+- chore: use HTML for app description

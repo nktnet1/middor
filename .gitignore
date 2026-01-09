@@ -10,6 +10,7 @@
 /.idea/inspectionProfiles
 /.idea/misc.xml
 /.idea/markdown.xml
+/.idea/deploymentTargetSelector.xml
 .DS_Store
 /build
 /captures

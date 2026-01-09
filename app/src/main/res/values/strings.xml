@@ -3,7 +3,15 @@
     <string name="toast_error">Error: %1$s</string>
     <string name="screen_back">Back</string>
     <string name="help_icon_content_description">Help</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_confirm">Save</string>
 
     <string name="button_start_mirror_display_overlay">Start Mirror Display Overlay</string>
+    <plurals name="button_starting_in_seconds">
+        <item quantity="one">Starting in %d second…</item>
+        <item quantity="other">Starting in %d seconds…</item>
+    </plurals>
+    <string name="button_starting_now">Starting now…</string>
+
     <string name="settings_overlay_permission_error">Error: please grant %1$s overlay permissions in settings.</string>
 </resources>
