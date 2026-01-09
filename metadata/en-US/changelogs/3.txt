@@ -1,0 +1,4 @@
+## Changes
+
+- feat: add start delay (seconds) in setting
+- fix: notification -  content text, silent and foreground immediate
