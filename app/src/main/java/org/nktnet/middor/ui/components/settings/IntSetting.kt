@@ -42,6 +42,7 @@ fun IntSetting(
     val safeMax = max.coerceAtLeast(safeMin + 1)
 
     var draftValue by remember { mutableIntStateOf(value.coerceIn(safeMin, safeMax)) }
+    var textValue by remember { mutableStateOf(draftValue.toString()) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -53,6 +54,7 @@ fun IntSetting(
             TextButton(
                 onClick = {
                     draftValue = value.coerceIn(safeMin, safeMax)
+                    textValue = draftValue.toString()
                     showDialog = true
                 },
                 contentPadding = PaddingValues(horizontal = 8.dp)
@@ -79,11 +81,13 @@ fun IntSetting(
                 Text(label, style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(8.dp))
                 TextField(
-                    value = draftValue.toString(),
-                    onValueChange = {
-                        val parsed = it.toIntOrNull()
-                        if (parsed != null) {
-                            draftValue = parsed.coerceIn(safeMin, safeMax)
+                    value = textValue,
+                    onValueChange = { newText ->
+                        if (newText.isEmpty() || newText.matches(Regex("\\d+"))) {
+                            textValue = newText
+                            newText.toIntOrNull()?.let {
+                                draftValue = it.coerceIn(safeMin, safeMax)
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth()
@@ -93,6 +97,7 @@ fun IntSetting(
                     value = draftValue.toFloat(),
                     onValueChange = {
                         draftValue = it.toInt().coerceIn(safeMin, safeMax)
+                        textValue = draftValue.toString()
                     },
                     valueRange = safeMin.toFloat()..safeMax.toFloat(),
                     steps = steps,

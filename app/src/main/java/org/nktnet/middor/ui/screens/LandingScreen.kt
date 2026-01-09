@@ -75,8 +75,8 @@ fun LandingScreen(
 
         countdownRunnable = object : Runnable {
             override fun run() {
-                // NOTE: make sure to loop to -1 to re-enable the button
-                if (delaySeconds > 0) {
+                // Off by one because we start with a postDelay
+                if (delaySeconds > 1) {
                     handler.postDelayed(this, 1000L)
                     delaySeconds--
                 } else {
@@ -85,13 +85,17 @@ fun LandingScreen(
                         {
                             delaySeconds = -1
                         },
-                        2000L
+                        500L
                     )
                 }
             }
         }
         countdownRunnable?.let {
-            handler.postDelayed(it, 1000L)
+            if (delaySeconds > 0) {
+                handler.postDelayed(it, 1000L)
+            } else {
+                handler.post(it)
+            }
         }
     }
 
