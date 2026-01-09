@@ -41,8 +41,9 @@ class MainActivity : ComponentActivity() {
         screenCaptureManager = ScreenCaptureManager(this) { resultCode, data ->
             val serviceIntent = Intent(this, MirrorService::class.java)
                 .apply {
-                    putExtra("code", resultCode)
-                    putExtra("data", data)
+                    action = MirrorService.ACTION_START_OVERLAY
+                    putExtra(MirrorService.EXTRA_RESULT_CODE, resultCode)
+                    putExtra(MirrorService.EXTRA_RESULT_INTENT, data)
                 }
             startForegroundService(serviceIntent)
         }
@@ -92,10 +93,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        val intent = Intent(this, MirrorService::class.java)
-        stopService(intent)
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        when (intent.action) {
+            MirrorService.ACTION_STOP_SERVICE -> {
+                stopService(Intent(this, MirrorService::class.java))
+            }
+            else -> Unit
+        }
+    }
+
+    override fun onDestroy() {
+        stopService(Intent(this, MirrorService::class.java))
+        super.onDestroy()
     }
 
     @Composable

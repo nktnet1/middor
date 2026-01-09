@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="notification_content_title">Screen mirroring active</string>
+    <string name="notification_content_title">Mirror Display Overlay</string>
+    <string name="notification_content_text">Tap to return</string>
     <string name="notification_exit_action">Exit</string>
 </resources>

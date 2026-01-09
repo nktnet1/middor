@@ -8,14 +8,12 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import org.nktnet.middor.MainActivity
-import org.nktnet.middor.services.MirrorService
 import org.nktnet.middor.R
+import org.nktnet.middor.services.MirrorService
 
 object CustomNotificationManager {
     private const val CHANNEL_ID = "mirror"
     private const val CHANNEL_NAME = "Screen Mirroring"
-
-    const val ACTION_STOP_SERVICE = "ACTION_STOP_SERVICE"
 
     fun createNotificationChannel(context: Context) {
         val channel = NotificationChannel(
@@ -28,7 +26,9 @@ object CustomNotificationManager {
     }
 
     fun buildNotification(context: Context): Notification {
-        val appIntent = Intent(context, MainActivity::class.java)
+        val appIntent = Intent(context, MainActivity::class.java).apply {
+            action = MirrorService.ACTION_STOP_SERVICE
+        }
         val pendingApp = PendingIntent.getActivity(
             context,
             0,
@@ -39,7 +39,7 @@ object CustomNotificationManager {
             context,
             MirrorService::class.java,
         ).apply {
-            action = ACTION_STOP_SERVICE
+            action = MirrorService.ACTION_STOP_SERVICE
         }
         val pendingExit = PendingIntent.getService(
             context,
@@ -53,6 +53,9 @@ object CustomNotificationManager {
             .setContentTitle(
                 context.getString(R.string.notification_content_title)
             )
+            .setContentText(
+                context.getString(R.string.notification_content_text)
+            )
             .setContentIntent(pendingApp)
             .addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
@@ -60,6 +63,8 @@ object CustomNotificationManager {
                 pendingExit
             )
             .setOngoing(true)
+            .setSilent(true)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .build()
     }
 }
