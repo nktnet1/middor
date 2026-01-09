@@ -29,8 +29,20 @@ val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
 class MirrorService : Service() {
     private var projection: MediaProjection? = null
     private var overlayView: FrameLayout? = null
-    private lateinit var wm: WindowManager
-    private lateinit var params: WindowManager.LayoutParams
+
+    companion object {
+        const val ACTION_STOP_SERVICE = "org.nktnet.middor.action.STOP_SERVICE"
+        const val ACTION_START_OVERLAY = "org.nktnet.middor.action.START_OVERLAY"
+
+        const val EXTRA_RESULT_CODE = "extra_result_code"
+        const val EXTRA_RESULT_INTENT = "extra_result_intent"
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        CustomNotificationManager.createNotificationChannel(this)
+
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == CustomNotificationManager.ACTION_STOP_SERVICE) {
@@ -43,7 +55,6 @@ class MirrorService : Service() {
             return START_NOT_STICKY
         }
 
-        CustomNotificationManager.createNotificationChannel(this)
 
         startForeground(
             1,
@@ -64,13 +75,13 @@ class MirrorService : Service() {
             }
         }, null)
 
-        wm = getSystemService(WINDOW_SERVICE) as WindowManager
         startFullScreenOverlay()
 
         return START_STICKY
     }
 
     private fun startFullScreenOverlay() {
+        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
         val windowMetrics = wm.currentWindowMetrics
         val bounds = windowMetrics.bounds
         val metrics = DisplayMetrics().apply {
@@ -107,7 +118,7 @@ class MirrorService : Service() {
         }
         overlayView?.addView(closeButton, closeParams)
 
-        params = WindowManager.LayoutParams(
+        val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
@@ -138,6 +149,7 @@ class MirrorService : Service() {
     }
 
     override fun onDestroy() {
+        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
         projection?.stop()
         overlayView?.let { wm.removeView(it) }
         overlayView = null
