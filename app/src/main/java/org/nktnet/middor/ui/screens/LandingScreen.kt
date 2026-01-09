@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,8 +55,8 @@ fun LandingScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     var delaySeconds by remember { mutableIntStateOf(0) }
-    // Extra boolean variable to disable with buffer
-    var enableStartButton by remember { mutableStateOf(true) }
+    val handler = remember { Handler(Looper.getMainLooper()) }
+    var countdownRunnable by remember { mutableStateOf<Runnable?>(null) }
 
     fun startMirrorOverlay() {
         if (!Settings.canDrawOverlays(context)) {
@@ -71,37 +72,30 @@ fun LandingScreen(
         }
 
         delaySeconds = UserSettings.startDelaySeconds.value
-        enableStartButton = false
-
-        val handler = Handler(Looper.getMainLooper())
 
         if (delaySeconds > 0) {
-            ToastManager.show(
-                context,
-                resources.getString(
-                    R.string.toast_start_delay_message,
-                    delaySeconds.toString()
-                )
-            )
-
-            val countdownRunnable = object : Runnable {
+            countdownRunnable = object : Runnable {
                 override fun run() {
                     delaySeconds--
                     if (delaySeconds > 0) {
                         handler.postDelayed(this, 1000L)
+                    } else {
+                        screenCaptureManager.requestCapture()
                     }
                 }
             }
-            handler.postDelayed(countdownRunnable, 1000L)
-        }
-
-        handler.postDelayed({
+            countdownRunnable?.let {
+                handler.postDelayed(it, 1000L)
+            }
+        } else {
             screenCaptureManager.requestCapture()
-            handler.postDelayed({
-                enableStartButton = true
-                delaySeconds = 0
-            }, 1000L)
-        }, delaySeconds * 1000L)
+        }
+    }
+
+    fun cancelMirrorOverlay() {
+        countdownRunnable?.let { handler.removeCallbacks(it) }
+        countdownRunnable = null
+        delaySeconds = 0
     }
 
     LaunchedEffect(Unit) {
@@ -174,30 +168,46 @@ fun LandingScreen(
             AppLogo()
             Spacer(Modifier.height(24.dp))
             Button(
-                onClick = { startMirrorOverlay() },
-                enabled = enableStartButton,
+                onClick = {
+                    if (delaySeconds > 0) {
+                        cancelMirrorOverlay()
+                    } else {
+                        startMirrorOverlay()
+                    }
+                },
+                enabled = true,
+                colors = if (delaySeconds > 0)
+                    ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                else
+                    ButtonDefaults.buttonColors(),
                 modifier = Modifier
                     .height(60.dp)
                     .widthIn(max = 300.dp)
                     .fillMaxWidth(0.9f)
             ) {
                 Text(
-                    if (delaySeconds > 0) {
-                        stringResource(
-                            R.string.button_starting_in_seconds,
-                            delaySeconds
+                    when {
+                        delaySeconds > 0 -> {
+                            stringResource(
+                                R.string.button_starting_in_seconds,
+                                delaySeconds
+                            )
+                        }
+                        else -> stringResource(
+                            R.string.button_start_mirror_display_overlay
                         )
-                    } else if (!enableStartButton) {
-                        stringResource(
-                            R.string.button_starting_now,
-                            delaySeconds
-                        )
-                    } else {
-                        stringResource(R.string.button_start_mirror_display_overlay)
                     },
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (delaySeconds > 0) {
+                        MaterialTheme.colorScheme.onError
+                    } else {
+                        MaterialTheme.colorScheme.onPrimary
+                    }
                 )
             }
+
         }
     }
 }

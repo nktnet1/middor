@@ -8,8 +8,6 @@
 
     <string name="button_start_mirror_display_overlay">Start Mirror Display Overlay</string>
     <string name="button_starting_in_seconds">Starting in %d seconds…</string>
-    <string name="button_starting_now">Starting now…</string>
 
-    <string name="toast_start_delay_message">Delaying start for %1$s seconds…</string>
     <string name="settings_overlay_permission_error">Error: please grant %1$s overlay permissions in settings.</string>
 </resources>
