@@ -41,31 +41,36 @@ class MirrorService : Service() {
     override fun onCreate() {
         super.onCreate()
         CustomNotificationManager.createNotificationChannel(this)
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == CustomNotificationManager.ACTION_STOP_SERVICE) {
-            stopSelf()
-            return START_NOT_STICKY
+        when (intent?.action) {
+            ACTION_STOP_SERVICE -> {
+                removeOverlay()
+                stopSelf()
+                return START_NOT_STICKY
+            }
+            ACTION_START_OVERLAY -> {
+                startForeground(
+                    1,
+                    CustomNotificationManager.buildNotification(this),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
+
+                val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, Activity.RESULT_CANCELED)
+                val data = intent.getParcelableExtra(EXTRA_RESULT_INTENT, Intent::class.java)
+                    ?: return START_NOT_STICKY
+
+                startFullScreenOverlay(resultCode, data)
+                return START_STICKY
+            }
+
+            else -> Unit
         }
+        return START_NOT_STICKY
+    }
 
-        if (intent == null) {
-            stopSelf()
-            return START_NOT_STICKY
-        }
-
-
-        startForeground(
-            1,
-            CustomNotificationManager.buildNotification(this),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-        )
-
-        val resultCode = intent.getIntExtra("code", Activity.RESULT_CANCELED)
-        val data = intent.getParcelableExtra("data", Intent::class.java)
-            ?: return START_NOT_STICKY
-
+    private fun startFullScreenOverlay(resultCode: Int, data: Intent) {
         val mpm = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         projection = mpm.getMediaProjection(resultCode, data)
         projection?.registerCallback(object : MediaProjection.Callback() {
@@ -75,12 +80,6 @@ class MirrorService : Service() {
             }
         }, null)
 
-        startFullScreenOverlay()
-
-        return START_STICKY
-    }
-
-    private fun startFullScreenOverlay() {
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
         val windowMetrics = wm.currentWindowMetrics
         val bounds = windowMetrics.bounds
@@ -90,13 +89,15 @@ class MirrorService : Service() {
             densityDpi = resources.displayMetrics.densityDpi
         }
 
-        overlayView = FrameLayout(this)
+        val newFrame = FrameLayout(this)
+        overlayView = newFrame
+
         val textureView = TextureView(this).apply {
             scaleX = if (UserSettings.flipHorizontally.value) -1f else 1f
             rotation = if (UserSettings.rotate180.value) 180f else 0f
         }
 
-        overlayView?.addView(textureView, FrameLayout.LayoutParams(
+        newFrame.addView(textureView, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
@@ -116,7 +117,7 @@ class MirrorService : Service() {
             topMargin = 40
             rightMargin = 40
         }
-        overlayView?.addView(closeButton, closeParams)
+        newFrame.addView(closeButton, closeParams)
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
@@ -127,7 +128,7 @@ class MirrorService : Service() {
                 or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         )
-        wm.addView(overlayView, params)
+        wm.addView(newFrame, params)
 
         textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(st: SurfaceTexture, w: Int, h: Int) {
@@ -149,12 +150,16 @@ class MirrorService : Service() {
     }
 
     override fun onDestroy() {
-        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        projection?.stop()
-        overlayView?.let { wm.removeView(it) }
-        overlayView = null
+        removeOverlay()
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun removeOverlay() {
+        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        projection?.stop()
+        overlayView?.let { wm.removeView(it) }
+        overlayView = null
+    }
 }
