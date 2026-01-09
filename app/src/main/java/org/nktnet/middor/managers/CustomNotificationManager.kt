@@ -53,6 +53,9 @@ object CustomNotificationManager {
             .setContentTitle(
                 context.getString(R.string.notification_content_title)
             )
+            .setContentText(
+                context.getString(R.string.notification_content_text)
+            )
             .setContentIntent(pendingApp)
             .addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
