@@ -17,7 +17,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,20 +29,19 @@ import androidx.compose.ui.window.Dialog
 import org.nktnet.middor.R
 
 @Composable
-fun LongSetting(
+fun IntSetting(
     label: String,
-    value: Long,
-    min: Long,
-    max: Long,
-    onValueChange: (Long) -> Unit
+    value: Int,
+    min: Int = 0,
+    max: Int,
+    steps: Int = 1,
+    onValueChange: (Int) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    val safeMin = min.coerceAtLeast(0L)
+    val safeMin = min.coerceAtLeast(0)
     val safeMax = max.coerceAtLeast(safeMin + 1)
-    val stepCount = ((safeMax - safeMin).coerceAtMost(100L) - 1)
-        .toInt().coerceAtLeast(0)
 
-    var draftValue by remember { mutableLongStateOf(value.coerceIn(safeMin, safeMax)) }
+    var draftValue by remember { mutableIntStateOf(value.coerceIn(safeMin, safeMax)) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -59,7 +58,7 @@ fun LongSetting(
                 contentPadding = PaddingValues(horizontal = 8.dp)
             ) {
                 Text(
-                    "$value ms",
+                    stringResource(R.string.settings_start_delay_seconds_value, value),
                     style = MaterialTheme.typography.titleMedium
                 )
             }
@@ -82,17 +81,21 @@ fun LongSetting(
                 TextField(
                     value = draftValue.toString(),
                     onValueChange = {
-                        val parsed = it.toLongOrNull()
-                        if (parsed != null) draftValue = parsed.coerceIn(safeMin, safeMax)
+                        val parsed = it.toIntOrNull()
+                        if (parsed != null) {
+                            draftValue = parsed.coerceIn(safeMin, safeMax)
+                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(Modifier.height(16.dp))
                 Slider(
                     value = draftValue.toFloat(),
-                    onValueChange = { draftValue = it.toLong().coerceIn(safeMin, safeMax) },
+                    onValueChange = {
+                        draftValue = it.toInt().coerceIn(safeMin, safeMax)
+                    },
                     valueRange = safeMin.toFloat()..safeMax.toFloat(),
-                    steps = stepCount,
+                    steps = steps,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)

@@ -55,7 +55,7 @@ import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.ui.ThemeDropdownIcon
 import org.nktnet.middor.ui.components.settings.BooleanSetting
-import org.nktnet.middor.ui.components.settings.LongSetting
+import org.nktnet.middor.ui.components.settings.IntSetting
 import org.nktnet.middor.ui.components.settings.PermissionSetting
 import org.nktnet.middor.ui.components.settings.ResetPreferencesDialog
 
@@ -290,12 +290,13 @@ fun SettingsScreen(navController: NavController) {
             ) { newValue ->
                 UserSettings.setRotate180(context, newValue)
             }
-            LongSetting(
-                label = stringResource(R.string.settings_start_delay_label),
-                value = UserSettings.startDelayMs.value,
+            IntSetting(
+                label = stringResource(R.string.settings_start_delay_seconds_label),
+                value = UserSettings.startDelaySeconds.value,
                 onValueChange = { UserSettings.setStartDelay(context, it) },
                 min = 0,
-                max = 60 * 1000
+                max = 60,
+                steps = 60,
             )
 
             Spacer(Modifier.height(32.dp))
