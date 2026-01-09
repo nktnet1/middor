@@ -93,9 +93,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        when (intent.action) {
+            MirrorService.ACTION_STOP_SERVICE -> {
+                stopService(Intent(this, MirrorService::class.java))
+            }
+            else -> Unit
+        }
+    }
+
     override fun onDestroy() {
-        val serviceIntent = Intent(this, MirrorService::class.java)
-        stopService(serviceIntent)
+        stopService(Intent(this, MirrorService::class.java))
         super.onDestroy()
     }
 

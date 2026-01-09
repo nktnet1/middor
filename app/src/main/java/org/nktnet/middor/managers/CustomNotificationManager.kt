@@ -26,7 +26,9 @@ object CustomNotificationManager {
     }
 
     fun buildNotification(context: Context): Notification {
-        val appIntent = Intent(context, MainActivity::class.java)
+        val appIntent = Intent(context, MainActivity::class.java).apply {
+            action = MirrorService.ACTION_STOP_SERVICE
+        }
         val pendingApp = PendingIntent.getActivity(
             context,
             0,
