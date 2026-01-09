@@ -94,8 +94,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        val intent = Intent(this, MirrorService::class.java)
-        stopService(intent)
     }
 
     @Composable
