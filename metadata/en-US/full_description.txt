@@ -25,20 +25,14 @@ For usage instructions, see https://github.com/nktnet1/middor/discussions/2
 
 <b>Questions/Feature Requests</b>
 
-Create a Q&A for questions and Ideas for feature requests on GitHub discussions:
-
-- https://github.com/nktnet1/middor/discussions
+Create a Q&A for questions and Ideas for feature requests on GitHub discussions: https://github.com/nktnet1/middor/discussions
 
 <b>Bugs/Issues</b>
 
-Report bugs by creating a GitHub issue describing the problem and how it can be reproduced:
-
-- https://github.com/nktnet1/middor/issues
+Report bugs by creating a GitHub issue describing the problem and how it can be reproduced: https://github.com/nktnet1/middor/issues
 
 Please also include your device model, app version and android version.
 
 <b>Other</b>
 
-For all other inquiries, please reach out to:
-
-- support@middor.nktnet.org
+For all other inquiries, please reach out to: support@middor.nktnet.org
