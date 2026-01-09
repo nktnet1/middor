@@ -42,6 +42,7 @@ import org.nktnet.middor.config.Screen
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ScreenCaptureManager
 import org.nktnet.middor.managers.ToastManager
+import org.nktnet.middor.states.SystemState
 import org.nktnet.middor.ui.ThemeDropdownIcon
 import org.nktnet.middor.ui.components.AppLogo
 
@@ -104,9 +105,10 @@ fun LandingScreen(
     }
 
     LaunchedEffect(Unit) {
-        if (UserSettings.startOnLaunch.value) {
+        if (UserSettings.startOnLaunch.value && !SystemState.hasStartedOnLaunch) {
             startMirrorOverlay()
         }
+        SystemState.hasStartedOnLaunch = true
     }
 
     Box(
