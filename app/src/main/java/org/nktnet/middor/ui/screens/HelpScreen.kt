@@ -82,10 +82,14 @@ fun HelpScreen(navController: NavController) {
             SelectionContainer {
                 Text(
                     text = listOf(
-                        stringResource(R.string.help_overlay_step),
+                        stringResource(
+                            R.string.help_overlay_step,
+                            stringResource(R.string.app_name),
+                        ),
                         stringResource(
                             R.string.help_notification_step,
-                            stringResource(R.string.app_name)),
+                            stringResource(R.string.app_name)
+                        ),
                         stringResource(
                             R.string.help_start_button_step,
                             stringResource(
