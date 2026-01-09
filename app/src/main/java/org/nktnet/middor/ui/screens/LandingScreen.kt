@@ -106,6 +106,11 @@ fun LandingScreen(
         delaySeconds = -1
     }
 
+    fun navigateWithCancel(route: String) {
+        cancelMirrorOverlay()
+        navController.navigate(route)
+    }
+
     LaunchedEffect(Unit) {
         if (UserSettings.startOnLaunch.value && !SystemState.hasStartedOnLaunch) {
             startMirrorOverlay()
@@ -124,7 +129,7 @@ fun LandingScreen(
         ) {
             ThemeDropdownIcon()
             IconButton(
-                onClick = { navController.navigate(Screen.Info.route) },
+                onClick = { navigateWithCancel(Screen.Info.route) },
                 modifier = Modifier.size(42.dp),
             ) {
                 Icon(
@@ -141,7 +146,7 @@ fun LandingScreen(
             modifier = Modifier.align(Alignment.TopEnd)
         ) {
             IconButton(
-                onClick = { navController.navigate(Screen.Settings.route) },
+                onClick = { navigateWithCancel(Screen.Settings.route) },
                 modifier = Modifier.size(42.dp),
             ) {
                 Icon(
@@ -153,7 +158,7 @@ fun LandingScreen(
                 )
             }
             IconButton(
-                onClick = { navController.navigate(Screen.Help.route) },
+                onClick = { navigateWithCancel(Screen.Help.route) },
                 modifier = Modifier.size(42.dp),
             ) {
                 Icon(
