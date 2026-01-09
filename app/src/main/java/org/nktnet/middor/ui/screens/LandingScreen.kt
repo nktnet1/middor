@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -197,8 +198,9 @@ fun LandingScreen(
                 Text(
                     when {
                         delaySeconds > 0 -> {
-                            stringResource(
-                                R.string.button_starting_in_seconds,
+                            pluralStringResource(
+                                id = R.plurals.button_starting_in_seconds,
+                                count = delaySeconds,
                                 delaySeconds
                             )
                         }

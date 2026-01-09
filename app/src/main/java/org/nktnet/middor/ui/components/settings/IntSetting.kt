@@ -57,11 +57,14 @@ fun IntSetting(
                     textValue = draftValue.toString()
                     showDialog = true
                 },
-                contentPadding = PaddingValues(horizontal = 8.dp)
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(
-                    stringResource(R.string.settings_start_delay_seconds_value, value),
-                    style = MaterialTheme.typography.titleMedium
+                    stringResource(
+                        R.string.settings_start_delay_seconds_value,
+                        value
+                    ),
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         }
