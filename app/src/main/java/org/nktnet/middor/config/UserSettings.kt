@@ -14,8 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.nktnet.middor.config.UserSettings.Keys.THEME_KEY
-
 private val Context.dataStore by preferencesDataStore("user_settings")
 
 object UserSettings {
@@ -59,7 +57,7 @@ object UserSettings {
         currentTheme.value = theme
         CoroutineScope(Dispatchers.IO).launch {
             context.dataStore.edit { prefs ->
-                prefs[THEME_KEY] = theme.name
+                prefs[Keys.THEME_KEY] = theme.name
             }
         }
     }
@@ -93,7 +91,7 @@ object UserSettings {
         CoroutineScope(Dispatchers.IO).launch {
             context.dataStore.data.collectLatest { prefs ->
                 currentTheme.value = ThemeOption.entries.find {
-                    it.name == prefs[THEME_KEY]
+                    it.name == prefs[Keys.THEME_KEY]
                 } ?: Defaults.THEME
                 startOnLaunch.value = prefs[Keys.START_ON_LAUNCH_KEY] ?: Defaults.START_ON_LAUNCH
                 flipHorizontally.value = prefs[Keys.FLIP_DISPLAY_KEY] ?: Defaults.FLIP_HORIZONTALLY
