@@ -54,7 +54,7 @@ fun LandingScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
-    var delaySeconds by remember { mutableIntStateOf(0) }
+    var delaySeconds by remember { mutableIntStateOf(-1) }
     val handler = remember { Handler(Looper.getMainLooper()) }
     var countdownRunnable by remember { mutableStateOf<Runnable?>(null) }
 
@@ -73,29 +73,32 @@ fun LandingScreen(
 
         delaySeconds = UserSettings.startDelaySeconds.value
 
-        if (delaySeconds > 0) {
-            countdownRunnable = object : Runnable {
-                override fun run() {
+        countdownRunnable = object : Runnable {
+            override fun run() {
+                // NOTE: make sure to loop to -1 to re-enable the button
+                if (delaySeconds > 0) {
+                    handler.postDelayed(this, 1000L)
                     delaySeconds--
-                    if (delaySeconds > 0) {
-                        handler.postDelayed(this, 1000L)
-                    } else {
-                        screenCaptureManager.requestCapture()
-                    }
+                } else {
+                    screenCaptureManager.requestCapture()
+                    handler.postDelayed(
+                        {
+                            delaySeconds = -1
+                        },
+                        2000L
+                    )
                 }
             }
-            countdownRunnable?.let {
-                handler.postDelayed(it, 1000L)
-            }
-        } else {
-            screenCaptureManager.requestCapture()
+        }
+        countdownRunnable?.let {
+            handler.postDelayed(it, 1000L)
         }
     }
 
     fun cancelMirrorOverlay() {
         countdownRunnable?.let { handler.removeCallbacks(it) }
         countdownRunnable = null
-        delaySeconds = 0
+        delaySeconds = -1
     }
 
     LaunchedEffect(Unit) {
@@ -168,6 +171,7 @@ fun LandingScreen(
             AppLogo()
             Spacer(Modifier.height(24.dp))
             Button(
+                enabled = delaySeconds != 0,
                 onClick = {
                     if (delaySeconds > 0) {
                         cancelMirrorOverlay()
@@ -175,7 +179,6 @@ fun LandingScreen(
                         startMirrorOverlay()
                     }
                 },
-                enabled = true,
                 colors = if (delaySeconds > 0)
                     ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
@@ -195,19 +198,20 @@ fun LandingScreen(
                                 delaySeconds
                             )
                         }
-                        else -> stringResource(
-                            R.string.button_start_mirror_display_overlay
-                        )
+                        delaySeconds == 0 -> {
+                            stringResource(
+                                R.string.button_starting_now
+                            )
+                        }
+                        else -> {
+                            stringResource(
+                                R.string.button_start_mirror_display_overlay
+                            )
+                        }
                     },
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (delaySeconds > 0) {
-                        MaterialTheme.colorScheme.onError
-                    } else {
-                        MaterialTheme.colorScheme.onPrimary
-                    }
                 )
             }
-
         }
     }
 }
