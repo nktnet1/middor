@@ -27,7 +27,7 @@ object UserSettings {
     }
 
     private object Defaults {
-        val MIRROR_MODE = MirrorModeOption.ACTIVITY
+        val MIRROR_MODE = MirrorModeOption.OVERLAY
         val THEME = ThemeOption.SYSTEM
         const val START_ON_LAUNCH = false
         const val FLIP_HORIZONTALLY = true
@@ -92,6 +92,7 @@ object UserSettings {
         )
 
     fun resetSettings(context: Context) {
+        setMirrorMode(context, Defaults.MIRROR_MODE)
         setTheme(context, Defaults.THEME)
         setStartOnLaunch(context, Defaults.START_ON_LAUNCH)
         setFlipHorizontally(context, Defaults.FLIP_HORIZONTALLY)

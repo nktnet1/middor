@@ -4,6 +4,7 @@ import android.content.Intent
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -31,6 +32,13 @@ class MirrorActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.apply {
+            addFlags(
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
 
         val resultCode = intent.getIntExtra(
             MirrorService.EXTRA_RESULT_CODE, RESULT_CANCELED
