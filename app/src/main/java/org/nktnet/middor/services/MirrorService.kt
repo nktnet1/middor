@@ -20,11 +20,11 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
+import org.nktnet.middor.MirrorActivity
 import org.nktnet.middor.R
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.CustomNotificationManager
 
-val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
 
 class MirrorService : Service() {
 
@@ -33,6 +33,7 @@ class MirrorService : Service() {
     private var virtualDisplay: VirtualDisplay? = null
 
     companion object {
+        val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
         const val ACTION_STOP_SERVICE = "org.nktnet.middor.action.STOP_SERVICE"
         const val ACTION_START_OVERLAY = "org.nktnet.middor.action.START_OVERLAY"
         const val VIRTUAL_DISPLAY_NAME = "mirror"
@@ -69,7 +70,8 @@ class MirrorService : Service() {
                     Intent::class.java
                 ) ?: return START_NOT_STICKY
 
-                startFullScreenOverlay(resultCode, data)
+                //startFullScreenOverlay(resultCode, data)
+                startActivityOverlay(resultCode, data)
                 return START_STICKY
             }
             else -> Unit
@@ -161,6 +163,15 @@ class MirrorService : Service() {
                 PixelFormat.TRANSLUCENT
             )
         )
+    }
+
+    private fun startActivityOverlay(resultCode: Int, data: Intent) {
+        val activityIntent = Intent(this, MirrorActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            putExtra(EXTRA_RESULT_CODE, resultCode)
+            putExtra(EXTRA_RESULT_INTENT, data)
+        }
+        startActivity(activityIntent)
     }
 
     override fun onDestroy() {
