@@ -1,0 +1,3 @@
+## Changes
+
+- fix: rotation breaking overlay (e.g. portrait -> landscape)
