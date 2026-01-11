@@ -97,13 +97,15 @@ class MirrorService : Service() {
 
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
 
-        overlayView = FrameLayout(this)
+        val view = FrameLayout(this)
+        overlayView = view
+
         textureView = TextureView(this).apply {
             scaleX = if (UserSettings.flipHorizontally.value) -1f else 1f
             rotation = if (UserSettings.rotate180.value) 180f else 0f
         }
 
-        overlayView?.addView(textureView, FrameLayout.LayoutParams(
+        view.addView(textureView, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
@@ -118,7 +120,7 @@ class MirrorService : Service() {
             setColorFilter(Color.WHITE)
             setOnClickListener { stopSelf() }
         }
-        overlayView?.addView(closeButton, FrameLayout.LayoutParams(120, 120).apply {
+        view.addView(closeButton, FrameLayout.LayoutParams(120, 120).apply {
             gravity = Gravity.END or Gravity.TOP
             topMargin = 40
             rightMargin = 40
@@ -133,7 +135,7 @@ class MirrorService : Service() {
                 or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.TRANSLUCENT
         )
-        wm.addView(overlayView, params)
+        wm.addView(view, params)
 
         textureView?.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
             override fun onSurfaceTextureAvailable(st: SurfaceTexture, w: Int, h: Int) {
