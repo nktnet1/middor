@@ -9,10 +9,10 @@ import android.graphics.PixelFormat
 import android.graphics.SurfaceTexture
 import android.graphics.drawable.GradientDrawable
 import android.hardware.display.DisplayManager
+import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.IBinder
-import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.Surface
 import android.view.TextureView
@@ -27,12 +27,15 @@ import org.nktnet.middor.managers.CustomNotificationManager
 val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
 
 class MirrorService : Service() {
+
     private var projection: MediaProjection? = null
     private var overlayView: FrameLayout? = null
+    private var virtualDisplay: VirtualDisplay? = null
 
     companion object {
         const val ACTION_STOP_SERVICE = "org.nktnet.middor.action.STOP_SERVICE"
         const val ACTION_START_OVERLAY = "org.nktnet.middor.action.START_OVERLAY"
+        const val VIRTUAL_DISPLAY_NAME = "mirror"
 
         const val EXTRA_RESULT_CODE = "extra_result_code"
         const val EXTRA_RESULT_INTENT = "extra_result_intent"
@@ -57,47 +60,68 @@ class MirrorService : Service() {
                     ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
                 )
 
-                val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, Activity.RESULT_CANCELED)
-                val data = intent.getParcelableExtra(EXTRA_RESULT_INTENT, Intent::class.java)
-                    ?: return START_NOT_STICKY
+                val resultCode = intent.getIntExtra(
+                    EXTRA_RESULT_CODE,
+                    Activity.RESULT_CANCELED
+                )
+                val data = intent.getParcelableExtra(
+                    EXTRA_RESULT_INTENT,
+                    Intent::class.java
+                ) ?: return START_NOT_STICKY
 
                 startFullScreenOverlay(resultCode, data)
                 return START_STICKY
             }
-
             else -> Unit
         }
         return START_NOT_STICKY
     }
 
     private fun startFullScreenOverlay(resultCode: Int, data: Intent) {
-        val mpm = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
-        projection = mpm.getMediaProjection(resultCode, data)
-        projection?.registerCallback(object : MediaProjection.Callback() {
-            override fun onStop() {
-                super.onStop()
-                stopSelf()
-            }
-        }, null)
-
-        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        val windowMetrics = wm.currentWindowMetrics
-        val bounds = windowMetrics.bounds
-        val metrics = DisplayMetrics().apply {
-            widthPixels = bounds.width()
-            heightPixels = bounds.height()
-            densityDpi = resources.displayMetrics.densityDpi
-        }
-
-        val newFrame = FrameLayout(this)
-        overlayView = newFrame
-
         val textureView = TextureView(this).apply {
             scaleX = if (UserSettings.flipHorizontally.value) -1f else 1f
             rotation = if (UserSettings.rotate180.value) 180f else 0f
         }
+        textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
+            override fun onSurfaceTextureAvailable(st: SurfaceTexture, w: Int, h: Int) {
+                virtualDisplay = projection?.createVirtualDisplay(
+                    VIRTUAL_DISPLAY_NAME,
+                    w,
+                    h,
+                    resources.displayMetrics.densityDpi,
+                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                    Surface(st),
+                    null,
+                    null
+                )
+            }
+            override fun onSurfaceTextureSizeChanged(st: SurfaceTexture, w: Int, h: Int) {}
+            override fun onSurfaceTextureDestroyed(st: SurfaceTexture) = true
+            override fun onSurfaceTextureUpdated(st: SurfaceTexture) {}
+        }
 
-        newFrame.addView(textureView, FrameLayout.LayoutParams(
+        val mpm = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        projection = mpm.getMediaProjection(resultCode, data)
+        projection?.registerCallback(
+            object : MediaProjection.Callback() {
+                override fun onStop() {
+                    super.onStop()
+                    stopSelf()
+                }
+
+                override fun onCapturedContentResize(width: Int, height: Int) {
+                    textureView.surfaceTexture?.let { st ->
+                        virtualDisplay?.resize(width, height, resources.displayMetrics.densityDpi)
+                        virtualDisplay?.surface = Surface(st)
+                    }
+                }
+            },
+            null,
+        )
+
+        val ov = FrameLayout(this)
+        overlayView = ov
+        ov.addView(textureView, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
         ))
@@ -112,41 +136,31 @@ class MirrorService : Service() {
             setColorFilter(Color.WHITE)
             setOnClickListener { stopSelf() }
         }
-        val closeParams = FrameLayout.LayoutParams(120, 120).apply {
-            gravity = Gravity.END or Gravity.TOP
-            topMargin = 40
-            rightMargin = 40
-        }
-        newFrame.addView(closeButton, closeParams)
-
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        )
-        wm.addView(newFrame, params)
-
-        textureView.surfaceTextureListener = object : TextureView.SurfaceTextureListener {
-            override fun onSurfaceTextureAvailable(st: SurfaceTexture, w: Int, h: Int) {
-                projection?.createVirtualDisplay(
-                    "mirror",
-                    metrics.widthPixels,
-                    metrics.heightPixels,
-                    metrics.densityDpi,
-                    DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                    Surface(st),
-                    null,
-                    null
-                )
+        ov.addView(
+            closeButton,
+            FrameLayout.LayoutParams(
+                120,
+                120,
+            ).apply {
+                gravity = Gravity.END or Gravity.TOP
+                topMargin = 40
+                rightMargin = 40
             }
-            override fun onSurfaceTextureSizeChanged(st: SurfaceTexture, w: Int, h: Int) {}
-            override fun onSurfaceTextureDestroyed(st: SurfaceTexture) = true
-            override fun onSurfaceTextureUpdated(st: SurfaceTexture) {}
-        }
+        )
+
+        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        wm.addView(
+            ov,
+            WindowManager.LayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                PixelFormat.TRANSLUCENT
+            )
+        )
     }
 
     override fun onDestroy() {
@@ -158,8 +172,10 @@ class MirrorService : Service() {
 
     private fun removeOverlay() {
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        virtualDisplay?.release()
         projection?.stop()
         overlayView?.let { wm.removeView(it) }
         overlayView = null
+        virtualDisplay = null
     }
 }
