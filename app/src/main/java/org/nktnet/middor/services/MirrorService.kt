@@ -18,6 +18,8 @@ import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
 import org.nktnet.middor.MirrorActivity
 import org.nktnet.middor.R
+import org.nktnet.middor.config.MirrorModeOption
+import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.CustomNotificationManager
 import org.nktnet.middor.utils.MirrorUtils
 
@@ -63,8 +65,11 @@ class MirrorService : Service() {
                     EXTRA_RESULT_INTENT, Intent::class.java
                 ) ?: return START_NOT_STICKY
 
-                startFullScreenOverlay(resultCode, data)
-                // startActivityOverlay(resultCode, data)
+                if (UserSettings.mirrorMode.value == MirrorModeOption.ACTIVITY) {
+                    startActivityOverlay(resultCode, data)
+                } else {
+                    startFullScreenOverlay(resultCode, data)
+                }
                 return START_STICKY
             }
             else -> Unit

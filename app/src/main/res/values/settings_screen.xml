@@ -4,6 +4,7 @@
     <string name="settings_app_info">App Info</string>
     <string name="settings_preferences_title">Preferences</string>
     <string name="settings_permissions_title">Permissions</string>
+    <string name="settings_mirror_mode_label">Mirror Mode</string>
     <string name="settings_theme_label">Theme</string>
     <string name="settings_start_on_launch_label">Start on Launch</string>
     <string name="settings_flip_horizontally_label">Flip Horizontally</string>

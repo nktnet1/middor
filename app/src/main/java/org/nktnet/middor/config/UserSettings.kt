@@ -18,6 +18,7 @@ private val Context.dataStore by preferencesDataStore("user_settings")
 
 object UserSettings {
     private object Keys {
+        val MIRROR_MODE_KEY = stringPreferencesKey("user_settings.mirror_mode_option")
         val THEME_KEY = stringPreferencesKey("user_settings.theme_option")
         val START_ON_LAUNCH_KEY = booleanPreferencesKey("user_settings.start_on_launch")
         val FLIP_DISPLAY_KEY = booleanPreferencesKey("user_settings.flip_horizontally")
@@ -26,6 +27,7 @@ object UserSettings {
     }
 
     private object Defaults {
+        val MIRROR_MODE = MirrorModeOption.ACTIVITY
         val THEME = ThemeOption.SYSTEM
         const val START_ON_LAUNCH = false
         const val FLIP_HORIZONTALLY = true
@@ -34,10 +36,29 @@ object UserSettings {
     }
 
     val currentTheme: MutableState<ThemeOption> = mutableStateOf(Defaults.THEME)
+    val mirrorMode: MutableState<MirrorModeOption> = mutableStateOf(Defaults.MIRROR_MODE)
     val startOnLaunch: MutableState<Boolean> = mutableStateOf(Defaults.START_ON_LAUNCH)
     val flipHorizontally: MutableState<Boolean> = mutableStateOf(Defaults.FLIP_HORIZONTALLY)
     val rotate180: MutableState<Boolean> = mutableStateOf(Defaults.ROTATE_180)
     val startDelaySeconds: MutableState<Int> = mutableIntStateOf(Defaults.START_DELAY_SECONDS)
+
+    fun setMirrorMode(context: Context, mode: MirrorModeOption) {
+        mirrorMode.value = mode
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.edit { prefs ->
+                prefs[Keys.MIRROR_MODE_KEY] = mode.name
+            }
+        }
+    }
+
+    fun setTheme(context: Context, theme: ThemeOption) {
+        currentTheme.value = theme
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.edit { prefs ->
+                prefs[Keys.THEME_KEY] = theme.name
+            }
+        }
+    }
 
     private fun <T> setPreference(
         context: Context,
@@ -49,15 +70,6 @@ object UserSettings {
         CoroutineScope(Dispatchers.IO).launch {
             context.dataStore.edit { prefs ->
                 prefs[key] = value
-            }
-        }
-    }
-
-    fun setTheme(context: Context, theme: ThemeOption) {
-        currentTheme.value = theme
-        CoroutineScope(Dispatchers.IO).launch {
-            context.dataStore.edit { prefs ->
-                prefs[Keys.THEME_KEY] = theme.name
             }
         }
     }
@@ -90,9 +102,14 @@ object UserSettings {
     fun init(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             context.dataStore.data.collectLatest { prefs ->
+                mirrorMode.value = MirrorModeOption.entries.find {
+                    it.name == prefs[Keys.MIRROR_MODE_KEY]
+                } ?: Defaults.MIRROR_MODE
+
                 currentTheme.value = ThemeOption.entries.find {
                     it.name == prefs[Keys.THEME_KEY]
                 } ?: Defaults.THEME
+
                 startOnLaunch.value = prefs[Keys.START_ON_LAUNCH_KEY] ?: Defaults.START_ON_LAUNCH
                 flipHorizontally.value = prefs[Keys.FLIP_DISPLAY_KEY] ?: Defaults.FLIP_HORIZONTALLY
                 rotate180.value = prefs[Keys.UPSIDE_DOWN_KEY] ?: Defaults.ROTATE_180

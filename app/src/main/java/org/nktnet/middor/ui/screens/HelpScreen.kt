@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import org.nktnet.middor.R
 import org.nktnet.middor.config.Screen
+import org.nktnet.middor.config.UserSettings
 
 @Composable
 fun HelpScreen(navController: NavController) {
@@ -93,7 +94,10 @@ fun HelpScreen(navController: NavController) {
                         stringResource(
                             R.string.help_start_button_step,
                             stringResource(
-                                R.string.button_start_mirror_display_overlay
+                                R.string.button_start_mirror_display,
+                                stringResource(
+                                    UserSettings.mirrorMode.value.labelResId
+                                )
                             )
                         ),
                         stringResource(R.string.help_single_app_step),
