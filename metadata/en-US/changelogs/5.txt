@@ -1,0 +1,5 @@
+## Changes
+
+- feat: use WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+    - helps to reduce padding on the overlay
+    - docs: https://developer.android.com/develop/ui/views/layout/display-cutout
