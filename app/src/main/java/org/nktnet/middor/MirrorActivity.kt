@@ -4,6 +4,8 @@ import android.content.Intent
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.os.Bundle
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,13 +34,6 @@ class MirrorActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.apply {
-            addFlags(
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            )
-        }
 
         val resultCode = intent.getIntExtra(
             MirrorService.EXTRA_RESULT_CODE, RESULT_CANCELED
@@ -63,6 +58,24 @@ class MirrorActivity : ComponentActivity() {
 
         setContent {
             MirrorScreen(projection) { finish() }
+
+            window.apply {
+                addFlags(
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                        or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                )
+            }
+
+            window.decorView.post {
+                window.insetsController?.let { controller ->
+                    controller.hide(
+                        WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars()
+                    )
+                    controller.systemBarsBehavior =
+                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
         }
     }
 
