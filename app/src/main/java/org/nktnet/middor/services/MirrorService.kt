@@ -120,7 +120,7 @@ class MirrorService : Service() {
             closeButton,
             FrameLayout.LayoutParams(120, 120).apply {
                 gravity = Gravity.END or Gravity.TOP
-                topMargin = 100
+                topMargin = 90
                 rightMargin = 40
             }
         )
