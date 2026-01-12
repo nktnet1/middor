@@ -217,9 +217,6 @@ fun LandingScreen(
                         else -> {
                             stringResource(
                                 R.string.button_start_mirror_display,
-                                stringResource(
-                                    UserSettings.mirrorMode.value.labelResId
-                                )
                             )
                         }
                     },

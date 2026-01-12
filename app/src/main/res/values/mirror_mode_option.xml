@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="mirror_mode_activity">Activity</string>
-    <string name="mirror_mode_overlay">Overlay</string>
-</resources>

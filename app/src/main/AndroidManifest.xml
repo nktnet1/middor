@@ -33,13 +33,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".MirrorActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Middor"
-            android:finishOnTaskLaunch="true"
-        />
-
         <service
             android:name=".services.MirrorService"
             android:exported="false"

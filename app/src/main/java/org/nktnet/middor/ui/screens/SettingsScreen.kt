@@ -53,7 +53,6 @@ import org.nktnet.middor.R
 import org.nktnet.middor.config.Screen
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ToastManager
-import org.nktnet.middor.ui.MirrorModeDropdownIcon
 import org.nktnet.middor.ui.ThemeDropdownIcon
 import org.nktnet.middor.ui.components.settings.BooleanSetting
 import org.nktnet.middor.ui.components.settings.IntSetting
@@ -262,17 +261,6 @@ fun SettingsScreen(navController: NavController) {
                 DividerDefaults.Thickness,
                 DividerDefaults.color
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    stringResource(R.string.settings_mirror_mode_label)
-                )
-                MirrorModeDropdownIcon()
-            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
