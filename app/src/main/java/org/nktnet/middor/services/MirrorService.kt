@@ -120,7 +120,7 @@ class MirrorService : Service() {
             closeButton,
             FrameLayout.LayoutParams(120, 120).apply {
                 gravity = Gravity.END or Gravity.TOP
-                topMargin = 40
+                topMargin = 100
                 rightMargin = 40
             }
         )
@@ -136,7 +136,10 @@ class MirrorService : Service() {
                     or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                     or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
-            )
+            ).apply {
+                layoutInDisplayCutoutMode =
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+            }
         )
     }
 
