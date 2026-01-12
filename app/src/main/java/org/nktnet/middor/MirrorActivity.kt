@@ -57,7 +57,9 @@ class MirrorActivity : ComponentActivity() {
         )
 
         setContent {
-            MirrorScreen(projection) { finish() }
+            MirrorScreen(projection) {
+                finish()
+            }
 
             window.apply {
                 addFlags(
@@ -94,7 +96,7 @@ class MirrorActivity : ComponentActivity() {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { context ->
-                    MirrorUtils.setupTextureView(context = context) { tv ->
+                    MirrorUtils.setupTextureView(context) { tv ->
                         virtualDisplay = projection?.let {
                             MirrorUtils.createVirtualDisplay(
                                 it,
