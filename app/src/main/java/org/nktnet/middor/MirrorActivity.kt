@@ -19,12 +19,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
 import org.nktnet.middor.services.MirrorService
 import org.nktnet.middor.utils.MirrorUtils
 
@@ -35,18 +40,44 @@ class MirrorActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.apply {
+            addFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                        or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
+        }
+
+        window.decorView.post {
+            window.insetsController?.let { controller ->
+                controller.hide(
+                    WindowInsets.Type.statusBars()
+                        or WindowInsets.Type.navigationBars()
+                )
+                controller.systemBarsBehavior =
+                    WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        }
+
         val resultCode = intent.getIntExtra(
-            MirrorService.EXTRA_RESULT_CODE, RESULT_CANCELED
+            MirrorService.EXTRA_RESULT_CODE,
+            RESULT_CANCELED
         )
         val data = intent.getParcelableExtra(
-            MirrorService.EXTRA_RESULT_INTENT, Intent::class.java
-        ) ?: run { finish(); return }
+            MirrorService.EXTRA_RESULT_INTENT,
+            Intent::class.java
+        ) ?: run {
+            finish()
+            return
+        }
 
         projection = MirrorUtils.obtainProjection(
             context = this,
             resultCode = resultCode,
             data = data,
-            onStop = { finish() },
+            onStop = {
+                finish()
+            },
             onResize = { w, h ->
                 virtualDisplay?.resize(
                     w,
@@ -60,24 +91,6 @@ class MirrorActivity : ComponentActivity() {
             MirrorScreen(projection) {
                 finish()
             }
-
-            window.apply {
-                addFlags(
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                        or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                        or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                )
-            }
-
-            window.decorView.post {
-                window.insetsController?.let { controller ->
-                    controller.hide(
-                        WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars()
-                    )
-                    controller.systemBarsBehavior =
-                        WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                }
-            }
         }
     }
 
@@ -90,8 +103,16 @@ class MirrorActivity : ComponentActivity() {
 
     @Composable
     private fun MirrorScreen(projection: MediaProjection?, onClose: () -> Unit) {
+        var textureAttached by remember { mutableStateOf(false) }
+
         Box(modifier = Modifier.fillMaxSize()) {
-            val densityDpi = resources.displayMetrics.densityDpi
+            if (!textureAttached) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black)
+                )
+            }
 
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -102,9 +123,10 @@ class MirrorActivity : ComponentActivity() {
                                 it,
                                 tv,
                                 MirrorService.VIRTUAL_DISPLAY_NAME,
-                                densityDpi
+                                resources.displayMetrics.densityDpi
                             )
                         }
+                        textureAttached = true
                     }
                 }
             )
@@ -116,8 +138,8 @@ class MirrorActivity : ComponentActivity() {
                     .padding(16.dp)
                     .size(56.dp)
                     .background(
-                        color = Color(MirrorService.CLOSE_BUTTON_COLOUR),
-                        shape = CircleShape
+                        Color(MirrorService.CLOSE_BUTTON_COLOUR),
+                        CircleShape
                     )
             ) {
                 Icon(
