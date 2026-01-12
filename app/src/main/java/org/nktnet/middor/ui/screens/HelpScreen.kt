@@ -93,7 +93,7 @@ fun HelpScreen(navController: NavController) {
                         stringResource(
                             R.string.help_start_button_step,
                             stringResource(
-                                R.string.button_start_mirror_display_overlay
+                                R.string.button_start_mirror_display,
                             )
                         ),
                         stringResource(R.string.help_single_app_step),

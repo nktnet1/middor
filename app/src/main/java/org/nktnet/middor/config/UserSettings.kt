@@ -39,6 +39,15 @@ object UserSettings {
     val rotate180: MutableState<Boolean> = mutableStateOf(Defaults.ROTATE_180)
     val startDelaySeconds: MutableState<Int> = mutableIntStateOf(Defaults.START_DELAY_SECONDS)
 
+    fun setTheme(context: Context, theme: ThemeOption) {
+        currentTheme.value = theme
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.edit { prefs ->
+                prefs[Keys.THEME_KEY] = theme.name
+            }
+        }
+    }
+
     private fun <T> setPreference(
         context: Context,
         key: Preferences.Key<T>,
@@ -49,15 +58,6 @@ object UserSettings {
         CoroutineScope(Dispatchers.IO).launch {
             context.dataStore.edit { prefs ->
                 prefs[key] = value
-            }
-        }
-    }
-
-    fun setTheme(context: Context, theme: ThemeOption) {
-        currentTheme.value = theme
-        CoroutineScope(Dispatchers.IO).launch {
-            context.dataStore.edit { prefs ->
-                prefs[Keys.THEME_KEY] = theme.name
             }
         }
     }
@@ -93,6 +93,7 @@ object UserSettings {
                 currentTheme.value = ThemeOption.entries.find {
                     it.name == prefs[Keys.THEME_KEY]
                 } ?: Defaults.THEME
+
                 startOnLaunch.value = prefs[Keys.START_ON_LAUNCH_KEY] ?: Defaults.START_ON_LAUNCH
                 flipHorizontally.value = prefs[Keys.FLIP_DISPLAY_KEY] ?: Defaults.FLIP_HORIZONTALLY
                 rotate180.value = prefs[Keys.UPSIDE_DOWN_KEY] ?: Defaults.ROTATE_180

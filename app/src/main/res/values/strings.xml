@@ -6,7 +6,7 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_confirm">Save</string>
 
-    <string name="button_start_mirror_display_overlay">Start Mirror Display Overlay</string>
+    <string name="button_start_mirror_display">Start Mirror Display Overlay</string>
     <plurals name="button_starting_in_seconds">
         <item quantity="one">Starting in %d second…</item>
         <item quantity="other">Starting in %d seconds…</item>
