@@ -37,9 +37,7 @@
             android:name=".MirrorActivity"
             android:exported="false"
             android:theme="@style/Theme.Middor"
-            android:excludeFromRecents="true"
             android:finishOnTaskLaunch="true"
-            android:launchMode="singleInstance"
         />
 
         <service
