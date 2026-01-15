@@ -35,6 +35,11 @@ android {
         includeInBundle = false
     }
 
+    packaging {
+        // https://izzyondroid.org/docs/reproducibleBuilds/DebugFailedRBs/#native-library-stripping
+        jniLibs.keepDebugSymbols.add("**/*.so")
+    }
+
     signingConfigs {
         create("release") {
             storeFile = file("keystore.jks")
