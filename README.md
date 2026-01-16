@@ -4,8 +4,9 @@
 
 [<img src="./misc/badges/github.png" alt="Get it on GitHub" width="260px" />](https://github.com/nktnet1/middor/releases)
 [<img src="./misc/badges/obtainium.png" alt="Get it on Obtainium" width="260px" />](https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/nktnet1/middor)
+[<img src="./misc/badges/openapk.png" alt="Get it on OpenAPK" width="260px" />](https://www.openapk.net/middor/org.nktnet.middor/)
 [<img src="./misc/badges/f-droid.svg" alt="Get it on F-Droid" width="260px" />](https://f-droid.org/packages/org.nktnet.middor)
-<!-- [<img src="./misc/badges/izzy-on-droid.svg" alt="Get it on IzzyOnDroid" width="260px" />](https://apt.izzysoft.de/fdroid/index/apk/uk.nktnet.webviewkiosk) -->
+[<img src="./misc/badges/izzy-on-droid.svg" alt="Get it on IzzyOnDroid" width="260px" />](https://apt.izzysoft.de/fdroid/index/apk/org.nktnet.middor)
 
 </div>
 
