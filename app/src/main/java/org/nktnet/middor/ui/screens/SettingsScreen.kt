@@ -290,6 +290,12 @@ fun SettingsScreen(navController: NavController) {
             ) { newValue ->
                 UserSettings.setRotate180(context, newValue)
             }
+            BooleanSetting(
+                stringResource(R.string.settings_remove_system_bars),
+                UserSettings.removeSystemBars.value
+            ) { newValue ->
+                UserSettings.setRemoveSystemBars(context, newValue)
+            }
             IntSetting(
                 label = stringResource(R.string.settings_start_delay_seconds_label),
                 value = UserSettings.startDelaySeconds.value,

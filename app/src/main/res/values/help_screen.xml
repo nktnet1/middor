@@ -12,5 +12,5 @@
     <string name="help_exit_overlay_step">6. To exit, tap on the red Close (×) icon in the top-right corner of the overlay. Alternatively, you can pull down on your status bar and tap the notification.</string>
 
     <string name="help_overlay_note">1. You won\'t be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. starting the navigation in Google Maps) prior to creating the mirror overlay.</string>
-    <string name="help_padding_note">2. There will be padding between the application and the overlay. This padding is outside the control of %1$s.</string>
+    <string name="help_remove_system_bars">2. When using the \"Remove System Bars\" setting, the height of the status and navigation bar is recorded before creating the overlay for cropping. If the device orientation changes afterward (e.g. from portrait to landscape), the cropping dimensions will not update.</string>
 </resources>

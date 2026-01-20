@@ -119,10 +119,7 @@ fun HelpScreen(navController: NavController) {
                 Text(
                     text = listOf(
                         stringResource(R.string.help_overlay_note),
-                        stringResource(
-                            R.string.help_padding_note,
-                            stringResource(R.string.app_name)
-                        )
+                        stringResource(R.string.help_remove_system_bars)
                     ).joinToString("\n\n"),
                     style = MaterialTheme.typography.bodyMedium
                 )

@@ -17,6 +17,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
 import org.nktnet.middor.R
+import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.CustomNotificationManager
 import org.nktnet.middor.utils.MirrorUtils
 
@@ -71,10 +72,12 @@ class MirrorService : Service() {
                     EXTRA_RESULT_INTENT, Intent::class.java
                 ) ?: return START_NOT_STICKY
 
-                cropTop = intent.getIntExtra(EXTRA_CROP_TOP, 0)
-                cropBottom = intent.getIntExtra(EXTRA_CROP_BOTTOM, 0)
-                cropLeft = intent.getIntExtra(EXTRA_CROP_LEFT, 0)
-                cropRight = intent.getIntExtra(EXTRA_CROP_RIGHT, 0)
+                if (UserSettings.removeSystemBars.value) {
+                    cropTop = intent.getIntExtra(EXTRA_CROP_TOP, 0)
+                    cropBottom = intent.getIntExtra(EXTRA_CROP_BOTTOM, 0)
+                    cropLeft = intent.getIntExtra(EXTRA_CROP_LEFT, 0)
+                    cropRight = intent.getIntExtra(EXTRA_CROP_RIGHT, 0)
+                }
 
                 startFullScreenOverlay(resultCode, data)
                 return START_STICKY
@@ -148,7 +151,8 @@ class MirrorService : Service() {
             closeButton,
             FrameLayout.LayoutParams(120, 120).apply {
                 gravity = Gravity.END or Gravity.TOP
-                topMargin = 90
+                // To keep old behaviour for v0.1.5 and below
+                topMargin = if (UserSettings.removeSystemBars.value) 40 else 90
                 rightMargin = 40
             }
         )
@@ -165,6 +169,15 @@ class MirrorService : Service() {
             ).apply {
                 layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+
+                if (!UserSettings.removeSystemBars.value) {
+                    // To keep old behaviour for v0.1.5 and below
+                    flags = (
+                        flags
+                            or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                            or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                    )
+                }
             }
         )
 

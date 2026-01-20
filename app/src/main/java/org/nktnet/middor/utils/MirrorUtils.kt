@@ -24,7 +24,9 @@ object MirrorUtils {
         onStop: () -> Unit,
         onResize: (width: Int, height: Int) -> Unit
     ): MediaProjection? {
-        val mpm = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        val mpm = context.getSystemService(
+            Context.MEDIA_PROJECTION_SERVICE
+        ) as MediaProjectionManager
         return mpm.getMediaProjection(resultCode, data)?.also { mp ->
             mp.registerCallback(object : MediaProjection.Callback() {
                 override fun onStop() {
@@ -33,7 +35,10 @@ object MirrorUtils {
                 }
 
                 override fun onCapturedContentResize(width: Int, height: Int) {
-                    onResize(width - cropLeft - cropRight, height - cropTop - cropBottom)
+                    onResize(
+                        width - cropLeft - cropRight,
+                        height - cropTop - cropBottom
+                    )
                 }
             }, null)
         }
