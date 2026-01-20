@@ -28,6 +28,8 @@ class MirrorService : Service() {
 
     private var cropTop = 0
     private var cropBottom = 0
+    private var cropLeft = 0
+    private var cropRight = 0
 
     companion object {
         val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
@@ -39,6 +41,8 @@ class MirrorService : Service() {
         const val EXTRA_RESULT_INTENT = "extra_result_intent"
         const val EXTRA_CROP_TOP = "extra_crop_top"
         const val EXTRA_CROP_BOTTOM = "extra_crop_bottom"
+        const val EXTRA_CROP_LEFT = "extra_crop_left"
+        const val EXTRA_CROP_RIGHT = "extra_crop_right"
     }
 
     override fun onCreate() {
@@ -69,6 +73,8 @@ class MirrorService : Service() {
 
                 cropTop = intent.getIntExtra(EXTRA_CROP_TOP, 0)
                 cropBottom = intent.getIntExtra(EXTRA_CROP_BOTTOM, 0)
+                cropLeft = intent.getIntExtra(EXTRA_CROP_LEFT, 0)
+                cropRight = intent.getIntExtra(EXTRA_CROP_RIGHT, 0)
 
                 startFullScreenOverlay(resultCode, data)
                 return START_STICKY
@@ -82,7 +88,9 @@ class MirrorService : Service() {
         val textureView = MirrorUtils.setupTextureView(
             context = this,
             cropTop = cropTop,
-            cropBottom = cropBottom
+            cropBottom = cropBottom,
+            cropLeft = cropLeft,
+            cropRight = cropRight
         ) { tv ->
             virtualDisplay = projection?.let {
                 MirrorUtils.createVirtualDisplay(
@@ -91,7 +99,9 @@ class MirrorService : Service() {
                     VIRTUAL_DISPLAY_NAME,
                     resources.displayMetrics.densityDpi,
                     cropTop,
-                    cropBottom
+                    cropBottom,
+                    cropLeft,
+                    cropRight
                 )
             }
         }
@@ -103,6 +113,8 @@ class MirrorService : Service() {
             data = data,
             cropTop = cropTop,
             cropBottom = cropBottom,
+            cropLeft = cropLeft,
+            cropRight = cropRight,
             onStop = { stopSelf() },
             onResize = { w, h ->
                 virtualDisplay?.resize(w, h, densityDpi)

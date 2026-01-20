@@ -33,8 +33,10 @@ import org.nktnet.middor.ui.theme.MiddorTheme
 class MainActivity : ComponentActivity() {
 
     private lateinit var screenCaptureManager: ScreenCaptureManager
-    private var statusBarHeight = 0
-    private var navigationBarHeight = 0
+    private var sysBarTop = 0
+    private var sysBarBottom = 0
+    private var sysBarLeft = 0
+    private var sysBarRight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +45,10 @@ class MainActivity : ComponentActivity() {
 
         window.decorView.setOnApplyWindowInsetsListener { v, insets ->
             val sysBars = insets.getInsets(WindowInsets.Type.systemBars())
-            statusBarHeight = sysBars.top
-            navigationBarHeight = sysBars.bottom
+            sysBarTop = sysBars.top
+            sysBarBottom = sysBars.bottom
+            sysBarLeft = sysBars.left
+            sysBarRight = sysBars.right
             v.setOnApplyWindowInsetsListener(null)
             insets
         }
@@ -55,8 +59,10 @@ class MainActivity : ComponentActivity() {
                     action = MirrorService.ACTION_START_OVERLAY
                     putExtra(MirrorService.EXTRA_RESULT_CODE, resultCode)
                     putExtra(MirrorService.EXTRA_RESULT_INTENT, data)
-                    putExtra(MirrorService.EXTRA_CROP_TOP, statusBarHeight)
-                    putExtra(MirrorService.EXTRA_CROP_BOTTOM, navigationBarHeight)
+                    putExtra(MirrorService.EXTRA_CROP_TOP, sysBarTop)
+                    putExtra(MirrorService.EXTRA_CROP_BOTTOM, sysBarBottom)
+                    putExtra(MirrorService.EXTRA_CROP_LEFT, sysBarLeft)
+                    putExtra(MirrorService.EXTRA_CROP_RIGHT, sysBarRight)
                 }
             startForegroundService(serviceIntent)
         }

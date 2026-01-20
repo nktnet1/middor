@@ -19,6 +19,8 @@ object MirrorUtils {
         data: Intent,
         cropTop: Int,
         cropBottom: Int,
+        cropLeft: Int,
+        cropRight: Int,
         onStop: () -> Unit,
         onResize: (width: Int, height: Int) -> Unit
     ): MediaProjection? {
@@ -31,7 +33,7 @@ object MirrorUtils {
                 }
 
                 override fun onCapturedContentResize(width: Int, height: Int) {
-                    onResize(width, height - cropTop - cropBottom)
+                    onResize(width - cropLeft - cropRight, height - cropTop - cropBottom)
                 }
             }, null)
         }
@@ -43,9 +45,11 @@ object MirrorUtils {
         displayName: String,
         densityDpi: Int,
         cropTop: Int,
-        cropBottom: Int
+        cropBottom: Int,
+        cropLeft: Int,
+        cropRight: Int
     ): VirtualDisplay? {
-        val w = textureView.width
+        val w = textureView.width - cropLeft - cropRight
         val h = textureView.height - cropTop - cropBottom
         return projection.createVirtualDisplay(
             displayName,
@@ -63,6 +67,8 @@ object MirrorUtils {
         context: Context,
         cropTop: Int,
         cropBottom: Int,
+        cropLeft: Int,
+        cropRight: Int,
         onAvailable: (TextureView) -> Unit
     ): TextureView {
         return TextureView(context).apply {
@@ -73,22 +79,28 @@ object MirrorUtils {
                     st: android.graphics.SurfaceTexture, w: Int, h: Int
                 ) {
                     onAvailable(this@apply)
-                    println("[DEBUG] cropTop=$cropTop | cropBottom=$cropBottom")
 
+                    val cropW = w - cropLeft - cropRight
                     val cropH = h - cropTop - cropBottom
-                    val scale = h.toFloat() / cropH.toFloat()
+
+                    val scale = maxOf(
+                        w.toFloat() / cropW.toFloat(),
+                        h.toFloat() / cropH.toFloat()
+                    )
 
                     val matrix = Matrix()
                     matrix.setScale(scale, scale, 0f, 0f)
                     matrix.postTranslate(
-                        (w - w * scale) / 2f,
-                        -cropTop.toFloat() * scale
+                        (w - cropW * scale) / 2f - cropLeft.toFloat() * scale,
+                        (h - cropH * scale) / 2f - cropTop.toFloat() * scale
                     )
                     setTransform(matrix)
                 }
+
                 override fun onSurfaceTextureSizeChanged(
                     st: android.graphics.SurfaceTexture, w: Int, h: Int
                 ) {}
+
                 override fun onSurfaceTextureDestroyed(st: android.graphics.SurfaceTexture) = true
                 override fun onSurfaceTextureUpdated(st: android.graphics.SurfaceTexture) {}
             }
