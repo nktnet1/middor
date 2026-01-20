@@ -89,11 +89,13 @@ object MirrorUtils {
                     )
 
                     val matrix = Matrix()
-                    matrix.setScale(scale, scale, 0f, 0f)
+                    matrix.setScale(scale, scale)
+
                     matrix.postTranslate(
-                        (w - cropW * scale) / 2f - cropLeft.toFloat() * scale,
-                        (h - cropH * scale) / 2f - cropTop.toFloat() * scale
+                        -cropLeft.toFloat() * scale + (w - cropW * scale) / 2f,
+                        -cropTop.toFloat() * scale + (h - cropH * scale) / 2f
                     )
+
                     setTransform(matrix)
                 }
 
