@@ -54,12 +54,10 @@ object MirrorUtils {
         cropLeft: Int,
         cropRight: Int
     ): VirtualDisplay? {
-        val w = textureView.width - cropLeft - cropRight
-        val h = textureView.height - cropTop - cropBottom
         return projection.createVirtualDisplay(
             displayName,
-            w,
-            h,
+            textureView.width - cropLeft - cropRight,
+            textureView.height - cropTop - cropBottom,
             densityDpi,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             Surface(textureView.surfaceTexture),
