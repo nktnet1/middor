@@ -73,6 +73,7 @@ object UserSettings {
 
     fun setRotate180(context: Context, value: Boolean) =
         setPreference(context, Keys.UPSIDE_DOWN_KEY, rotate180, value)
+
     fun setRemoveSystemBars(context: Context, value: Boolean) =
         setPreference(context, Keys.REMOVE_SYSTEM_BARS_KEY, removeSystemBars, value)
 
