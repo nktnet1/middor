@@ -17,6 +17,7 @@ import android.widget.FrameLayout
 import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
 import org.nktnet.middor.R
+import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.CustomNotificationManager
 import org.nktnet.middor.utils.MirrorUtils
 
@@ -26,6 +27,11 @@ class MirrorService : Service() {
     private var overlayView: FrameLayout? = null
     private var virtualDisplay: VirtualDisplay? = null
 
+    private var cropTop = 0
+    private var cropBottom = 0
+    private var cropLeft = 0
+    private var cropRight = 0
+
     companion object {
         val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
         const val ACTION_STOP_SERVICE = "org.nktnet.middor.action.STOP_SERVICE"
@@ -34,6 +40,10 @@ class MirrorService : Service() {
 
         const val EXTRA_RESULT_CODE = "extra_result_code"
         const val EXTRA_RESULT_INTENT = "extra_result_intent"
+        const val EXTRA_CROP_TOP = "extra_crop_top"
+        const val EXTRA_CROP_BOTTOM = "extra_crop_bottom"
+        const val EXTRA_CROP_LEFT = "extra_crop_left"
+        const val EXTRA_CROP_RIGHT = "extra_crop_right"
     }
 
     override fun onCreate() {
@@ -62,6 +72,13 @@ class MirrorService : Service() {
                     EXTRA_RESULT_INTENT, Intent::class.java
                 ) ?: return START_NOT_STICKY
 
+                if (UserSettings.removeSystemBars.value) {
+                    cropTop = intent.getIntExtra(EXTRA_CROP_TOP, 0)
+                    cropBottom = intent.getIntExtra(EXTRA_CROP_BOTTOM, 0)
+                    cropLeft = intent.getIntExtra(EXTRA_CROP_LEFT, 0)
+                    cropRight = intent.getIntExtra(EXTRA_CROP_RIGHT, 0)
+                }
+
                 startFullScreenOverlay(resultCode, data)
                 return START_STICKY
             }
@@ -71,13 +88,23 @@ class MirrorService : Service() {
     }
 
     private fun startFullScreenOverlay(resultCode: Int, data: Intent) {
-        val textureView = MirrorUtils.setupTextureView(context = this) { tv ->
+        val textureView = MirrorUtils.setupTextureView(
+            context = this,
+            cropTop = cropTop,
+            cropBottom = cropBottom,
+            cropLeft = cropLeft,
+            cropRight = cropRight
+        ) { tv ->
             virtualDisplay = projection?.let {
                 MirrorUtils.createVirtualDisplay(
                     it,
                     tv,
                     VIRTUAL_DISPLAY_NAME,
                     resources.displayMetrics.densityDpi,
+                    cropTop,
+                    cropBottom,
+                    cropLeft,
+                    cropRight
                 )
             }
         }
@@ -87,6 +114,10 @@ class MirrorService : Service() {
             context = this,
             resultCode = resultCode,
             data = data,
+            cropTop = cropTop,
+            cropBottom = cropBottom,
+            cropLeft = cropLeft,
+            cropRight = cropRight,
             onStop = { stopSelf() },
             onResize = { w, h ->
                 virtualDisplay?.resize(w, h, densityDpi)
@@ -120,7 +151,8 @@ class MirrorService : Service() {
             closeButton,
             FrameLayout.LayoutParams(120, 120).apply {
                 gravity = Gravity.END or Gravity.TOP
-                topMargin = 90
+                // To keep old behaviour for v0.1.4 and below
+                topMargin = if (UserSettings.removeSystemBars.value) 40 else 90
                 rightMargin = 40
             }
         )
@@ -132,13 +164,20 @@ class MirrorService : Service() {
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+
+                if (!UserSettings.removeSystemBars.value) {
+                    // To keep old behaviour for v0.1.4 and below
+                    flags = (
+                        flags
+                            or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                            or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                    )
+                }
             }
         )
     }

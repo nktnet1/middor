@@ -2,6 +2,7 @@ package org.nktnet.middor
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,19 +32,41 @@ import org.nktnet.middor.ui.theme.MiddorTheme
 
 class MainActivity : ComponentActivity() {
     private lateinit var screenCaptureManager: ScreenCaptureManager
+    private var sysBarTop = 0
+    private var sysBarBottom = 0
+    private var sysBarLeft = 0
+    private var sysBarRight = 0
+    private var isRequestingCapture = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         UserSettings.init(this)
 
-        screenCaptureManager = ScreenCaptureManager(this) { resultCode, data ->
+        window.decorView.setOnApplyWindowInsetsListener { _, insets ->
+            if (!isRequestingCapture) {
+                val sysBars = insets.getInsets(WindowInsets.Type.systemBars())
+                sysBarTop = sysBars.top
+                sysBarBottom = sysBars.bottom
+                sysBarLeft = sysBars.left
+                sysBarRight = sysBars.right
+            }
+            insets
+        }
+
+        screenCaptureManager = ScreenCaptureManager(
+            this,
+            updateIsRequesting = { isRequestingCapture = it }
+        ) { resultCode, data ->
             val serviceIntent = Intent(this, MirrorService::class.java)
                 .apply {
                     action = MirrorService.ACTION_START_OVERLAY
                     putExtra(MirrorService.EXTRA_RESULT_CODE, resultCode)
                     putExtra(MirrorService.EXTRA_RESULT_INTENT, data)
+                    putExtra(MirrorService.EXTRA_CROP_TOP, sysBarTop)
+                    putExtra(MirrorService.EXTRA_CROP_BOTTOM, sysBarBottom)
+                    putExtra(MirrorService.EXTRA_CROP_LEFT, sysBarLeft)
+                    putExtra(MirrorService.EXTRA_CROP_RIGHT, sysBarRight)
                 }
             startForegroundService(serviceIntent)
         }
@@ -76,7 +99,6 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 screenCaptureManager = screenCaptureManager,
                             )
-
                         }
                         composable(Screen.Settings.route) {
                             SettingsScreen(navController)

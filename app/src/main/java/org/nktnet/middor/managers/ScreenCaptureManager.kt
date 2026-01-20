@@ -11,6 +11,7 @@ import org.nktnet.middor.R
 
 class ScreenCaptureManager(
     private val activity: ComponentActivity,
+    private val updateIsRequesting: (isRequesting: Boolean) -> Unit,
     private val onCaptureResult: (resultCode: Int, data: Intent) -> Unit
 ) {
     private val launcher: ActivityResultLauncher<Intent> =
@@ -21,15 +22,18 @@ class ScreenCaptureManager(
             if (result.resultCode == Activity.RESULT_OK && data != null) {
                 onCaptureResult(result.resultCode, data)
             }
+            updateIsRequesting(false)
         }
 
     fun requestCapture() {
+        updateIsRequesting(true)
         try {
             val mpm = activity.getSystemService(
                 Context.MEDIA_PROJECTION_SERVICE
             ) as MediaProjectionManager
             launcher.launch(mpm.createScreenCaptureIntent())
         } catch (e: Exception) {
+            updateIsRequesting(false)
             ToastManager.show(
                 activity,
                 activity.getString(
@@ -37,7 +41,6 @@ class ScreenCaptureManager(
                     e.message
                 )
             )
-
         }
     }
 }

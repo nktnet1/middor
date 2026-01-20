@@ -22,6 +22,7 @@ object UserSettings {
         val START_ON_LAUNCH_KEY = booleanPreferencesKey("user_settings.start_on_launch")
         val FLIP_DISPLAY_KEY = booleanPreferencesKey("user_settings.flip_horizontally")
         val UPSIDE_DOWN_KEY = booleanPreferencesKey("user_settings.upside_down")
+        val REMOVE_SYSTEM_BARS_KEY = booleanPreferencesKey("user_settings.remove_system_bars")
         val START_DELAY_SECONDS_KEY = intPreferencesKey("user_settings.start_delay_seconds")
     }
 
@@ -30,6 +31,7 @@ object UserSettings {
         const val START_ON_LAUNCH = false
         const val FLIP_HORIZONTALLY = true
         const val ROTATE_180 = false
+        const val REMOVE_SYSTEM_BARS = false
         const val START_DELAY_SECONDS = 0
     }
 
@@ -37,6 +39,7 @@ object UserSettings {
     val startOnLaunch: MutableState<Boolean> = mutableStateOf(Defaults.START_ON_LAUNCH)
     val flipHorizontally: MutableState<Boolean> = mutableStateOf(Defaults.FLIP_HORIZONTALLY)
     val rotate180: MutableState<Boolean> = mutableStateOf(Defaults.ROTATE_180)
+    val removeSystemBars: MutableState<Boolean> = mutableStateOf(Defaults.REMOVE_SYSTEM_BARS)
     val startDelaySeconds: MutableState<Int> = mutableIntStateOf(Defaults.START_DELAY_SECONDS)
 
     fun setTheme(context: Context, theme: ThemeOption) {
@@ -71,6 +74,9 @@ object UserSettings {
     fun setRotate180(context: Context, value: Boolean) =
         setPreference(context, Keys.UPSIDE_DOWN_KEY, rotate180, value)
 
+    fun setRemoveSystemBars(context: Context, value: Boolean) =
+        setPreference(context, Keys.REMOVE_SYSTEM_BARS_KEY, removeSystemBars, value)
+
     fun setStartDelay(context: Context, delayMs: Int) =
         setPreference(
             context,
@@ -84,6 +90,7 @@ object UserSettings {
         setStartOnLaunch(context, Defaults.START_ON_LAUNCH)
         setFlipHorizontally(context, Defaults.FLIP_HORIZONTALLY)
         setRotate180(context, Defaults.ROTATE_180)
+        setRemoveSystemBars(context, Defaults.REMOVE_SYSTEM_BARS)
         setStartDelay(context, Defaults.START_DELAY_SECONDS)
     }
 
@@ -97,6 +104,8 @@ object UserSettings {
                 startOnLaunch.value = prefs[Keys.START_ON_LAUNCH_KEY] ?: Defaults.START_ON_LAUNCH
                 flipHorizontally.value = prefs[Keys.FLIP_DISPLAY_KEY] ?: Defaults.FLIP_HORIZONTALLY
                 rotate180.value = prefs[Keys.UPSIDE_DOWN_KEY] ?: Defaults.ROTATE_180
+                removeSystemBars.value = prefs[Keys.REMOVE_SYSTEM_BARS_KEY]
+                    ?: Defaults.REMOVE_SYSTEM_BARS
                 startDelaySeconds.value = prefs[Keys.START_DELAY_SECONDS_KEY]
                     ?: Defaults.START_DELAY_SECONDS
             }
