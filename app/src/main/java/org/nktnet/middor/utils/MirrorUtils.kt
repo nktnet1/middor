@@ -73,12 +73,17 @@ object MirrorUtils {
                     st: android.graphics.SurfaceTexture, w: Int, h: Int
                 ) {
                     onAvailable(this@apply)
+                    println("[DEBUG] cropTop=$cropTop | cropBottom=$cropBottom")
 
                     val cropH = h - cropTop - cropBottom
-                    println("[DEBUG] cropTop=$cropTop | cropBottom=$cropBottom")
-                    val scale = maxOf(w.toFloat() / w.toFloat(), h.toFloat() / cropH.toFloat())
+                    val scale = h.toFloat() / cropH.toFloat()
+
                     val matrix = Matrix()
-                    matrix.setScale(scale, scale, w / 2f, h / 2f)
+                    matrix.setScale(scale, scale, 0f, 0f)
+                    matrix.postTranslate(
+                        (w - w * scale) / 2f,
+                        -cropTop.toFloat() * scale
+                    )
                     setTransform(matrix)
                 }
                 override fun onSurfaceTextureSizeChanged(
