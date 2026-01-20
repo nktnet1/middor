@@ -26,6 +26,9 @@ class MirrorService : Service() {
     private var overlayView: FrameLayout? = null
     private var virtualDisplay: VirtualDisplay? = null
 
+    private var cropTop = 0
+    private var cropBottom = 0
+
     companion object {
         val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
         const val ACTION_STOP_SERVICE = "org.nktnet.middor.action.STOP_SERVICE"
@@ -34,6 +37,8 @@ class MirrorService : Service() {
 
         const val EXTRA_RESULT_CODE = "extra_result_code"
         const val EXTRA_RESULT_INTENT = "extra_result_intent"
+        const val EXTRA_CROP_TOP = "extra_crop_top"
+        const val EXTRA_CROP_BOTTOM = "extra_crop_bottom"
     }
 
     override fun onCreate() {
@@ -62,6 +67,9 @@ class MirrorService : Service() {
                     EXTRA_RESULT_INTENT, Intent::class.java
                 ) ?: return START_NOT_STICKY
 
+                cropTop = intent.getIntExtra(EXTRA_CROP_TOP, 0)
+                cropBottom = intent.getIntExtra(EXTRA_CROP_BOTTOM, 0)
+
                 startFullScreenOverlay(resultCode, data)
                 return START_STICKY
             }
@@ -71,13 +79,19 @@ class MirrorService : Service() {
     }
 
     private fun startFullScreenOverlay(resultCode: Int, data: Intent) {
-        val textureView = MirrorUtils.setupTextureView(context = this) { tv ->
+        val textureView = MirrorUtils.setupTextureView(
+            context = this,
+            cropTop = cropTop,
+            cropBottom = cropBottom
+        ) { tv ->
             virtualDisplay = projection?.let {
                 MirrorUtils.createVirtualDisplay(
                     it,
                     tv,
                     VIRTUAL_DISPLAY_NAME,
                     resources.displayMetrics.densityDpi,
+                    cropTop,
+                    cropBottom
                 )
             }
         }
@@ -87,6 +101,8 @@ class MirrorService : Service() {
             context = this,
             resultCode = resultCode,
             data = data,
+            cropTop = cropTop,
+            cropBottom = cropBottom,
             onStop = { stopSelf() },
             onResize = { w, h ->
                 virtualDisplay?.resize(w, h, densityDpi)
@@ -132,14 +148,9 @@ class MirrorService : Service() {
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT
-            ).apply {
-                layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
-            }
+            )
         )
     }
 

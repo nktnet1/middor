@@ -2,6 +2,7 @@ package org.nktnet.middor.utils
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Matrix
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
@@ -11,16 +12,17 @@ import android.view.TextureView
 import org.nktnet.middor.config.UserSettings
 
 object MirrorUtils {
+
     fun obtainProjection(
         context: Context,
         resultCode: Int,
         data: Intent,
+        cropTop: Int,
+        cropBottom: Int,
         onStop: () -> Unit,
         onResize: (width: Int, height: Int) -> Unit
     ): MediaProjection? {
-        val mpm = context.getSystemService(
-            Context.MEDIA_PROJECTION_SERVICE
-        ) as MediaProjectionManager
+        val mpm = context.getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         return mpm.getMediaProjection(resultCode, data)?.also { mp ->
             mp.registerCallback(object : MediaProjection.Callback() {
                 override fun onStop() {
@@ -29,7 +31,7 @@ object MirrorUtils {
                 }
 
                 override fun onCapturedContentResize(width: Int, height: Int) {
-                    onResize(width, height)
+                    onResize(width, height - cropTop - cropBottom)
                 }
             }, null)
         }
@@ -39,12 +41,16 @@ object MirrorUtils {
         projection: MediaProjection,
         textureView: TextureView,
         displayName: String,
-        densityDpi: Int
+        densityDpi: Int,
+        cropTop: Int,
+        cropBottom: Int
     ): VirtualDisplay? {
+        val w = textureView.width
+        val h = textureView.height - cropTop - cropBottom
         return projection.createVirtualDisplay(
             displayName,
-            textureView.width,
-            textureView.height,
+            w,
+            h,
             densityDpi,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             Surface(textureView.surfaceTexture),
@@ -55,6 +61,8 @@ object MirrorUtils {
 
     fun setupTextureView(
         context: Context,
+        cropTop: Int,
+        cropBottom: Int,
         onAvailable: (TextureView) -> Unit
     ): TextureView {
         return TextureView(context).apply {
@@ -65,6 +73,13 @@ object MirrorUtils {
                     st: android.graphics.SurfaceTexture, w: Int, h: Int
                 ) {
                     onAvailable(this@apply)
+
+                    val cropH = h - cropTop - cropBottom
+                    println("[DEBUG] cropTop=$cropTop | cropBottom=$cropBottom")
+                    val scale = maxOf(w.toFloat() / w.toFloat(), h.toFloat() / cropH.toFloat())
+                    val matrix = Matrix()
+                    matrix.setScale(scale, scale, w / 2f, h / 2f)
+                    setTransform(matrix)
                 }
                 override fun onSurfaceTextureSizeChanged(
                     st: android.graphics.SurfaceTexture, w: Int, h: Int

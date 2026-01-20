@@ -2,6 +2,7 @@ package org.nktnet.middor
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,13 +31,23 @@ import org.nktnet.middor.ui.screens.SettingsScreen
 import org.nktnet.middor.ui.theme.MiddorTheme
 
 class MainActivity : ComponentActivity() {
+
     private lateinit var screenCaptureManager: ScreenCaptureManager
+    private var statusBarHeight = 0
+    private var navigationBarHeight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         UserSettings.init(this)
+
+        window.decorView.setOnApplyWindowInsetsListener { v, insets ->
+            val sysBars = insets.getInsets(WindowInsets.Type.systemBars())
+            statusBarHeight = sysBars.top
+            navigationBarHeight = sysBars.bottom
+            v.setOnApplyWindowInsetsListener(null)
+            insets
+        }
 
         screenCaptureManager = ScreenCaptureManager(this) { resultCode, data ->
             val serviceIntent = Intent(this, MirrorService::class.java)
@@ -44,6 +55,8 @@ class MainActivity : ComponentActivity() {
                     action = MirrorService.ACTION_START_OVERLAY
                     putExtra(MirrorService.EXTRA_RESULT_CODE, resultCode)
                     putExtra(MirrorService.EXTRA_RESULT_INTENT, data)
+                    putExtra(MirrorService.EXTRA_CROP_TOP, statusBarHeight)
+                    putExtra(MirrorService.EXTRA_CROP_BOTTOM, navigationBarHeight)
                 }
             startForegroundService(serviceIntent)
         }
@@ -76,7 +89,6 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 screenCaptureManager = screenCaptureManager,
                             )
-
                         }
                         composable(Screen.Settings.route) {
                             SettingsScreen(navController)
