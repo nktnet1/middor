@@ -31,29 +31,33 @@ import org.nktnet.middor.ui.screens.SettingsScreen
 import org.nktnet.middor.ui.theme.MiddorTheme
 
 class MainActivity : ComponentActivity() {
-
     private lateinit var screenCaptureManager: ScreenCaptureManager
     private var sysBarTop = 0
     private var sysBarBottom = 0
     private var sysBarLeft = 0
     private var sysBarRight = 0
+    private var isRequestingCapture = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         UserSettings.init(this)
 
-        window.decorView.setOnApplyWindowInsetsListener { v, insets ->
-            val sysBars = insets.getInsets(WindowInsets.Type.systemBars())
-            sysBarTop = sysBars.top
-            sysBarBottom = sysBars.bottom
-            sysBarLeft = sysBars.left
-            sysBarRight = sysBars.right
-            v.setOnApplyWindowInsetsListener(null)
+        window.decorView.setOnApplyWindowInsetsListener { _, insets ->
+            if (!isRequestingCapture) {
+                val sysBars = insets.getInsets(WindowInsets.Type.systemBars())
+                sysBarTop = sysBars.top
+                sysBarBottom = sysBars.bottom
+                sysBarLeft = sysBars.left
+                sysBarRight = sysBars.right
+            }
             insets
         }
 
-        screenCaptureManager = ScreenCaptureManager(this) { resultCode, data ->
+        screenCaptureManager = ScreenCaptureManager(
+            this,
+            updateIsRequesting = { isRequestingCapture = it }
+        ) { resultCode, data ->
             val serviceIntent = Intent(this, MirrorService::class.java)
                 .apply {
                     action = MirrorService.ACTION_START_OVERLAY
