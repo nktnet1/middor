@@ -12,7 +12,6 @@ import android.view.TextureView
 import org.nktnet.middor.config.UserSettings
 
 object MirrorUtils {
-
     fun obtainProjection(
         context: Context,
         resultCode: Int,
@@ -101,11 +100,9 @@ object MirrorUtils {
 
                     setTransform(matrix)
                 }
-
                 override fun onSurfaceTextureSizeChanged(
                     st: android.graphics.SurfaceTexture, w: Int, h: Int
                 ) {}
-
                 override fun onSurfaceTextureDestroyed(st: android.graphics.SurfaceTexture) = true
                 override fun onSurfaceTextureUpdated(st: android.graphics.SurfaceTexture) {}
             }

@@ -180,7 +180,6 @@ class MirrorService : Service() {
                 }
             }
         )
-
     }
 
     override fun onDestroy() {
