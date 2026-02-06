@@ -1,0 +1,4 @@
+## Changes
+
+- feat: added warning for Android 14 devices about requiring minimum QPR2
+- deps: bump package versions (jetpack compose)
