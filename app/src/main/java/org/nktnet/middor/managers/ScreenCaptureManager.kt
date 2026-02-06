@@ -3,6 +3,7 @@ package org.nktnet.middor.managers
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.media.projection.MediaProjectionConfig
 import android.media.projection.MediaProjectionManager
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
@@ -31,7 +32,11 @@ class ScreenCaptureManager(
             val mpm = activity.getSystemService(
                 Context.MEDIA_PROJECTION_SERVICE
             ) as MediaProjectionManager
-            launcher.launch(mpm.createScreenCaptureIntent())
+            launcher.launch(
+                mpm.createScreenCaptureIntent(
+                    MediaProjectionConfig.createConfigForUserChoice()
+                )
+            )
         } catch (e: Exception) {
             updateIsRequesting(false)
             ToastManager.show(

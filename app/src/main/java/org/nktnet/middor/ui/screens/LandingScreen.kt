@@ -1,5 +1,6 @@
 package org.nktnet.middor.ui.screens
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -49,6 +50,7 @@ import org.nktnet.middor.managers.ScreenCaptureManager
 import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.states.SystemState
 import org.nktnet.middor.ui.ThemeDropdownIcon
+import org.nktnet.middor.ui.components.Android14Qpr2Note
 import org.nktnet.middor.ui.components.AppLogo
 
 @Composable
@@ -230,6 +232,11 @@ fun LandingScreen(
                         maxFontSize = 32.sp
                     ),
                 )
+            }
+
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                Spacer(Modifier.height(8.dp))
+                Android14Qpr2Note()
             }
         }
     }
