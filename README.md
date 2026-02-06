@@ -18,7 +18,7 @@ With built-in support for horizontal flip and 180° rotation, Middor can be used
 - Project content onto a car windscreen (e.g. Google Maps navigation)
 - View mirrored images and videos
 
-Middor only supports devices running Android 14 or higher (SDK 34+), as it
+Middor only supports devices running Android 14 QPR2 or higher, as it
 relies on the single app screen sharing feature. For more details, see
 [Android 14 - App Screen Sharing](https://developer.android.com/about/versions/14/features/app-screen-sharing).
 
