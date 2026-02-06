@@ -3,4 +3,5 @@
     <string name="landing_settings_content_description">Settings</string>
     <string name="landing_info_content_description">Info</string>
     <string name="landing_app_icon_content_description">App Icon</string>
-    <string name="landing_android14_qpr2_note">Your device is running Android 14. App Screen Sharing requires at least Android 14 QPR2, which may not be implemented by your OEM. If you do not see the "Single App" option when starting the overlay, your device is not compatible with this application.</string></resources>
+    <string name="landing_android14_qpr2_note">Your device is running Android 14. App Screen Sharing requires at least Android 14 QPR2, which may not be implemented by your OEM. If you do not see the "Single App" option when starting the overlay, your device is not compatible with this application.</string>
+</resources>
