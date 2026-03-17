@@ -19,7 +19,9 @@ With built-in support for horizontal flip and 180° rotation, Middor can be used
 - View mirrored images and videos
 
 Middor only supports devices running Android 14 QPR2 or higher, as it
-relies on the single app screen sharing feature. For more details, see
+relies on the single app screen sharing feature.
+
+For more details, see
 [Android 14 - App Screen Sharing](https://developer.android.com/about/versions/14/features/app-screen-sharing).
 
 For usage instructions, see [Discussion #2](https://github.com/nktnet1/middor/discussions/2).
