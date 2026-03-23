@@ -5,17 +5,13 @@ plugins {
 
 android {
     ndkVersion = "29.0.14206865"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 37
     namespace = "org.nktnet.middor"
 
     defaultConfig {
         applicationId = "org.nktnet.middor"
         minSdk = 34
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 8
         versionName = "0.1.7"
     }
