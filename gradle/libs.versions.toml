@@ -1,11 +1,11 @@
 [versions]
-agp = "9.0.0"
-coreKtx = "1.17.0"
-datastorePreferences = "1.2.0"
+agp = "9.1.0"
+coreKtx = "1.18.0"
+datastorePreferences = "1.2.1"
 lifecycleRuntimeKtx = "2.10.0"
-activityCompose = "1.12.3"
-kotlin = "2.3.0"
-composeBom = "2026.01.01"
+activityCompose = "1.13.0"
+kotlin = "2.3.20"
+composeBom = "2026.03.00"
 navigationCompose = "2.9.7"
 
 [libraries]
