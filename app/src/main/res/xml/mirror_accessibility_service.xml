@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/accessibility_service_description"
     android:accessibilityFeedbackType="feedbackGeneric"
-    android:accessibilityEventTypes="typeWindowStateChanged"
-    android:notificationTimeout="100"
     android:canRetrieveWindowContent="false"
+    android:isAccessibilityTool="false"
     android:canPerformGestures="true" />

@@ -2,44 +2,41 @@ package org.nktnet.middor.services
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.PixelFormat
-import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.Gravity
+import android.view.MotionEvent
 import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityManager
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import org.nktnet.middor.R
-import org.nktnet.middor.config.UserSettings
+import java.lang.ref.WeakReference
 
-/** Owns trusted overlay windows and replays touch gestures at the mirrored coordinates. */
+/** Only replays explicit user gestures while the user has enabled touch controls and mirroring. */
+// The policy inspection is advisory. No node access, autonomous actions, or settings changes.
+@SuppressLint("AccessibilityPolicy")
 class MirrorInputService : AccessibilityService() {
 
     private val handler = Handler(Looper.getMainLooper())
     private val windowManager by lazy { getSystemService(WINDOW_SERVICE) as WindowManager }
-    private var mirror: FrameLayout? = null
-    private var input: MirrorTouchView? = null
+    private var mirror: MirrorOverlayView? = null
+    private var input: View? = null
     private var inputParams: WindowManager.LayoutParams? = null
-    private var closeButton: ImageButton? = null
-    private var closeParams: WindowManager.LayoutParams? = null
     private var generation = 0
 
     companion object {
         private const val TAG = "MirrorInputService"
-        private const val INPUT_RELEASE_DELAY_MS = 32L
 
         @Volatile
-        var connected: MirrorInputService? = null
-            private set
+        private var connection = WeakReference<MirrorInputService>(null)
+
+        val connected: MirrorInputService?
+            get() = connection.get()
 
         fun isEnabled(context: Context): Boolean {
             val manager = context.getSystemService(AccessibilityManager::class.java)
@@ -54,7 +51,7 @@ class MirrorInputService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        connected = this
+        connection = WeakReference(this)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
@@ -71,61 +68,31 @@ class MirrorInputService : AccessibilityService() {
         super.onDestroy()
     }
 
-    /** Attach the video and controls to trusted accessibility windows, at full opacity. */
+    /** Keep the opaque video and its close control in one permanently untouchable window. */
     fun showMirror(texture: TextureView, onClose: () -> Unit): Boolean {
         hideMirror()
         return try {
-            mirror = FrameLayout(this).apply {
-                setBackgroundColor(Color.BLACK)
-                addView(
-                    texture,
-                    FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                    )
+            val overlay = MirrorOverlayView(this).apply { setup(texture, onClose) }
+            mirror = overlay
+            windowManager.addView(
+                overlay,
+                MirrorOverlayView.layoutParams(
+                    WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY, touchable = false
                 )
-            }.also {
-                windowManager.addView(
-                    it,
-                    layoutParams(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        PixelFormat.OPAQUE
-                    )
-                )
-            }
+            )
 
-            input = MirrorTouchView(this, texture) { gesture -> replayGesture(gesture) }.also {
-                val params = layoutParams(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                )
+            val controller = MirrorTouchController(texture, overlay, onClose, ::replayGesture)
+            input = View(this).apply {
+                setOnTouchListener { view, event ->
+                    controller.onTouch(event)
+                    if (event.actionMasked == MotionEvent.ACTION_UP) view.performClick()
+                    true
+                }
+            }.also {
+                val params = MirrorOverlayView.layoutParams(
+                    WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY, touchable = true
+                ).apply { format = PixelFormat.TRANSLUCENT }
                 inputParams = params
-                windowManager.addView(it, params)
-            }
-
-            closeButton = ImageButton(this).apply {
-                background = GradientDrawable().apply {
-                    shape = GradientDrawable.OVAL
-                    setColor(MirrorService.CLOSE_BUTTON_COLOUR)
-                }
-                setImageResource(R.drawable.close_24px)
-                setColorFilter(Color.WHITE)
-                setOnClickListener { onClose() }
-            }.also {
-                val params = layoutParams(
-                    120,
-                    120,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                ).apply {
-                    gravity = Gravity.END or Gravity.TOP
-                    y = if (UserSettings.removeSystemBars.value) 40 else 90
-                    x = 40
-                }
-                closeParams = params
                 windowManager.addView(it, params)
             }
             true
@@ -136,15 +103,12 @@ class MirrorInputService : AccessibilityService() {
         }
     }
 
-    /** Stop injecting and remove all windows before releasing the projection surface. */
+    /** Stop injecting and remove both windows before releasing the projection surface. */
     fun hideMirror() {
         generation++
         input?.let { removeWindow(it) }
         input = null
         inputParams = null
-        closeButton?.let { removeWindow(it) }
-        closeButton = null
-        closeParams = null
         mirror?.let {
             removeWindow(it)
             it.removeAllViews()
@@ -153,33 +117,26 @@ class MirrorInputService : AccessibilityService() {
     }
 
     private fun removeWindow(view: View) {
-        // addView can throw before a view is attached. Cleaning up must be safe in both cases.
+        // addView can fail before attachment. A detached input is also normal during replay.
         if (view.parent != null) windowManager.removeViewImmediate(view)
     }
 
     private fun disconnect() {
         val wasMirroring = mirror != null
         hideMirror()
-        if (connected === this) connected = null
-        if (wasMirroring) {
-            stopService(Intent(this, MirrorService::class.java))
-        }
+        if (connected === this) connection.clear()
+        if (wasMirroring) stopService(Intent(this, MirrorService::class.java))
     }
 
     private fun replayGesture(gesture: GestureDescription) {
         val view = input ?: return
-        val params = inputParams ?: return
         val request = ++generation
 
-        // The touch catcher must not receive the synthetic gesture we dispatch.
-        params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        windowManager.updateViewLayout(view, params)
-        // A mirrored app target can lie beneath our close control, too.
-        setCloseTouchable(false)
-
-        // Allow InputDispatcher to observe the new window flags before injecting.
-        handler.postDelayed({
-            if (generation != request || input !== view) return@postDelayed
+        // Synchronously remove the input channel instead of guessing when flag changes arrive.
+        // The close control belongs to the untouchable video, so replay cannot activate it.
+        removeWindow(view)
+        handler.post {
+            if (generation != request || input !== view) return@post
             try {
                 val accepted = dispatchGesture(
                     gesture,
@@ -199,47 +156,20 @@ class MirrorInputService : AccessibilityService() {
                 Log.e(TAG, "Unable to dispatch mirrored gesture", e)
                 restoreInput(view, request)
             }
-        }, INPUT_RELEASE_DELAY_MS)
+        }
     }
 
     private fun restoreInput(view: View, request: Int) {
-        if (generation != request || input !== view) return
-        val params = inputParams ?: return
-        params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
-        windowManager.updateViewLayout(view, params)
-        setCloseTouchable(true)
-    }
-
-    private fun setCloseTouchable(touchable: Boolean) {
-        val button = closeButton ?: return
-        val params = closeParams ?: return
-        params.flags = if (touchable) {
-            params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
-        } else {
-            params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        }
-        windowManager.updateViewLayout(button, params)
-    }
-
-    private fun layoutParams(
-        width: Int,
-        height: Int,
-        flags: Int,
-        format: Int = PixelFormat.TRANSLUCENT
-    ) =
-        WindowManager.LayoutParams(
-            width,
-            height,
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            flags or WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-            format
-        ).apply {
-            alpha = 1f
-            layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-            if (!UserSettings.removeSystemBars.value) {
-                this.flags = this.flags or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        // Wait until the final injected event has finished dispatching before reattaching.
+        handler.post {
+            if (generation != request || input !== view || view.parent != null) return@post
+            val params = inputParams ?: return@post
+            try {
+                windowManager.addView(view, params)
+            } catch (e: RuntimeException) {
+                Log.e(TAG, "Unable to restore mirrored touch controls", e)
+                disconnect()
             }
         }
+    }
 }

@@ -66,7 +66,7 @@ fun LandingScreen(
     var countdownRunnable by remember { mutableStateOf<Runnable?>(null) }
 
     fun startMirrorOverlay() {
-        if (!MirrorInputService.isEnabled(context)) {
+        if (UserSettings.touchControls.value && !MirrorInputService.isEnabled(context)) {
             ToastManager.show(
                 context,
                 resources.getString(R.string.settings_accessibility_permission_error)
@@ -74,7 +74,7 @@ fun LandingScreen(
             navController.navigate(Screen.Settings.route)
             return
         }
-        if (MirrorInputService.connected == null) {
+        if (UserSettings.touchControls.value && MirrorInputService.connected == null) {
             ToastManager.show(
                 context,
                 resources.getString(R.string.settings_accessibility_not_connected)

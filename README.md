@@ -21,15 +21,23 @@ With built-in support for horizontal flip and 180° rotation, Middor can be used
 Middor only supports devices running Android 14 QPR2 or higher, as it
 relies on the single app screen sharing feature.
 
-Enable **Middor mirrored input** in Android Accessibility settings to show the
-mirror at full opacity and send taps, swipes, and multi-touch gestures to the
-underlying app at the flipped positions. Gestures are replayed after finger-up,
-not streamed in real time. Accessibility is required: if it is disabled or not
-connected, the app asks you to enable it rather than starting a translucent
-mirror with untransformed input. The close button stays in the top-right corner.
+The mirror is fully opaque. **Enable Touch Controls** in Middor settings to interact
+with the buttons you see in the mirror, then enable **Middor mirrored input** in
+Android Accessibility settings. Taps, swipes, and multitouch gestures replay at the
+source positions corresponding to the displayed image after finger-up. Wait for
+replay to finish before starting another gesture; input is not streamed in real time.
 
-The accessibility service only enables gesture injection and trusted overlays;
-it does not request access to other apps' accessibility node contents.
+Turn touch controls off for an opaque, view-only mirror that blocks touches to the
+hidden app. Accessibility is optional in this mode. Settings also control touch
+feedback, tap replay duration, and the close-button corner. Restart the mirror to
+apply settings changes. The close button is never flipped or rotated with the video.
+
+The optional accessibility service only replays user gestures while mirroring. It
+does not request accessibility node contents, subscribe to accessibility events,
+collect or share gesture data, change settings, or perform autonomous actions.
+It can be disabled in Android Accessibility settings at any time. The code's
+AccessibilityPolicy suppression acknowledges the general API usage notice; it is
+not a declaration of app-store policy approval.
 
 For more details, see
 [Android 14 - App Screen Sharing](https://developer.android.com/about/versions/14/features/app-screen-sharing).
@@ -41,6 +49,7 @@ For usage instructions, see [Discussion #2](https://github.com/nktnet1/middor/di
 - <b>SYSTEM_ALERT_WINDOW</b>: to draw a mirror overlay on top of other apps
 - <b>FOREGROUND_SERVICE</b>: to run the mirror service continuously while the overlay is active
 - <b>FOREGROUND_SERVICE_MEDIA_PROJECTION</b>: for capturing the screen content of the underlying app
+- <b>BIND_ACCESSIBILITY_SERVICE</b>: (optional) for touch controls with user-enabled gesture replay
 - <b>POST_NOTIFICATIONS</b>: (optional) to display the mirror service notification with additional actions
 
 ## Contact

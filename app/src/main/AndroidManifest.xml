@@ -33,11 +33,13 @@
             </intent-filter>
         </activity>
 
+        <!-- Optional, user-enabled gesture replay only. No accessibility node content access. -->
         <service
             android:name=".services.MirrorInputService"
             android:label="@string/accessibility_service_label"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true"
+            tools:ignore="AccessibilityPolicy"
         >
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

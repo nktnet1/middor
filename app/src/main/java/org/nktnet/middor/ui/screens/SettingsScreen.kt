@@ -56,6 +56,7 @@ import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.services.MirrorInputService
 import org.nktnet.middor.ui.ThemeDropdownIcon
 import org.nktnet.middor.ui.components.settings.BooleanSetting
+import org.nktnet.middor.ui.components.settings.CloseButtonPositionSetting
 import org.nktnet.middor.ui.components.settings.IntSetting
 import org.nktnet.middor.ui.components.settings.PermissionSetting
 import org.nktnet.middor.ui.components.settings.ResetPreferencesDialog
@@ -299,6 +300,32 @@ fun SettingsScreen(navController: NavController) {
             ) { newValue ->
                 UserSettings.setRotate180(context, newValue)
             }
+            BooleanSetting(
+                stringResource(R.string.settings_touch_controls_label),
+                UserSettings.touchControls.value
+            ) { newValue ->
+                UserSettings.setTouchControls(context, newValue)
+            }
+            Text(
+                stringResource(R.string.settings_touch_controls_note),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            BooleanSetting(
+                stringResource(R.string.settings_touch_feedback_label),
+                UserSettings.touchFeedback.value
+            ) { newValue ->
+                UserSettings.setTouchFeedback(context, newValue)
+            }
+            IntSetting(
+                label = stringResource(R.string.settings_tap_duration_label),
+                value = UserSettings.tapDuration.value,
+                min = 16,
+                max = 200,
+                steps = 0,
+                onValueChange = { UserSettings.setTapDuration(context, it) }
+            )
+            CloseButtonPositionSetting()
             BooleanSetting(
                 stringResource(R.string.settings_remove_system_bars),
                 UserSettings.removeSystemBars.value

@@ -12,18 +12,34 @@
     <string name="settings_start_delay_seconds_label">Start Delay (seconds)</string>
     <string name="settings_start_delay_seconds_value">%1$d</string>
     <string name="settings_overlay_permission_label">Overlay</string>
-    <string name="settings_accessibility_permission_label">Mirrored input (Accessibility)</string>
+    <string name="settings_accessibility_permission_label">Accessibility</string>
+    <string name="settings_touch_controls_label">Enable Touch Controls</string>
+    <string name="settings_touch_feedback_label">Show Touch Feedback</string>
+    <string name="settings_tap_duration_label">Tap Duration (ms)</string>
+    <string name="settings_close_position_label">Close Button Position</string>
+    <string name="settings_corner_top_right">Top right</string>
+    <string name="settings_corner_top_left">Top left</string>
+    <string name="settings_corner_bottom_right">Bottom right</string>
+    <string name="settings_corner_bottom_left">Bottom left</string>
+    <string name="settings_touch_controls_note">Touch controls follow the buttons you see in the
+        overlay. Turn them off for a view-only mirror that blocks touches to the hidden app.
+        Accessibility is required when touch controls are enabled. Restart the mirror to apply
+        changes. Gestures replay after finger-up; wait for each replay before touching
+        again.</string>
+    <string name="mirror_close_description">Close mirror</string>
     <string name="settings_accessibility_permission_error">Enable Middor mirrored input in
-        Accessibility settings before starting the mirror.</string>
+        Accessibility settings to use touch controls, or turn off Enable Touch Controls.</string>
     <string name="settings_accessibility_not_connected">Middor mirrored input is not connected.
         Wait a moment and try again. If it persists, turn the service off and on in
         Accessibility settings.</string>
     <string name="settings_accessibility_overlay_error">Could not create the mirror overlay.
-        Turn Middor mirrored input off and on in Accessibility settings, then try again.</string>
+        Check the Overlay permission and restart the mirror.</string>
     <string name="accessibility_service_label">Middor mirrored input</string>
-    <string name="accessibility_service_description">Replays gestures at mirrored positions
-        and displays the mirror at full opacity. Does not request accessibility node access.
-        Only injects gestures while mirroring.</string>
+    <string name="accessibility_service_description">Optional touch controls for the mirror.
+        Replays only your taps and gestures at the positions shown in the mirror while touch
+        controls are enabled. Does not read accessibility node contents or collect or share
+        gesture data. Disable touch controls in Middor or turn off this service to stop
+        replay.</string>
     <string name="settings_notifications_permission_label">Notifications</string>
     <string name="settings_granted_text_button">Granted</string>
     <string name="settings_request_text_button">Request</string>

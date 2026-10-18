@@ -7,7 +7,8 @@ import android.content.pm.ServiceInfo
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.os.IBinder
-import android.view.Surface
+import android.util.Log
+import android.view.WindowManager
 import androidx.core.graphics.toColorInt
 import org.nktnet.middor.R
 import org.nktnet.middor.config.UserSettings
@@ -20,6 +21,8 @@ class MirrorService : Service() {
     private var projection: MediaProjection? = null
     private var inputService: MirrorInputService? = null
     private var virtualDisplay: VirtualDisplay? = null
+    private var viewOnlyOverlay: MirrorOverlayView? = null
+    private val windowManager by lazy { getSystemService(WINDOW_SERVICE) as WindowManager }
 
     private var cropTop = 0
     private var cropBottom = 0
@@ -27,6 +30,7 @@ class MirrorService : Service() {
     private var cropRight = 0
 
     companion object {
+        private const val TAG = "MirrorService"
         val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
         const val ACTION_STOP_SERVICE = "org.nktnet.middor.action.STOP_SERVICE"
         const val ACTION_START_OVERLAY = "org.nktnet.middor.action.START_OVERLAY"
@@ -86,7 +90,7 @@ class MirrorService : Service() {
 
     private fun startFullScreenOverlay(resultCode: Int, data: Intent) {
         val accessibility = MirrorInputService.connected
-        if (accessibility == null) {
+        if (UserSettings.touchControls.value && accessibility == null) {
             ToastManager.show(this, getString(R.string.settings_accessibility_not_connected))
             stopSelf()
             return
@@ -104,11 +108,7 @@ class MirrorService : Service() {
                     it,
                     tv,
                     VIRTUAL_DISPLAY_NAME,
-                    resources.displayMetrics.densityDpi,
-                    cropTop,
-                    cropBottom,
-                    cropLeft,
-                    cropRight
+                    resources.displayMetrics.densityDpi
                 )
             }
         }
@@ -118,20 +118,30 @@ class MirrorService : Service() {
             context = this,
             resultCode = resultCode,
             data = data,
-            cropTop = cropTop,
-            cropBottom = cropBottom,
-            cropLeft = cropLeft,
-            cropRight = cropRight,
             onStop = { stopSelf() },
             onResize = { w, h ->
                 virtualDisplay?.resize(w, h, densityDpi)
-                textureView.surfaceTexture?.let { st ->
-                    virtualDisplay?.surface = Surface(st)
-                }
+                textureView.surfaceTexture?.setDefaultBufferSize(w, h)
             }
         )
 
-        if (accessibility.showMirror(textureView) { stopSelf() }) {
+        if (!UserSettings.touchControls.value) {
+            try {
+                val overlay = MirrorOverlayView(this).apply {
+                    setup(textureView) { stopSelf() }
+                }
+                viewOnlyOverlay = overlay
+                windowManager.addView(
+                    overlay,
+                    MirrorOverlayView.layoutParams(
+                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, touchable = true
+                    )
+                )
+                return
+            } catch (e: RuntimeException) {
+                Log.e(TAG, "Unable to attach view-only mirror", e)
+            }
+        } else if (accessibility?.showMirror(textureView) { stopSelf() } == true) {
             inputService = accessibility
             return
         }
@@ -149,6 +159,11 @@ class MirrorService : Service() {
     private fun removeOverlay() {
         inputService?.hideMirror()
         inputService = null
+        viewOnlyOverlay?.let {
+            if (it.parent != null) windowManager.removeViewImmediate(it)
+            it.removeAllViews()
+        }
+        viewOnlyOverlay = null
         MirrorUtils.releaseProjection(projection, virtualDisplay)
         virtualDisplay = null
         projection = null

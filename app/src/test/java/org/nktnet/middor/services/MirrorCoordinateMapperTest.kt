@@ -2,6 +2,8 @@ package org.nktnet.middor.services
 
 import android.app.Activity
 import android.graphics.Matrix
+import android.hardware.display.DisplayManager
+import android.view.Display
 import android.view.TextureView
 import android.widget.FrameLayout
 import org.junit.After
@@ -11,6 +13,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.nktnet.middor.utils.MirrorUtils
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
@@ -27,7 +30,9 @@ class MirrorCoordinateMapperTest {
     @Before
     fun setUp() {
         val activity = controller.setup().get()
-        shadowOf(activity.windowManager.defaultDisplay).apply {
+        val display = activity.getSystemService(DisplayManager::class.java)
+            .getDisplay(Display.DEFAULT_DISPLAY)
+        shadowOf(display).apply {
             setWidth(1000)
             setRealWidth(1000)
             setHeight(2000)
@@ -93,6 +98,26 @@ class MirrorCoordinateMapperTest {
                 val secondX = if (flip xor rotate) 125f else 275f
                 val secondY = if (rotate) 100f else 700f
                 assertMaps(secondX, secondY, 240f, 600f)
+            }
+        }
+    }
+
+    @Test
+    fun usesTheActualImageTransformForEveryFlipRotationAndCropCombination() {
+        for (flip in listOf(false, true)) {
+            for (rotate in listOf(false, true)) {
+                for (cropped in listOf(false, true)) {
+                    val matrix = MirrorUtils.imageTransform(
+                        400, 800, if (cropped) 40 else 0, if (cropped) 80 else 0,
+                        if (cropped) 20 else 0, 0, flip, rotate
+                    )
+                    texture.setTransform(matrix)
+                    for ((x, y) in listOf(80f to 180f, 320f to 620f)) {
+                        val displayed = floatArrayOf(x, y)
+                        matrix.mapPoints(displayed)
+                        assertMaps(displayed[0], displayed[1], x, y)
+                    }
+                }
             }
         }
     }
