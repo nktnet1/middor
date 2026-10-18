@@ -4,30 +4,21 @@ import android.app.Activity
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.graphics.Color
-import android.graphics.PixelFormat
-import android.graphics.drawable.GradientDrawable
 import android.hardware.display.VirtualDisplay
-import android.hardware.input.InputManager
 import android.media.projection.MediaProjection
 import android.os.IBinder
-import android.view.Gravity
 import android.view.Surface
-import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
 import org.nktnet.middor.R
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.CustomNotificationManager
+import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.utils.MirrorUtils
 
 class MirrorService : Service() {
 
     private var projection: MediaProjection? = null
-    private var overlayView: FrameLayout? = null
-    private var closeButtonView: ImageButton? = null
-    private var usingAccessibilityOverlay = false
+    private var inputService: MirrorInputService? = null
     private var virtualDisplay: VirtualDisplay? = null
 
     private var cropTop = 0
@@ -73,7 +64,10 @@ class MirrorService : Service() {
                 )
                 val data = intent.getParcelableExtra(
                     EXTRA_RESULT_INTENT, Intent::class.java
-                ) ?: return START_NOT_STICKY
+                ) ?: run {
+                    stopSelf()
+                    return START_NOT_STICKY
+                }
 
                 if (UserSettings.removeSystemBars.value) {
                     cropTop = intent.getIntExtra(EXTRA_CROP_TOP, 0)
@@ -83,7 +77,7 @@ class MirrorService : Service() {
                 }
 
                 startFullScreenOverlay(resultCode, data)
-                return START_STICKY
+                return START_NOT_STICKY
             }
             else -> Unit
         }
@@ -91,6 +85,13 @@ class MirrorService : Service() {
     }
 
     private fun startFullScreenOverlay(resultCode: Int, data: Intent) {
+        val accessibility = MirrorInputService.connected
+        if (accessibility == null) {
+            ToastManager.show(this, getString(R.string.settings_accessibility_not_connected))
+            stopSelf()
+            return
+        }
+
         val textureView = MirrorUtils.setupTextureView(
             context = this,
             cropTop = cropTop,
@@ -130,83 +131,13 @@ class MirrorService : Service() {
             }
         )
 
-        val accessibility = MirrorInputService.connected
-        if (accessibility?.showMirror(textureView) { stopSelf() } == true) {
-            usingAccessibilityOverlay = true
+        if (accessibility.showMirror(textureView) { stopSelf() }) {
+            inputService = accessibility
             return
         }
-
-        // Fallback when Accessibility is disabled: the original touch-through mode.
-        val ov = FrameLayout(this)
-        ov.addView(
-            textureView,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        )
-
-        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        val maximumOpacity = getSystemService(InputManager::class.java)
-            .maximumObscuringOpacityForTouch
-        wm.addView(
-            ov,
-            overlayLayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            ).apply {
-                // Android 12+ blocks pass-through touches under more opaque app overlays.
-                alpha = maximumOpacity
-            }
-        )
-        overlayView = ov
-
-        // Keep the close control touchable without making the full-screen mirror touchable.
-        val closeButton = ImageButton(this).apply {
-            val shape = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(CLOSE_BUTTON_COLOUR)
-            }
-            background = shape
-            setImageResource(R.drawable.close_24px)
-            setColorFilter(Color.WHITE)
-            setOnClickListener { stopSelf() }
-        }
-        wm.addView(
-            closeButton,
-            overlayLayoutParams(
-                120,
-                120,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            ).apply {
-                gravity = Gravity.END or Gravity.TOP
-                // Preserve the close button position used by previous releases.
-                y = if (UserSettings.removeSystemBars.value) 40 else 90
-                x = 40
-            }
-        )
-        closeButtonView = closeButton
+        ToastManager.show(this, getString(R.string.settings_accessibility_overlay_error))
+        stopSelf()
     }
-
-    private fun overlayLayoutParams(width: Int, height: Int, windowFlags: Int) =
-        WindowManager.LayoutParams(
-            width,
-            height,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            windowFlags,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            layoutInDisplayCutoutMode =
-                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-
-            if (!UserSettings.removeSystemBars.value) {
-                // Preserve the layout behaviour used by v0.1.4 and earlier.
-                flags = flags or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            }
-        }
 
     override fun onDestroy() {
         removeOverlay()
@@ -216,16 +147,9 @@ class MirrorService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun removeOverlay() {
-        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        if (usingAccessibilityOverlay) {
-            MirrorInputService.connected?.hideMirror()
-            usingAccessibilityOverlay = false
-        }
+        inputService?.hideMirror()
+        inputService = null
         MirrorUtils.releaseProjection(projection, virtualDisplay)
-        closeButtonView?.let { wm.removeView(it) }
-        closeButtonView = null
-        overlayView?.let { wm.removeView(it) }
-        overlayView = null
         virtualDisplay = null
         projection = null
     }

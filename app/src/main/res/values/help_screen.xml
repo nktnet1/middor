@@ -6,17 +6,17 @@
 
     <string name="help_overlay_step">1. Open Settings and grant %1$s the overlay permission. This is for displaying an overlay over other apps.</string>
     <string name="help_notification_step">2. Grant %1$s the notification permission (optional). Tapping on the notification will close the overlay and return you to this app.</string>
-    <string name="help_accessibility_step">3. For a fully opaque mirror with flipped touch
-        controls, open Accessibility settings and enable &quot;Middor mirrored input&quot;.
-        Without it, the translucent touch-through mode remains available.</string>
+    <string name="help_accessibility_step">3. Open Accessibility settings and enable
+        &quot;Middor mirrored input&quot;. This is required for the fully opaque mirror
+        and flipped touch controls.</string>
     <string name="help_start_button_step">4. On the main screen, tap on the &quot;%1$s&quot; button.</string>
     <string name="help_single_app_step">5. Ensure that &quot;Single App&quot; is selected, then tap Start. Avoid the &quot;Entire Screen&quot; option, as this will also capture the overlay.</string>
     <string name="help_select_app_step">6. Select the application you want to mirror. This will launch the application, create the overlay and post a notification.</string>
     <string name="help_exit_overlay_step">7. To exit, tap on the red Close (×) icon in the top-right corner of the overlay. Alternatively, you can pull down on your status bar and tap the notification.</string>
 
-    <string name="help_overlay_note">1. With Accessibility enabled, the mirror is fully opaque.
+    <string name="help_overlay_note">1. The mirror is fully opaque.
         Taps, swipes, and multi-touch gestures replay at their flipped positions after finger-up,
-        not in real time. Without Accessibility, the mirror remains translucent and touches pass
-        through at their original screen positions.</string>
+        not in real time. Enable &quot;Middor mirrored input&quot; in Accessibility settings
+        before starting.</string>
     <string name="help_remove_system_bars">2. When using the \"Remove System Bars\" setting, the height of the status and navigation bar is recorded before creating the overlay for cropping. If the device orientation changes afterward (e.g. from portrait to landscape), the cropping dimensions will not update.</string>
 </resources>

@@ -13,6 +13,13 @@
     <string name="settings_start_delay_seconds_value">%1$d</string>
     <string name="settings_overlay_permission_label">Overlay</string>
     <string name="settings_accessibility_permission_label">Mirrored input (Accessibility)</string>
+    <string name="settings_accessibility_permission_error">Enable Middor mirrored input in
+        Accessibility settings before starting the mirror.</string>
+    <string name="settings_accessibility_not_connected">Middor mirrored input is not connected.
+        Wait a moment and try again. If it persists, turn the service off and on in
+        Accessibility settings.</string>
+    <string name="settings_accessibility_overlay_error">Could not create the mirror overlay.
+        Turn Middor mirrored input off and on in Accessibility settings, then try again.</string>
     <string name="accessibility_service_label">Middor mirrored input</string>
     <string name="accessibility_service_description">Replays gestures at mirrored positions
         and displays the mirror at full opacity. Does not request accessibility node access.

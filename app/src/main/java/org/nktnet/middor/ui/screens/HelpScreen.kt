@@ -90,6 +90,7 @@ fun HelpScreen(navController: NavController) {
                             R.string.help_notification_step,
                             stringResource(R.string.app_name)
                         ),
+                        stringResource(R.string.help_accessibility_step),
                         stringResource(
                             R.string.help_start_button_step,
                             stringResource(

@@ -24,10 +24,9 @@ relies on the single app screen sharing feature.
 Enable **Middor mirrored input** in Android Accessibility settings to show the
 mirror at full opacity and send taps, swipes, and multi-touch gestures to the
 underlying app at the flipped positions. Gestures are replayed after finger-up,
-not streamed in real time. Accessibility is optional: without it, the mirror
-remains translucent and touches pass through at their original coordinates to
-meet Android's overlay touch-security restrictions. The close button works in
-both modes.
+not streamed in real time. Accessibility is required: if it is disabled or not
+connected, the app asks you to enable it rather than starting a translucent
+mirror with untransformed input. The close button stays in the top-right corner.
 
 The accessibility service only enables gesture injection and trusted overlays;
 it does not request access to other apps' accessibility node contents.

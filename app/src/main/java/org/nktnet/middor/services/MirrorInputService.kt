@@ -30,6 +30,7 @@ class MirrorInputService : AccessibilityService() {
     private var input: MirrorTouchView? = null
     private var inputParams: WindowManager.LayoutParams? = null
     private var closeButton: ImageButton? = null
+    private var closeParams: WindowManager.LayoutParams? = null
     private var generation = 0
 
     companion object {
@@ -75,6 +76,7 @@ class MirrorInputService : AccessibilityService() {
         hideMirror()
         return try {
             mirror = FrameLayout(this).apply {
+                setBackgroundColor(Color.BLACK)
                 addView(
                     texture,
                     FrameLayout.LayoutParams(
@@ -89,7 +91,8 @@ class MirrorInputService : AccessibilityService() {
                         WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.MATCH_PARENT,
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        PixelFormat.OPAQUE
                     )
                 )
             }
@@ -113,14 +116,17 @@ class MirrorInputService : AccessibilityService() {
                 setColorFilter(Color.WHITE)
                 setOnClickListener { onClose() }
             }.also {
-                windowManager.addView(
-                    it,
-                    layoutParams(120, 120, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE).apply {
-                        gravity = Gravity.END or Gravity.TOP
-                        y = if (UserSettings.removeSystemBars.value) 40 else 90
-                        x = 40
-                    }
-                )
+                val params = layoutParams(
+                    120,
+                    120,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                ).apply {
+                    gravity = Gravity.END or Gravity.TOP
+                    y = if (UserSettings.removeSystemBars.value) 40 else 90
+                    x = 40
+                }
+                closeParams = params
+                windowManager.addView(it, params)
             }
             true
         } catch (e: RuntimeException) {
@@ -138,6 +144,7 @@ class MirrorInputService : AccessibilityService() {
         inputParams = null
         closeButton?.let { removeWindow(it) }
         closeButton = null
+        closeParams = null
         mirror?.let {
             removeWindow(it)
             it.removeAllViews()
@@ -167,6 +174,8 @@ class MirrorInputService : AccessibilityService() {
         // The touch catcher must not receive the synthetic gesture we dispatch.
         params.flags = params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
         windowManager.updateViewLayout(view, params)
+        // A mirrored app target can lie beneath our close control, too.
+        setCloseTouchable(false)
 
         // Allow InputDispatcher to observe the new window flags before injecting.
         handler.postDelayed({
@@ -198,16 +207,34 @@ class MirrorInputService : AccessibilityService() {
         val params = inputParams ?: return
         params.flags = params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
         windowManager.updateViewLayout(view, params)
+        setCloseTouchable(true)
     }
 
-    private fun layoutParams(width: Int, height: Int, flags: Int) =
+    private fun setCloseTouchable(touchable: Boolean) {
+        val button = closeButton ?: return
+        val params = closeParams ?: return
+        params.flags = if (touchable) {
+            params.flags and WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE.inv()
+        } else {
+            params.flags or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        }
+        windowManager.updateViewLayout(button, params)
+    }
+
+    private fun layoutParams(
+        width: Int,
+        height: Int,
+        flags: Int,
+        format: Int = PixelFormat.TRANSLUCENT
+    ) =
         WindowManager.LayoutParams(
             width,
             height,
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            flags,
-            PixelFormat.TRANSLUCENT
+            flags or WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+            format
         ).apply {
+            alpha = 1f
             layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             if (!UserSettings.removeSystemBars.value) {

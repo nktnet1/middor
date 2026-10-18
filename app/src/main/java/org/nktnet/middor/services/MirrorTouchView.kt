@@ -2,9 +2,7 @@ package org.nktnet.middor.services
 
 import android.accessibilityservice.GestureDescription
 import android.content.Context
-import android.graphics.Matrix
 import android.graphics.Path
-import android.graphics.Point
 import android.graphics.PointF
 import android.util.Log
 import android.view.MotionEvent
@@ -130,35 +128,5 @@ internal class MirrorTouchView(
         private const val TAG = "MirrorTouchView"
         private const val MAX_PATH_SAMPLES = 4096
         private const val MIN_TAP_DURATION_MS = 40L
-    }
-}
-
-/** Invert both the view flip/rotation and the TextureView's crop/zoom transform. */
-internal class MirrorCoordinateMapper(texture: TextureView) {
-    private val location = IntArray(2).also { texture.getLocationOnScreen(it) }
-    private val inverseView = Matrix().also { texture.matrix.invert(it) }
-    private val inverseCrop = Matrix().also {
-        texture.getTransform(Matrix()).invert(it)
-    }
-    private val width = texture.width
-    private val height = texture.height
-    private val displaySize = Point().also { texture.display?.getRealSize(it) }
-    private val left = location[0].toFloat().coerceAtLeast(0f)
-    private val top = location[1].toFloat().coerceAtLeast(0f)
-    private val right = (location[0] + width - 1).toFloat()
-        .coerceAtMost((displaySize.x - 1).toFloat()).coerceAtLeast(left)
-    private val bottom = (location[1] + height - 1).toFloat()
-        .coerceAtMost((displaySize.y - 1).toFloat()).coerceAtLeast(top)
-
-    val isReady = width > 0 && height > 0 && displaySize.x > 0 && displaySize.y > 0
-
-    fun map(rawX: Float, rawY: Float): PointF {
-        val point = floatArrayOf(rawX - location[0], rawY - location[1])
-        inverseView.mapPoints(point)
-        inverseCrop.mapPoints(point)
-        return PointF(
-            (point[0] + location[0]).coerceIn(left, right),
-            (point[1] + location[1]).coerceIn(top, bottom)
-        )
     }
 }
