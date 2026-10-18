@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.drawable.GradientDrawable
 import android.hardware.display.VirtualDisplay
+import android.hardware.input.InputManager
 import android.media.projection.MediaProjection
 import android.os.IBinder
 import android.view.Gravity
@@ -25,6 +26,7 @@ class MirrorService : Service() {
 
     private var projection: MediaProjection? = null
     private var overlayView: FrameLayout? = null
+    private var closeButtonView: ImageButton? = null
     private var virtualDisplay: VirtualDisplay? = null
 
     private var cropTop = 0
@@ -128,7 +130,6 @@ class MirrorService : Service() {
         )
 
         val ov = FrameLayout(this)
-        overlayView = ov
         ov.addView(
             textureView,
             FrameLayout.LayoutParams(
@@ -137,6 +138,24 @@ class MirrorService : Service() {
             )
         )
 
+        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        val maximumOpacity = getSystemService(InputManager::class.java)
+            .maximumObscuringOpacityForTouch
+        wm.addView(
+            ov,
+            overlayLayoutParams(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            ).apply {
+                // Android 12+ blocks pass-through touches under more opaque app overlays.
+                alpha = maximumOpacity
+            }
+        )
+        overlayView = ov
+
+        // Keep the close control touchable without making the full-screen mirror touchable.
         val closeButton = ImageButton(this).apply {
             val shape = GradientDrawable().apply {
                 shape = GradientDrawable.OVAL
@@ -147,40 +166,39 @@ class MirrorService : Service() {
             setColorFilter(Color.WHITE)
             setOnClickListener { stopSelf() }
         }
-        ov.addView(
-            closeButton,
-            FrameLayout.LayoutParams(120, 120).apply {
-                gravity = Gravity.END or Gravity.TOP
-                // To keep old behaviour for v0.1.4 and below
-                topMargin = if (UserSettings.removeSystemBars.value) 40 else 90
-                rightMargin = 40
-            }
-        )
-
-        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
         wm.addView(
-            ov,
-            WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT
+            closeButton,
+            overlayLayoutParams(
+                120,
+                120,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
             ).apply {
-                layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-
-                if (!UserSettings.removeSystemBars.value) {
-                    // To keep old behaviour for v0.1.4 and below
-                    flags = (
-                        flags
-                            or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                            or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                    )
-                }
+                gravity = Gravity.END or Gravity.TOP
+                // Preserve the close button position used by previous releases.
+                y = if (UserSettings.removeSystemBars.value) 40 else 90
+                x = 40
             }
         )
+        closeButtonView = closeButton
     }
+
+    private fun overlayLayoutParams(width: Int, height: Int, windowFlags: Int) =
+        WindowManager.LayoutParams(
+            width,
+            height,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            windowFlags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            layoutInDisplayCutoutMode =
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+
+            if (!UserSettings.removeSystemBars.value) {
+                // Preserve the layout behaviour used by v0.1.4 and earlier.
+                flags = flags or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            }
+        }
 
     override fun onDestroy() {
         removeOverlay()
@@ -192,6 +210,8 @@ class MirrorService : Service() {
     private fun removeOverlay() {
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
         MirrorUtils.releaseProjection(projection, virtualDisplay)
+        closeButtonView?.let { wm.removeView(it) }
+        closeButtonView = null
         overlayView?.let { wm.removeView(it) }
         overlayView = null
         virtualDisplay = null

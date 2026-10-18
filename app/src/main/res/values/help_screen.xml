@@ -11,6 +11,6 @@
     <string name="help_select_app_step">5. Select the application you want to mirror. This will launch the application, create the overlay and post a notification.</string>
     <string name="help_exit_overlay_step">6. To exit, tap on the red Close (×) icon in the top-right corner of the overlay. Alternatively, you can pull down on your status bar and tap the notification.</string>
 
-    <string name="help_overlay_note">1. You won\'t be able to interact with the application while the overlay is active. Thus, it is recommended that you set up the application beforehand (e.g. starting the navigation in Google Maps) prior to creating the mirror overlay.</string>
+    <string name="help_overlay_note">1. You can interact with the app beneath the mirror, but touches use their original screen positions, not the flipped positions shown in the overlay. The mirror is slightly translucent to allow touches through on Android 12 and later.</string>
     <string name="help_remove_system_bars">2. When using the \"Remove System Bars\" setting, the height of the status and navigation bar is recorded before creating the overlay for cropping. If the device orientation changes afterward (e.g. from portrait to landscape), the cropping dimensions will not update.</string>
 </resources>
