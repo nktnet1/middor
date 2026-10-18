@@ -27,6 +27,7 @@ class MirrorService : Service() {
     private var projection: MediaProjection? = null
     private var overlayView: FrameLayout? = null
     private var closeButtonView: ImageButton? = null
+    private var usingAccessibilityOverlay = false
     private var virtualDisplay: VirtualDisplay? = null
 
     private var cropTop = 0
@@ -129,6 +130,13 @@ class MirrorService : Service() {
             }
         )
 
+        val accessibility = MirrorInputService.connected
+        if (accessibility?.showMirror(textureView) { stopSelf() } == true) {
+            usingAccessibilityOverlay = true
+            return
+        }
+
+        // Fallback when Accessibility is disabled: the original touch-through mode.
         val ov = FrameLayout(this)
         ov.addView(
             textureView,
@@ -209,6 +217,10 @@ class MirrorService : Service() {
 
     private fun removeOverlay() {
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        if (usingAccessibilityOverlay) {
+            MirrorInputService.connected?.hideMirror()
+            usingAccessibilityOverlay = false
+        }
         MirrorUtils.releaseProjection(projection, virtualDisplay)
         closeButtonView?.let { wm.removeView(it) }
         closeButtonView = null

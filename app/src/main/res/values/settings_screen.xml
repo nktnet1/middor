@@ -12,6 +12,11 @@
     <string name="settings_start_delay_seconds_label">Start Delay (seconds)</string>
     <string name="settings_start_delay_seconds_value">%1$d</string>
     <string name="settings_overlay_permission_label">Overlay</string>
+    <string name="settings_accessibility_permission_label">Mirrored input (Accessibility)</string>
+    <string name="accessibility_service_label">Middor mirrored input</string>
+    <string name="accessibility_service_description">Replays gestures at mirrored positions
+        and displays the mirror at full opacity. Does not request accessibility node access.
+        Only injects gestures while mirroring.</string>
     <string name="settings_notifications_permission_label">Notifications</string>
     <string name="settings_granted_text_button">Granted</string>
     <string name="settings_request_text_button">Request</string>

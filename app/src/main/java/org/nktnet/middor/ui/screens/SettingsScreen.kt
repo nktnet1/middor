@@ -53,6 +53,7 @@ import org.nktnet.middor.R
 import org.nktnet.middor.config.Screen
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ToastManager
+import org.nktnet.middor.services.MirrorInputService
 import org.nktnet.middor.ui.ThemeDropdownIcon
 import org.nktnet.middor.ui.components.settings.BooleanSetting
 import org.nktnet.middor.ui.components.settings.IntSetting
@@ -69,6 +70,7 @@ fun SettingsScreen(navController: NavController) {
     var overlayGranted by remember {
         mutableStateOf(Settings.canDrawOverlays(context))
     }
+    var accessibilityGranted by remember { mutableStateOf(MirrorInputService.isEnabled(context)) }
     var notificationsGranted by remember {
         mutableStateOf(
             nm.areNotificationsEnabled()
@@ -89,6 +91,7 @@ fun SettingsScreen(navController: NavController) {
             val observer = object : DefaultLifecycleObserver {
                 override fun onStart(owner: LifecycleOwner) {
                     overlayGranted = Settings.canDrawOverlays(activity)
+                    accessibilityGranted = MirrorInputService.isEnabled(activity)
                     notificationsGranted = nm.areNotificationsEnabled()
                 }
             }
@@ -206,6 +209,12 @@ fun SettingsScreen(navController: NavController) {
                     "package:${context.packageName}".toUri()
                 )
                 activity?.startActivity(intent)
+            }
+            PermissionSetting(
+                stringResource(R.string.settings_accessibility_permission_label),
+                accessibilityGranted
+            ) {
+                activity?.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             }
             PermissionSetting(
                 stringResource(R.string.settings_notifications_permission_label),
