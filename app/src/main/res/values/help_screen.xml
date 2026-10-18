@@ -19,10 +19,12 @@
 
     <string name="help_overlay_note">1. The mirror is fully opaque.
         Taps, swipes, and multitouch gestures replay at their flipped positions after finger-up,
-        not in real time. Wait for replay before touching again. Enable
+        not in real time. A new gesture can cancel unfinished replay. Enable
         &quot;Middor mirrored input&quot; in Accessibility settings for touch controls, or turn
         &quot;Enable Touch Controls&quot; off for a view-only mirror. Touch feedback, tap duration,
-        and the close-button corner are configurable in Settings. Restart the mirror to apply
+        and the close-button corner are configurable in Settings. Touch feedback is off by default.
+        After an update, turn the accessibility service off and on once if touch controls cannot
+        start. Restart the mirror to apply
         changes.</string>
     <string name="help_remove_system_bars">2. When using the \"Remove System Bars\" setting, the height of the status and navigation bar is recorded before creating the overlay for cropping. If the device orientation changes afterward (e.g. from portrait to landscape), the cropping dimensions will not update.</string>
 </resources>

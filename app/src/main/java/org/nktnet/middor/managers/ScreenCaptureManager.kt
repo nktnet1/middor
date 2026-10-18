@@ -9,6 +9,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import org.nktnet.middor.R
+import org.nktnet.middor.config.UserSettings
+import org.nktnet.middor.services.MirrorInputService
 
 class ScreenCaptureManager(
     private val activity: ComponentActivity,
@@ -22,11 +24,21 @@ class ScreenCaptureManager(
             val data = result.data
             if (result.resultCode == Activity.RESULT_OK && data != null) {
                 onCaptureResult(result.resultCode, data)
+            } else {
+                MirrorInputService.connected?.releaseInput()
             }
             updateIsRequesting(false)
         }
 
     fun requestCapture() {
+        if (UserSettings.touchControls.value &&
+            MirrorInputService.connected?.prepareInput() != true
+        ) {
+            ToastManager.show(
+                activity, activity.getString(R.string.settings_accessibility_not_connected)
+            )
+            return
+        }
         updateIsRequesting(true)
         try {
             val mpm = activity.getSystemService(
@@ -38,6 +50,7 @@ class ScreenCaptureManager(
                 )
             )
         } catch (e: Exception) {
+            MirrorInputService.connected?.releaseInput()
             updateIsRequesting(false)
             ToastManager.show(
                 activity,

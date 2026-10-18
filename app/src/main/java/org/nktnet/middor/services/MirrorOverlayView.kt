@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
+import android.view.WindowInsets
 import android.widget.FrameLayout
 import android.widget.ImageButton
 import org.nktnet.middor.R
@@ -50,6 +51,16 @@ internal class MirrorOverlayView(context: Context) : FrameLayout(context) {
         close.getLocationOnScreen(location)
         return rawX >= location[0] && rawX < location[0] + close.width &&
             rawY >= location[1] && rawY < location[1] + close.height
+    }
+
+    fun containsInput(rawX: Float, rawY: Float): Boolean {
+        val location = IntArray(2)
+        getLocationOnScreen(location)
+        val insets = rootWindowInsets?.getInsets(WindowInsets.Type.systemBars())
+        val x = rawX - location[0]
+        val y = rawY - location[1]
+        return x >= (insets?.left ?: 0) && x < width - (insets?.right ?: 0) &&
+            y >= (insets?.top ?: 0) && y < height - (insets?.bottom ?: 0)
     }
 
     fun showTouch(event: MotionEvent) {

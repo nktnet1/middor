@@ -4,5 +4,6 @@
     android:description="@string/accessibility_service_description"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:canRetrieveWindowContent="false"
+    android:canRequestTouchExplorationMode="true"
     android:isAccessibilityTool="false"
     android:canPerformGestures="true" />

@@ -4,7 +4,6 @@ import android.accessibilityservice.GestureDescription
 import android.graphics.Path
 import android.graphics.PointF
 import android.util.Log
-import android.view.KeyCharacterMap
 import android.view.MotionEvent
 import android.view.TextureView
 import android.view.ViewConfiguration
@@ -40,8 +39,6 @@ internal class MirrorTouchController(
     private var mapper: MirrorCoordinateMapper? = null
 
     fun onTouch(event: MotionEvent): Boolean {
-        // Accessibility replay uses this virtual device. Never record it or close the mirror.
-        if (event.deviceId == KeyCharacterMap.VIRTUAL_KEYBOARD) return true
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             reset()
             downTime = event.eventTime
@@ -148,6 +145,8 @@ internal class MirrorTouchController(
 
     private fun point(event: MotionEvent, index: Int): PointF =
         mapper?.map(event.getRawX(index), event.getRawY(index)) ?: PointF(0f, 0f)
+
+    fun cancel() = reset()
 
     private fun reset() {
         strokes.clear()

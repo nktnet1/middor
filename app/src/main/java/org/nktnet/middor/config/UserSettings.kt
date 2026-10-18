@@ -38,7 +38,7 @@ object UserSettings {
         const val REMOVE_SYSTEM_BARS = false
         const val START_DELAY_SECONDS = 0
         const val TOUCH_CONTROLS = true
-        const val TOUCH_FEEDBACK = true
+        const val TOUCH_FEEDBACK = false
         val CLOSE_BUTTON_POSITION = CloseButtonPosition.TOP_RIGHT
         const val TAP_DURATION = 40
     }

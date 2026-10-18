@@ -24,18 +24,25 @@ relies on the single app screen sharing feature.
 The mirror is fully opaque. **Enable Touch Controls** in Middor settings to interact
 with the buttons you see in the mirror, then enable **Middor mirrored input** in
 Android Accessibility settings. Taps, swipes, and multitouch gestures replay at the
-source positions corresponding to the displayed image after finger-up. Wait for
-replay to finish before starting another gesture; input is not streamed in real time.
+source positions corresponding to the displayed image after finger-up. Input is not streamed in
+real time. Physical touches are intercepted throughout the session;
+only the synthetic replay is delegated to the hidden app. A replay starts with a held pointer,
+then continues only after Android acknowledges delegation, so no input window is removed between
+taps. Starting a physical gesture cancels any unfinished replay; canceled actions are not retried.
 
 Turn touch controls off for an opaque, view-only mirror that blocks touches to the
 hidden app. Accessibility is optional in this mode. Settings also control touch
-feedback, tap replay duration, and the close-button corner. Restart the mirror to
+feedback (off by default), tap replay duration, and the close-button corner. Restart the mirror to
 apply settings changes. The close button is never flipped or rotated with the video.
 
 The optional accessibility service only replays user gestures while mirroring. It
 does not request accessibility node contents, subscribe to accessibility events,
 collect or share gesture data, change settings, or perform autonomous actions.
-It can be disabled in Android Accessibility settings at any time. The code's
+Touch interception is enabled before the screen-sharing picker and released when mirroring ends
+or capture is canceled. The picker and touches outside the mirror are delegated without mirroring.
+After updating from an older version, turn **Middor mirrored input** off and on once in Android
+Accessibility settings to refresh its touch-exploration capability. The service does not enable
+spoken feedback or require double-tapping to activate controls. The code's
 AccessibilityPolicy suppression acknowledges the general API usage notice; it is
 not a declaration of app-store policy approval.
 

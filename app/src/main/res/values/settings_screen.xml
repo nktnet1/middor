@@ -24,8 +24,10 @@
     <string name="settings_touch_controls_note">Touch controls follow the buttons you see in the
         overlay. Turn them off for a view-only mirror that blocks touches to the hidden app.
         Accessibility is required when touch controls are enabled. Restart the mirror to apply
-        changes. Gestures replay after finger-up; wait for each replay before touching
-        again.</string>
+        changes. Gestures replay after finger-up. Touch feedback is optional and off by
+        default.</string>
+    <string name="settings_touch_routing_error">Touch routing stopped. Restart the mirror.
+        If it persists, turn Middor mirrored input off and on in Accessibility settings.</string>
     <string name="mirror_close_description">Close mirror</string>
     <string name="settings_accessibility_permission_error">Enable Middor mirrored input in
         Accessibility settings to use touch controls, or turn off Enable Touch Controls.</string>
@@ -37,7 +39,8 @@
     <string name="accessibility_service_label">Middor mirrored input</string>
     <string name="accessibility_service_description">Optional touch controls for the mirror.
         Replays only your taps and gestures at the positions shown in the mirror while touch
-        controls are enabled. Does not read accessibility node contents or collect or share
+        controls are enabled. Temporarily intercepts touchscreen gestures during mirroring.
+        Does not read accessibility node contents or collect or share
         gesture data. Disable touch controls in Middor or turn off this service to stop
         replay.</string>
     <string name="settings_notifications_permission_label">Notifications</string>
