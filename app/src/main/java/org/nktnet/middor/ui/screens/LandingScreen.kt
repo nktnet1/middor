@@ -229,7 +229,7 @@ fun LandingScreen(
                     overflow = TextOverflow.Ellipsis,
                     autoSize = TextAutoSize.StepBased(
                         minFontSize = 8.sp,
-                        maxFontSize = 32.sp
+                        maxFontSize = 28.sp
                     ),
                 )
             }

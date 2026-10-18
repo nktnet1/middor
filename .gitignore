@@ -25,3 +25,8 @@ local.properties
 
 .env*
 *.jks
+
+*.bundle
+*.patch
+*.tar.gz
+
