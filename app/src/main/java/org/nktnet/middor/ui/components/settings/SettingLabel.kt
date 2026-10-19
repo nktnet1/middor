@@ -3,6 +3,7 @@ package org.nktnet.middor.ui.components.settings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -26,9 +27,12 @@ fun SettingLabel(label: String, info: String, modifier: Modifier = Modifier) {
     var showInfo by remember { mutableStateOf(false) }
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         Text(label, modifier = Modifier.weight(1f, fill = false))
-        IconButton(onClick = { showInfo = true }) {
+        IconButton(
+            onClick = { showInfo = true },
+            modifier = Modifier.offset(x = (-2).dp)
+        ) {
             // Keep the full touch target while placing the icon next to the label.
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
                     painter = painterResource(R.drawable.info_24px),
                     contentDescription = stringResource(R.string.settings_info_description, label),
