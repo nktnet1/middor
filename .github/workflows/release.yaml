@@ -25,23 +25,24 @@ jobs:
           # Decode keystore
           echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
 
-      - name: Build release APK
-        run: sh gradlew assembleRelease --stacktrace
+      - name: Build release and debug APKs
+        run: sh gradlew assembleRelease assembleDebug --stacktrace
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Rename APK and Add Version Code Changelog
+      - name: Add Versioned Release APK Alias and Version Code Changelog
         run: |
-          # Rename APK
+          # Read the release version for the additional APK filename.
           VERSION_NAME="$(jq -r ".elements[0].versionName" "app/build/outputs/apk/release/output-metadata.json")"
           echo "Version name: $VERSION_NAME" >> "$GITHUB_STEP_SUMMARY"
           echo '```json' >> "$GITHUB_STEP_SUMMARY"
           cat "app/build/outputs/apk/release/output-metadata.json" >> "$GITHUB_STEP_SUMMARY"
           echo >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          mv app/build/outputs/apk/release/*.apk "app/build/outputs/apk/release/middor_v$VERSION_NAME.apk"
+          cp app/build/outputs/apk/release/app-release.apk \
+            "app/build/outputs/apk/release/middor_v$VERSION_NAME.apk"
 
           # Get version code from output-metadata.json
           VERSION_CODE=$(jq -r ".elements[0].versionCode" app/build/outputs/apk/release/output-metadata.json 2>/dev/null || echo "0")
@@ -60,5 +61,5 @@ jobs:
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           bodyFile: metadata/en-US/changelogs/${{ env.VERSION_CODE }}.txt
-          artifacts: app/build/outputs/apk/release/*.apk
+          artifacts: app/build/outputs/apk/release/*.apk,app/build/outputs/apk/debug/*.apk
           draft: true
