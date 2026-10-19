@@ -18,8 +18,6 @@ import org.nktnet.middor.R
 import org.nktnet.middor.config.UserSettings
 
 /** Only the video is transformed. Controls and feedback keep their visible screen positions. */
-// Reached through the services Android instantiates from the manifest.
-@Suppress("unused")
 internal class MirrorOverlayView(context: Context) : FrameLayout(context) {
     private val feedback = TouchFeedbackView(context)
     private val close = ImageButton(context).apply {
@@ -93,8 +91,6 @@ internal class MirrorOverlayView(context: Context) : FrameLayout(context) {
     }
 }
 
-// Reached through the overlay owned by the manifest services.
-@Suppress("unused")
 internal class TouchFeedbackView(context: Context) : View(context) {
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE

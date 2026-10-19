@@ -49,8 +49,6 @@ import org.robolectric.shadows.ShadowWindowManagerImpl
 import org.robolectric.util.ReflectionHelpers
 import org.robolectric.util.ReflectionHelpers.ClassParameter
 
-// JUnit and Robolectric invoke tests and shadow implementations reflectively.
-@Suppress("unused")
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [34], shadows = [
@@ -608,7 +606,7 @@ class MirrorInputServiceTest {
 
         @Implementation
         fun registerCallback(
-            @Suppress("UNUSED_PARAMETER") executor: Executor?,
+            executor: Executor?,
             callback: TouchInteractionController.Callback
         ) {
             this.callback = callback

@@ -21,9 +21,7 @@ import org.nktnet.middor.managers.ToastManager
 
 /** Only replays explicit user gestures while the user has enabled touch controls and mirroring. */
 // The policy inspection is advisory. No node access, autonomous actions, or settings changes.
-// Android instantiates this manifest entry point.
 @SuppressLint("AccessibilityPolicy")
-@Suppress("unused")
 class MirrorInputService : AccessibilityService() {
 
     private val handler = Handler(Looper.getMainLooper())
