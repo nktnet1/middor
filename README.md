@@ -36,8 +36,10 @@ feedback (off by default), tap replay duration, and the close-button corner. Res
 apply settings changes. The close button is never flipped or rotated with the video.
 
 The optional accessibility service only replays user gestures while mirroring. It
-does not request accessibility node contents, subscribe to accessibility events,
-collect or share gesture data, change settings, or perform autonomous actions.
+does not request accessibility node contents, collect or share gesture data, change settings,
+or perform autonomous actions. It requests only touch-interaction start/end accessibility events
+because Android requires a nonempty event subscription to enable touch interception. Their payloads
+are ignored.
 Touch interception is enabled before the screen-sharing picker and released when mirroring ends
 or capture is canceled. The picker and touches outside the mirror are delegated without mirroring.
 After updating from an older version, turn **Middor mirrored input** off and on once in Android

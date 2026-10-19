@@ -30,6 +30,13 @@ class MirrorInputService : AccessibilityService() {
     private var touchController: TouchInteractionController? = null
     private var session: MirrorTouchSession? = null
     private var previousFlags = 0
+    private var previousEventTypes = 0
+    private val accessibilityManager by lazy {
+        getSystemService(AccessibilityManager::class.java)
+    }
+    private val explorationListener = AccessibilityManager.TouchExplorationStateChangeListener {
+        if (!it && mirror != null) stopForInputFailure()
+    }
     private val touchCallback = object : TouchInteractionController.Callback {
         override fun onMotionEvent(event: MotionEvent) {
             val active = session
@@ -71,6 +78,11 @@ class MirrorInputService : AccessibilityService() {
         }
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        accessibilityManager.addTouchExplorationStateChangeListener(explorationListener)
+    }
+
     override fun onServiceConnected() {
         super.onServiceConnected()
         connection = WeakReference(this)
@@ -86,6 +98,7 @@ class MirrorInputService : AccessibilityService() {
     }
 
     override fun onDestroy() {
+        accessibilityManager.removeTouchExplorationStateChangeListener(explorationListener)
         disconnect()
         super.onDestroy()
     }
@@ -99,10 +112,14 @@ class MirrorInputService : AccessibilityService() {
         ) return false
         return try {
             previousFlags = info.flags
+            previousEventTypes = info.eventTypes
             val controller = getTouchInteractionController(Display.DEFAULT_DISPLAY)
             touchController = controller
             controller.registerCallback(null, touchCallback)
             info.flags = info.flags or AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
+            // Android ignores touch exploration requests from a service with no event types.
+            info.eventTypes = info.eventTypes or AccessibilityEvent.TYPE_TOUCH_INTERACTION_START or
+                AccessibilityEvent.TYPE_TOUCH_INTERACTION_END
             serviceInfo = info
             true
         } catch (e: RuntimeException) {
@@ -124,6 +141,7 @@ class MirrorInputService : AccessibilityService() {
             serviceInfo?.let {
                 val flag = AccessibilityServiceInfo.FLAG_REQUEST_TOUCH_EXPLORATION_MODE
                 it.flags = (it.flags and flag.inv()) or (previousFlags and flag)
+                it.eventTypes = previousEventTypes
                 serviceInfo = it
             }
         } catch (e: RuntimeException) {
@@ -141,6 +159,11 @@ class MirrorInputService : AccessibilityService() {
     fun showMirror(texture: TextureView, onClose: () -> Unit): Boolean {
         removeMirror()
         if (!prepareInput()) return false
+        if (!accessibilityManager.isTouchExplorationEnabled) {
+            Log.e(TAG, "Touch interception is not active; refusing an untouchable mirror")
+            releaseInput()
+            return false
+        }
         return try {
             val overlay = MirrorOverlayView(this).apply { setup(texture, onClose) }
             val controller = touchController ?: return false
@@ -151,11 +174,7 @@ class MirrorInputService : AccessibilityService() {
                 overlay::containsInput,
                 controller::requestDelegating,
                 { gesture, callback -> dispatchGesture(gesture, callback, handler) },
-                {
-                    ToastManager.show(this, getString(R.string.settings_touch_routing_error))
-                    hideMirror()
-                    stopService(Intent(this, MirrorService::class.java))
-                }
+                ::stopForInputFailure
             )
             session = active
             mirror = overlay
@@ -193,5 +212,11 @@ class MirrorInputService : AccessibilityService() {
         hideMirror()
         if (connected === this) connection.clear()
         if (wasMirroring) stopService(Intent(this, MirrorService::class.java))
+    }
+
+    private fun stopForInputFailure() {
+        ToastManager.show(this, getString(R.string.settings_touch_routing_error))
+        hideMirror()
+        stopService(Intent(this, MirrorService::class.java))
     }
 }

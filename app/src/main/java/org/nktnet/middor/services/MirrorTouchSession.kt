@@ -5,6 +5,7 @@ import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.TouchInteractionController
 import android.graphics.Path
 import android.graphics.PathMeasure
+import android.graphics.PointF
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
@@ -21,6 +22,8 @@ internal class MirrorTouchSession(
 ) : TouchInteractionController.Callback {
     private class Replay(val gesture: GestureDescription) {
         val starts = mutableMapOf<Int, GestureDescription.StrokeDescription>()
+        val initialPoints = mutableListOf<PointF>()
+        var injectedDownTime: Long? = null
         var started = false
         var delegated = false
         var delegationRequested = false
@@ -36,7 +39,7 @@ internal class MirrorTouchSession(
 
     override fun onMotionEvent(event: MotionEvent) {
         if (closed) return
-        if (event.deviceId == KeyCharacterMap.VIRTUAL_KEYBOARD) {
+        if (isReplayEvent(event)) {
             if (event.actionMasked == MotionEvent.ACTION_DOWN) {
                 current?.delegationRequested = true
                 delegateSafely()
@@ -90,6 +93,23 @@ internal class MirrorTouchSession(
         handler.removeCallbacksAndMessages(null)
     }
 
+    private fun isReplayEvent(event: MotionEvent): Boolean {
+        val replay = current ?: return false
+        if (event.deviceId != KeyCharacterMap.VIRTUAL_KEYBOARD) return false
+        if (event.actionMasked != MotionEvent.ACTION_DOWN) {
+            return replay.injectedDownTime == event.downTime
+        }
+        // Virtual input can also be user input (for example adb/emulator taps). A device ID
+        // alone must never bypass mapping or close handling. Match only our pending held DOWN.
+        if (replay.injectedDownTime != null || replay.continuing) return false
+        val matchesStart = replay.initialPoints.any {
+            kotlin.math.abs(it.x - event.rawX) < 1f &&
+                kotlin.math.abs(it.y - event.rawY) < 1f
+        }
+        if (matchesStart) replay.injectedDownTime = event.downTime
+        return matchesStart
+    }
+
     private fun drain() {
         if (closed || physicalDown || current != null || queue.isEmpty() ||
             state == TouchInteractionController.STATE_DELEGATING ||
@@ -116,6 +136,7 @@ internal class MirrorTouchSession(
                     lineTo(point[0], point[1])
                 }, 0, 1, true
             )
+            replay.initialPoints.add(PointF(point[0], point[1]))
             replay.starts[index] = initial
             start.addStroke(initial)
         }

@@ -290,30 +290,29 @@ fun SettingsScreen(navController: NavController) {
             }
             BooleanSetting(
                 stringResource(R.string.settings_flip_horizontally_label),
-                UserSettings.flipHorizontally.value
+                UserSettings.flipHorizontally.value,
+                info = stringResource(R.string.settings_flip_horizontally_info)
             ) { newValue ->
                 UserSettings.setFlipHorizontally(context, newValue)
             }
             BooleanSetting(
                 stringResource(R.string.settings_rotate_180_label),
-                UserSettings.rotate180.value
+                UserSettings.rotate180.value,
+                info = stringResource(R.string.settings_rotate_180_info)
             ) { newValue ->
                 UserSettings.setRotate180(context, newValue)
             }
             BooleanSetting(
                 stringResource(R.string.settings_touch_controls_label),
-                UserSettings.touchControls.value
+                UserSettings.touchControls.value,
+                info = stringResource(R.string.settings_touch_controls_note)
             ) { newValue ->
                 UserSettings.setTouchControls(context, newValue)
             }
-            Text(
-                stringResource(R.string.settings_touch_controls_note),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
             BooleanSetting(
                 stringResource(R.string.settings_touch_feedback_label),
-                UserSettings.touchFeedback.value
+                UserSettings.touchFeedback.value,
+                info = stringResource(R.string.settings_touch_feedback_info)
             ) { newValue ->
                 UserSettings.setTouchFeedback(context, newValue)
             }
@@ -323,6 +322,7 @@ fun SettingsScreen(navController: NavController) {
                 min = 16,
                 max = 200,
                 steps = 0,
+                info = stringResource(R.string.settings_tap_duration_info),
                 onValueChange = { UserSettings.setTapDuration(context, it) }
             )
             CloseButtonPositionSetting()

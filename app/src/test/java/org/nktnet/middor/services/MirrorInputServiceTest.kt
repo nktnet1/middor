@@ -4,7 +4,11 @@ import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
 import android.accessibilityservice.TouchInteractionController
 import android.app.Activity
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.RectF
@@ -16,6 +20,8 @@ import android.view.MotionEvent
 import android.view.TextureView
 import android.view.View
 import android.view.WindowManager
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityManager
 import android.widget.ImageButton
 import java.time.Duration
 import java.util.concurrent.Executor
@@ -41,6 +47,7 @@ import org.robolectric.shadows.ShadowAccessibilityService.GestureDispatch
 import org.robolectric.shadows.ShadowAccessibilityService
 import org.robolectric.shadows.ShadowWindowManagerImpl
 import org.robolectric.util.ReflectionHelpers
+import org.robolectric.util.ReflectionHelpers.ClassParameter
 
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -64,12 +71,11 @@ class MirrorInputServiceTest {
         UserSettings.tapDuration.value = 40
         UserSettings.closeButtonPosition.value = CloseButtonPosition.TOP_RIGHT
         service = controller.create().get()
-        service.serviceInfo = AccessibilityServiceInfo().also {
-            ReflectionHelpers.setField(
-                it, "mCapabilities",
-                AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION
-            )
-        }
+        // Load the real manifest metadata. A hand-built fixture missed the zero-event mask
+        // that makes Android refuse touch exploration even when the capability is declared.
+        service.serviceInfo = manifestServiceInfo()
+        shadowOf(service.getSystemService(AccessibilityManager::class.java))
+            .setTouchExplorationEnabled(true)
         windows = Shadow.extract(service.getSystemService(WindowManager::class.java))
         shadowOf(service).setCanDispatchGestures(true)
         touch = Shadow.extract(service.getTouchInteractionController(0))
@@ -183,12 +189,49 @@ class MirrorInputServiceTest {
     }
 
     @Test
-    fun injectedTouchIsDelegatedWithoutClosingOrBeingRecordedAgain() {
+    fun virtualUserInputCanCloseTheVisibleButton() {
         tap(220f, 130f, deviceId = KeyCharacterMap.VIRTUAL_KEYBOARD)
         idle()
-        assertEquals(0, closeCount)
-        assertEquals(1, touch.delegations)
+        assertEquals(1, closeCount)
+        assertEquals(0, touch.delegations)
         assertTrue(shadowOf(service).gesturesDispatched.isEmpty())
+    }
+
+    @Test
+    fun virtualUserInputFollowsEveryFlipAndRotationCombination() {
+        for (flip in listOf(false, true)) {
+            for (rotate in listOf(false, true)) {
+                texture.setTransform(MirrorUtils.imageTransform(
+                    320, 470, 0, 0, 0, 0, flip, rotate
+                ))
+                tap(80f, 250f, deviceId = KeyCharacterMap.VIRTUAL_KEYBOARD)
+                idle()
+                assertEquals(0, closeCount)
+                val replay = acknowledgeReplay()
+                val bounds = RectF()
+                replay.description().getStroke(0).path.computeBounds(bounds, true)
+                assertEquals(if (flip xor rotate) 240f else 80f, bounds.left, 0.01f)
+                assertEquals(if (rotate) 220f else 250f, bounds.top, 0.01f)
+                finish(replay)
+            }
+        }
+    }
+
+    @Test
+    fun onlyTheExpectedInjectedDownBypassesMappingAndCloseHandling() {
+        texture.setTransform(MirrorUtils.imageTransform(
+            320, 470, 0, 0, 0, 0, flip = true, rotate = false
+        ))
+        tap(80f, 130f)
+        idle()
+        val start = shadowOf(service).gesturesDispatched.single()
+        touchEvent(MotionEvent.ACTION_DOWN, 240f, 130f, 100, KeyCharacterMap.VIRTUAL_KEYBOARD)
+        assertEquals(1, touch.delegations)
+        assertEquals(0, closeCount)
+        assertEquals(1, shadowOf(service).gesturesDispatched.size)
+        start.callback().onCompleted(start.description())
+        touch.state(TouchInteractionController.STATE_DELEGATING)
+        assertEquals(2, shadowOf(service).gesturesDispatched.size)
     }
 
     @Test
@@ -366,6 +409,48 @@ class MirrorInputServiceTest {
     }
 
     @Test
+    fun manifestDeclaresEventsRequiredForAndroidToEnableTouchInterception() {
+        val info = manifestServiceInfo()
+        assertTrue(info.eventTypes and AccessibilityEvent.TYPE_TOUCH_INTERACTION_START != 0)
+        assertTrue(info.eventTypes and AccessibilityEvent.TYPE_TOUCH_INTERACTION_END != 0)
+        assertTrue(info.capabilities and
+            AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION != 0)
+        assertEquals(0, info.capabilities and
+            AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT)
+    }
+
+    @Test
+    fun preparationRepairsAnOldEmptyEventMaskAndRestoresItAfterStopping() {
+        service.hideMirror()
+        val info = manifestServiceInfo().apply { eventTypes = 0 }
+        service.serviceInfo = info
+        assertTrue(service.prepareInput())
+        assertTrue(service.serviceInfo.eventTypes != 0)
+        service.releaseInput()
+        assertEquals(0, service.serviceInfo.eventTypes)
+    }
+
+    @Test
+    fun inactiveTouchInterceptionCannotStartAnUntouchableMirror() {
+        service.hideMirror()
+        shadowOf(service.getSystemService(AccessibilityManager::class.java))
+            .setTouchExplorationEnabled(false)
+        assertFalse(service.showMirror(TextureView(service)) {})
+        assertTrue(windows.views.isEmpty())
+        assertTrue(touch.callback == null)
+    }
+
+    @Test
+    fun lossOfTouchInterceptionRemovesTheOpaqueMirror() {
+        val listener = ReflectionHelpers.getField<
+            AccessibilityManager.TouchExplorationStateChangeListener
+        >(service, "explorationListener")
+        listener.onTouchExplorationStateChanged(false)
+        assertTrue(windows.views.isEmpty())
+        assertTrue(touch.callback == null)
+    }
+
+    @Test
     fun oldServiceCapabilitiesCannotStartAnUntouchableMirror() {
         service.hideMirror()
         service.serviceInfo = AccessibilityServiceInfo()
@@ -414,6 +499,20 @@ class MirrorInputServiceTest {
         putExtra(MirrorService.EXTRA_RESULT_CODE, Activity.RESULT_OK)
         putExtra(MirrorService.EXTRA_RESULT_INTENT, Intent())
         setClass(context, MirrorService::class.java)
+    }
+
+    private fun manifestServiceInfo(): AccessibilityServiceInfo {
+        val resolveInfo = ResolveInfo().apply {
+            serviceInfo = service.packageManager.getServiceInfo(
+                ComponentName(service, MirrorInputService::class.java),
+                PackageManager.ComponentInfoFlags.of(PackageManager.GET_META_DATA.toLong())
+            )
+        }
+        return ReflectionHelpers.callConstructor(
+            AccessibilityServiceInfo::class.java,
+            ClassParameter.from(ResolveInfo::class.java, resolveInfo),
+            ClassParameter.from(Context::class.java, service)
+        )
     }
 
     private fun showMirror() {

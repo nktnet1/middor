@@ -38,7 +38,7 @@ internal class MirrorTouchController(
     private var invalid = false
     private var mapper: MirrorCoordinateMapper? = null
 
-    fun onTouch(event: MotionEvent): Boolean {
+    fun onTouch(event: MotionEvent) {
         if (event.actionMasked == MotionEvent.ACTION_DOWN) {
             reset()
             downTime = event.eventTime
@@ -61,9 +61,9 @@ internal class MirrorTouchController(
             } else if (event.actionMasked == MotionEvent.ACTION_CANCEL) {
                 reset()
             }
-            return true
+            return
         }
-        if (!UserSettings.touchControls.value) return true
+        if (!UserSettings.touchControls.value) return
         overlay.showTouch(event)
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> addPointer(event, event.actionIndex)
@@ -88,7 +88,6 @@ internal class MirrorTouchController(
             }
             MotionEvent.ACTION_CANCEL -> reset()
         }
-        return true
     }
 
     private fun addPointer(event: MotionEvent, index: Int) {

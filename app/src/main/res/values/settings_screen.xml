@@ -17,6 +17,20 @@
     <string name="settings_touch_feedback_label">Show Touch Feedback</string>
     <string name="settings_tap_duration_label">Tap Duration (ms)</string>
     <string name="settings_close_position_label">Close Button Position</string>
+    <string name="settings_info_description">Information about %1$s</string>
+    <string name="settings_flip_horizontally_info">Flips the displayed image left to right.
+        Touch controls use the same flip so you can tap the buttons you see. Restart the mirror
+        after changing this setting.</string>
+    <string name="settings_rotate_180_info">Rotates the displayed image by 180 degrees.
+        Touch controls follow the rotated image. Restart the mirror after changing this
+        setting.</string>
+    <string name="settings_touch_feedback_info">Shows a small circle where you touch the mirror.
+        This visual feedback is optional and off by default.</string>
+    <string name="settings_tap_duration_info">Sets how long a replayed tap stays pressed.
+        Long presses and swipes keep their recorded timing.</string>
+    <string name="settings_close_position_info">Choose the physical corner for the red close
+        button. The button stays in that corner when the image is flipped or rotated. Restart
+        the mirror after changing this setting.</string>
     <string name="settings_corner_top_right">Top right</string>
     <string name="settings_corner_top_left">Top left</string>
     <string name="settings_corner_bottom_right">Bottom right</string>

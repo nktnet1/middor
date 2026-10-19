@@ -30,7 +30,11 @@ fun CloseButtonPositionSetting() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(stringResource(R.string.settings_close_position_label))
+        SettingLabel(
+            stringResource(R.string.settings_close_position_label),
+            modifier = Modifier.weight(1f),
+            info = stringResource(R.string.settings_close_position_info)
+        )
         Box {
             TextButton(onClick = { expanded = true }) {
                 Text(stringResource(UserSettings.closeButtonPosition.value.labelResId))

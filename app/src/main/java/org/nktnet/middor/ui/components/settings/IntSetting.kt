@@ -35,6 +35,7 @@ fun IntSetting(
     min: Int = 0,
     max: Int,
     steps: Int = 1,
+    info: String? = null,
     onValueChange: (Int) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -50,7 +51,7 @@ fun IntSetting(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(label)
+            SettingLabel(label, modifier = Modifier.weight(1f), info = info)
             TextButton(
                 onClick = {
                     draftValue = value.coerceIn(safeMin, safeMax)
