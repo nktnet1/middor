@@ -604,6 +604,8 @@ class MirrorInputServiceTest {
         var callback: TouchInteractionController.Callback? = null
         var delegations = 0
 
+        // Robolectric invokes these implementations through the matching Android APIs.
+        @Suppress("unused")
         @Implementation
         fun registerCallback(
             executor: Executor?,
@@ -612,6 +614,7 @@ class MirrorInputServiceTest {
             this.callback = callback
         }
 
+        @Suppress("unused")
         @Implementation
         fun unregisterCallback(callback: TouchInteractionController.Callback): Boolean {
             if (this.callback !== callback) return false
@@ -619,6 +622,7 @@ class MirrorInputServiceTest {
             return true
         }
 
+        @Suppress("unused")
         @Implementation
         fun requestDelegating() {
             delegations++
@@ -631,9 +635,12 @@ class MirrorInputServiceTest {
     class InputServiceShadow : ShadowAccessibilityService() {
         private var info = AccessibilityServiceInfo()
 
+        // Robolectric invokes these implementations through the matching Android APIs.
+        @Suppress("unused")
         @Implementation
         fun getServiceInfo(): AccessibilityServiceInfo = info
 
+        @Suppress("unused")
         @Implementation
         fun setServiceInfo(info: AccessibilityServiceInfo) {
             this.info = info
