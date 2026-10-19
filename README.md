@@ -21,35 +21,15 @@ With built-in support for horizontal flip and 180° rotation, Middor can be used
 Middor only supports devices running Android 14 QPR2 or higher, as it
 relies on the single app screen sharing feature.
 
-The mirror is fully opaque. **Enable Touch Controls** in Middor settings to interact
-with the buttons you see in the mirror, then enable **Middor Touch** in
-Android Accessibility settings. Taps, swipes, and multitouch gestures replay at the
-source positions corresponding to the displayed image after finger-up. Input is not streamed in
-real time. Physical touches are intercepted throughout the session;
-only the synthetic replay is delegated to the hidden app. A replay starts with a held pointer,
-then continues only after Android acknowledges delegation, so no input window is removed between
-taps. Starting a physical gesture cancels any unfinished replay; canceled actions are not retried.
-
-Turn touch controls off for an opaque, view-only mirror that blocks touches to the
-hidden app. Accessibility is optional in this mode. Settings also control touch
-feedback (off by default), tap replay duration, and the close-button corner. Restart the mirror to
-apply settings changes. The close button is never flipped or rotated with the video.
-
-The optional accessibility service only replays user gestures while mirroring. It
-does not request accessibility node contents, collect or share gesture data, change settings,
-or perform autonomous actions. It requests only touch-interaction start/end accessibility events
-because Android requires a nonempty event subscription to enable touch interception. Their payloads
-are ignored.
-Touch interception is enabled before the screen-sharing picker and released when mirroring ends
-or capture is canceled. The picker and touches outside the mirror are delegated without mirroring.
-After updating from an older version, turn **Middor Touch** off and on once in Android
-Accessibility settings to refresh its touch-exploration capability. The service does not enable
-spoken feedback or require double-tapping to activate controls. The code's
-AccessibilityPolicy suppression acknowledges the general API usage notice; it is
-not a declaration of app-store policy approval.
-
 For more details, see
 [Android 14 - App Screen Sharing](https://developer.android.com/about/versions/14/features/app-screen-sharing).
+
+## Touch controls
+
+To tap, swipe, or use multitouch on the mirror, turn on **Enable Touch Controls**
+in Settings and enable **Middor Touch** in Android Accessibility settings.
+Gestures follow flips and rotations and replay when you lift your fingers.
+Touch controls are optional for view-only mirroring.
 
 For usage instructions, see [Discussion #2](https://github.com/nktnet1/middor/discussions/2).
 

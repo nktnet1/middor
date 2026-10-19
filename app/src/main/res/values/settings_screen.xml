@@ -18,45 +18,39 @@
     <string name="settings_tap_duration_label">Tap Duration (ms)</string>
     <string name="settings_close_position_label">Close Button Position</string>
     <string name="settings_info_description">Information about %1$s</string>
-    <string name="settings_overlay_permission_info">Allows Middor to display the mirror above
-        other apps. Required to start mirroring.</string>
+    <string name="settings_overlay_permission_info">Required to show the mirror over other
+        apps.</string>
     <string name="settings_accessibility_permission_info">Enable Middor Touch in Android
-        Accessibility settings to control the app through the mirror. This permission is
-        optional when Enable Touch Controls is off. If touch controls cannot start after an
-        update, turn Middor Touch off and on once.</string>
-    <string name="settings_notifications_permission_info">Shows a notification while mirroring.
-        Tap it to close the overlay and return to Middor. This permission is optional.</string>
-    <string name="settings_theme_info">Choose a light or dark appearance for Middor. System
-        follows your device theme. The mirrored app keeps its own theme.</string>
-    <string name="settings_start_on_launch_info">Automatically starts the mirroring flow when
-        Middor opens. You still choose the app and approve screen sharing.</string>
-    <string name="settings_flip_horizontally_info">Flips the displayed image left to right.
-        Touch controls use the same flip so you can tap the buttons you see. Restart the mirror
-        after changing this setting.</string>
-    <string name="settings_rotate_180_info">Rotates the displayed image by 180 degrees.
-        Touch controls follow the rotated image. Restart the mirror after changing this
-        setting.</string>
-    <string name="settings_touch_feedback_info">Shows a small circle where you touch the mirror.
-        This visual feedback is optional and off by default.</string>
-    <string name="settings_tap_duration_info">Sets how long a replayed tap stays pressed.
-        Long presses and swipes keep their recorded timing.</string>
-    <string name="settings_close_position_info">Choose the physical corner for the red close
-        button. The button stays in that corner when the image is flipped or rotated. Restart
-        the mirror after changing this setting.</string>
-    <string name="settings_remove_system_bars_info">Crops the status and navigation bars out of
-        the mirror using their sizes at startup. Restart the mirror after changing this setting
-        or rotating your device.</string>
-    <string name="settings_start_delay_info">Waits the selected number of seconds before opening
-        the screen-sharing picker. Applies to both Start and Start on Launch.</string>
+        Accessibility settings for touch controls. Not needed for view-only mirroring. If it
+        stops working after an update, turn it off and on.</string>
+    <string name="settings_notifications_permission_info">Optional. Shows a notification you
+        can tap to close the mirror.</string>
+    <string name="settings_theme_info">Choose System, Light, or Dark. This does not change the
+        mirrored app.</string>
+    <string name="settings_start_on_launch_info">Opens screen-sharing setup on launch. You still
+        choose the app to mirror.</string>
+    <string name="settings_flip_horizontally_info">Mirrors the image and touch positions left to
+        right. Restart to apply.</string>
+    <string name="settings_rotate_180_info">Rotates the image and touch positions 180°.
+        Restart to apply.</string>
+    <string name="settings_touch_feedback_info">Shows a circle where you touch the mirror. Off
+        by default.</string>
+    <string name="settings_tap_duration_info">Sets how long replayed taps are held. Other
+        gestures keep their timing.</string>
+    <string name="settings_close_position_info">Places the close button in the selected corner,
+        unaffected by flipping or rotation. Restart to apply.</string>
+    <string name="settings_remove_system_bars_info">Hides the status and navigation bars.
+        Restart after changing this setting or rotating your device.</string>
+    <string name="settings_start_delay_info">Delays the screen-sharing picker after Start or
+        Start on Launch.</string>
     <string name="settings_corner_top_right">Top right</string>
     <string name="settings_corner_top_left">Top left</string>
     <string name="settings_corner_bottom_right">Bottom right</string>
     <string name="settings_corner_bottom_left">Bottom left</string>
-    <string name="settings_touch_controls_note">Touch controls follow the buttons you see in the
-        overlay. Turn them off for a view-only mirror that blocks touches to the hidden app.
-        Enable Middor Touch in Accessibility settings when touch controls are enabled. Restart
-        the mirror to apply changes. Gestures replay after finger-up. Touch feedback is optional
-        and off by default.</string>
+    <string name="settings_touch_controls_note">Enable Middor Touch in Android Accessibility
+        settings to tap and swipe the mirror. Gestures replay after you lift your fingers.
+        Turning this off makes the mirror view-only and blocks touches to the hidden app.
+        Restart to apply.</string>
     <string name="settings_touch_routing_error">Touch controls stopped. Restart the mirror.</string>
     <string name="mirror_close_description">Close mirror</string>
     <string name="settings_accessibility_permission_error">Enable Middor Touch in Accessibility
@@ -66,11 +60,9 @@
     <string name="settings_accessibility_overlay_error">Could not open the mirror. Check Overlay
         permission.</string>
     <string name="accessibility_service_label">Middor Touch</string>
-    <string name="accessibility_service_description">Optional touch controls for the mirror.
-        Replays only your taps and gestures at the positions shown in the mirror while touch
-        controls are enabled. Temporarily intercepts touchscreen gestures during mirroring.
-        Does not read accessibility node contents or collect or share
-        gesture data. Disable touch controls in Middor or turn off this service to stop
+    <string name="accessibility_service_description">Enables touch controls by intercepting and
+        replaying your gestures while mirroring. Does not read accessibility window content or
+        store or share gesture data. Turn off touch controls or this service to stop
         replay.</string>
     <string name="settings_notifications_permission_label">Notifications</string>
     <string name="settings_granted_text_button">Granted</string>
