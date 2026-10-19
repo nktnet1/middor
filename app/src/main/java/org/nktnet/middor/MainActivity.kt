@@ -30,6 +30,8 @@ import org.nktnet.middor.ui.screens.LandingScreen
 import org.nktnet.middor.ui.screens.SettingsScreen
 import org.nktnet.middor.ui.theme.MiddorTheme
 
+// Android instantiates this manifest entry point.
+@Suppress("unused")
 class MainActivity : ComponentActivity() {
     private lateinit var screenCaptureManager: ScreenCaptureManager
     private var sysBarTop = 0

@@ -35,7 +35,7 @@ fun IntSetting(
     min: Int = 0,
     max: Int,
     steps: Int = 1,
-    info: String? = null,
+    info: String,
     onValueChange: (Int) -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }

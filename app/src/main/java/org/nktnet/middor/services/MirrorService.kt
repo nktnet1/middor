@@ -16,6 +16,8 @@ import org.nktnet.middor.managers.CustomNotificationManager
 import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.utils.MirrorUtils
 
+// Android instantiates this manifest entry point.
+@Suppress("unused")
 class MirrorService : Service() {
 
     private var projection: MediaProjection? = null

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 fun BooleanSetting(
     label: String,
     checked: Boolean,
-    info: String? = null,
+    info: String,
     onCheckedChange: (Boolean) -> Unit
 ) {
     Row(

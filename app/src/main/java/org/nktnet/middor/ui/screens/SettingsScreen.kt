@@ -60,6 +60,7 @@ import org.nktnet.middor.ui.components.settings.CloseButtonPositionSetting
 import org.nktnet.middor.ui.components.settings.IntSetting
 import org.nktnet.middor.ui.components.settings.PermissionSetting
 import org.nktnet.middor.ui.components.settings.ResetPreferencesDialog
+import org.nktnet.middor.ui.components.settings.SettingLabel
 
 @Composable
 fun SettingsScreen(navController: NavController) {
@@ -203,7 +204,8 @@ fun SettingsScreen(navController: NavController) {
 
             PermissionSetting(
                 stringResource(R.string.settings_overlay_permission_label),
-                overlayGranted
+                overlayGranted,
+                info = stringResource(R.string.settings_overlay_permission_info)
             ) {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -213,13 +215,15 @@ fun SettingsScreen(navController: NavController) {
             }
             PermissionSetting(
                 stringResource(R.string.settings_accessibility_permission_label),
-                accessibilityGranted
+                accessibilityGranted,
+                info = stringResource(R.string.settings_accessibility_permission_info)
             ) {
                 activity?.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             }
             PermissionSetting(
                 stringResource(R.string.settings_notifications_permission_label),
-                notificationsGranted
+                notificationsGranted,
+                info = stringResource(R.string.settings_notifications_permission_info)
             ) {
                 activity?.let {
                     val granted = activity.checkSelfPermission(
@@ -277,14 +281,17 @@ fun SettingsScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    stringResource(R.string.settings_theme_label)
+                SettingLabel(
+                    stringResource(R.string.settings_theme_label),
+                    modifier = Modifier.weight(1f),
+                    info = stringResource(R.string.settings_theme_info)
                 )
                 ThemeDropdownIcon()
             }
             BooleanSetting(
                 stringResource(R.string.settings_start_on_launch_label),
-                UserSettings.startOnLaunch.value
+                UserSettings.startOnLaunch.value,
+                info = stringResource(R.string.settings_start_on_launch_info)
             ) { newValue ->
                 UserSettings.setStartOnLaunch(context, newValue)
             }
@@ -328,7 +335,8 @@ fun SettingsScreen(navController: NavController) {
             CloseButtonPositionSetting()
             BooleanSetting(
                 stringResource(R.string.settings_remove_system_bars),
-                UserSettings.removeSystemBars.value
+                UserSettings.removeSystemBars.value,
+                info = stringResource(R.string.settings_remove_system_bars_info)
             ) { newValue ->
                 UserSettings.setRemoveSystemBars(context, newValue)
             }
@@ -339,6 +347,7 @@ fun SettingsScreen(navController: NavController) {
                 min = 0,
                 max = 60,
                 steps = 60,
+                info = stringResource(R.string.settings_start_delay_info),
             )
 
             Spacer(Modifier.height(32.dp))

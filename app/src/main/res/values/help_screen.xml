@@ -7,7 +7,7 @@
     <string name="help_overlay_step">1. Open Settings and grant %1$s the overlay permission. This is for displaying an overlay over other apps.</string>
     <string name="help_notification_step">2. Grant %1$s the notification permission (optional). Tapping on the notification will close the overlay and return you to this app.</string>
     <string name="help_accessibility_step">3. Open Accessibility settings and enable
-        &quot;Middor mirrored input&quot;. This is required only when
+        &quot;Middor Touch&quot;. This is required only when
         &quot;Enable Touch Controls&quot; is on
         in Middor settings. Turn touch controls off for a view-only mirror.</string>
     <string name="help_start_button_step">4. On the main screen, tap on the &quot;%1$s&quot; button.</string>
@@ -20,7 +20,7 @@
     <string name="help_overlay_note">1. The mirror is fully opaque.
         Taps, swipes, and multitouch gestures replay at their flipped positions after finger-up,
         not in real time. A new gesture can cancel unfinished replay. Enable
-        &quot;Middor mirrored input&quot; in Accessibility settings for touch controls, or turn
+        &quot;Middor Touch&quot; in Accessibility settings for touch controls, or turn
         &quot;Enable Touch Controls&quot; off for a view-only mirror. Touch feedback, tap duration,
         and the close-button corner are configurable in Settings. Touch feedback is off by default.
         After an update, turn the accessibility service off and on once if touch controls cannot

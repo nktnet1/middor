@@ -19,6 +19,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 
+// JUnit invokes the test class and its annotated methods reflectively.
+@Suppress("unused")
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class MirrorCoordinateMapperTest {

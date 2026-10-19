@@ -21,7 +21,9 @@ import org.nktnet.middor.managers.ToastManager
 
 /** Only replays explicit user gestures while the user has enabled touch controls and mirroring. */
 // The policy inspection is advisory. No node access, autonomous actions, or settings changes.
+// Android instantiates this manifest entry point.
 @SuppressLint("AccessibilityPolicy")
+@Suppress("unused")
 class MirrorInputService : AccessibilityService() {
 
     private val handler = Handler(Looper.getMainLooper())
@@ -106,10 +108,8 @@ class MirrorInputService : AccessibilityService() {
     /** Enable interception before opening the screen-sharing picker, never between taps. */
     fun prepareInput(): Boolean {
         if (touchController != null) return true
-        val info = serviceInfo ?: return false
-        if (info.capabilities and
-            AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION == 0
-        ) return false
+        val capability = AccessibilityServiceInfo.CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION
+        val info = serviceInfo?.takeIf { it.capabilities and capability != 0 } ?: return false
         return try {
             previousFlags = info.flags
             previousEventTypes = info.eventTypes

@@ -22,7 +22,7 @@ Middor only supports devices running Android 14 QPR2 or higher, as it
 relies on the single app screen sharing feature.
 
 The mirror is fully opaque. **Enable Touch Controls** in Middor settings to interact
-with the buttons you see in the mirror, then enable **Middor mirrored input** in
+with the buttons you see in the mirror, then enable **Middor Touch** in
 Android Accessibility settings. Taps, swipes, and multitouch gestures replay at the
 source positions corresponding to the displayed image after finger-up. Input is not streamed in
 real time. Physical touches are intercepted throughout the session;
@@ -42,7 +42,7 @@ because Android requires a nonempty event subscription to enable touch intercept
 are ignored.
 Touch interception is enabled before the screen-sharing picker and released when mirroring ends
 or capture is canceled. The picker and touches outside the mirror are delegated without mirroring.
-After updating from an older version, turn **Middor mirrored input** off and on once in Android
+After updating from an older version, turn **Middor Touch** off and on once in Android
 Accessibility settings to refresh its touch-exploration capability. The service does not enable
 spoken feedback or require double-tapping to activate controls. The code's
 AccessibilityPolicy suppression acknowledges the general API usage notice; it is

@@ -18,6 +18,18 @@
     <string name="settings_tap_duration_label">Tap Duration (ms)</string>
     <string name="settings_close_position_label">Close Button Position</string>
     <string name="settings_info_description">Information about %1$s</string>
+    <string name="settings_overlay_permission_info">Allows Middor to display the mirror above
+        other apps. Required to start mirroring.</string>
+    <string name="settings_accessibility_permission_info">Enable Middor Touch in Android
+        Accessibility settings to control the app through the mirror. This permission is
+        optional when Enable Touch Controls is off. If touch controls cannot start after an
+        update, turn Middor Touch off and on once.</string>
+    <string name="settings_notifications_permission_info">Shows a notification while mirroring.
+        Tap it to close the overlay and return to Middor. This permission is optional.</string>
+    <string name="settings_theme_info">Choose a light or dark appearance for Middor. System
+        follows your device theme. The mirrored app keeps its own theme.</string>
+    <string name="settings_start_on_launch_info">Automatically starts the mirroring flow when
+        Middor opens. You still choose the app and approve screen sharing.</string>
     <string name="settings_flip_horizontally_info">Flips the displayed image left to right.
         Touch controls use the same flip so you can tap the buttons you see. Restart the mirror
         after changing this setting.</string>
@@ -31,26 +43,29 @@
     <string name="settings_close_position_info">Choose the physical corner for the red close
         button. The button stays in that corner when the image is flipped or rotated. Restart
         the mirror after changing this setting.</string>
+    <string name="settings_remove_system_bars_info">Crops the status and navigation bars out of
+        the mirror using their sizes at startup. Restart the mirror after changing this setting
+        or rotating your device.</string>
+    <string name="settings_start_delay_info">Waits the selected number of seconds before opening
+        the screen-sharing picker. Applies to both Start and Start on Launch.</string>
     <string name="settings_corner_top_right">Top right</string>
     <string name="settings_corner_top_left">Top left</string>
     <string name="settings_corner_bottom_right">Bottom right</string>
     <string name="settings_corner_bottom_left">Bottom left</string>
     <string name="settings_touch_controls_note">Touch controls follow the buttons you see in the
         overlay. Turn them off for a view-only mirror that blocks touches to the hidden app.
-        Accessibility is required when touch controls are enabled. Restart the mirror to apply
-        changes. Gestures replay after finger-up. Touch feedback is optional and off by
-        default.</string>
-    <string name="settings_touch_routing_error">Touch routing stopped. Restart the mirror.
-        If it persists, turn Middor mirrored input off and on in Accessibility settings.</string>
+        Enable Middor Touch in Accessibility settings when touch controls are enabled. Restart
+        the mirror to apply changes. Gestures replay after finger-up. Touch feedback is optional
+        and off by default.</string>
+    <string name="settings_touch_routing_error">Touch controls stopped. Restart the mirror.</string>
     <string name="mirror_close_description">Close mirror</string>
-    <string name="settings_accessibility_permission_error">Enable Middor mirrored input in
-        Accessibility settings to use touch controls, or turn off Enable Touch Controls.</string>
-    <string name="settings_accessibility_not_connected">Middor mirrored input is not connected.
-        Wait a moment and try again. If it persists, turn the service off and on in
-        Accessibility settings.</string>
-    <string name="settings_accessibility_overlay_error">Could not create the mirror overlay.
-        Check the Overlay permission and restart the mirror.</string>
-    <string name="accessibility_service_label">Middor mirrored input</string>
+    <string name="settings_accessibility_permission_error">Enable Middor Touch in Accessibility
+        settings.</string>
+    <string name="settings_accessibility_not_connected">Middor Touch is unavailable. Check
+        Accessibility.</string>
+    <string name="settings_accessibility_overlay_error">Could not open the mirror. Check Overlay
+        permission.</string>
+    <string name="accessibility_service_label">Middor Touch</string>
     <string name="accessibility_service_description">Optional touch controls for the mirror.
         Replays only your taps and gestures at the positions shown in the mirror while touch
         controls are enabled. Temporarily intercepts touchscreen gestures during mirroring.

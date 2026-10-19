@@ -49,6 +49,8 @@ import org.robolectric.shadows.ShadowWindowManagerImpl
 import org.robolectric.util.ReflectionHelpers
 import org.robolectric.util.ReflectionHelpers.ClassParameter
 
+// JUnit and Robolectric invoke tests and shadow implementations reflectively.
+@Suppress("unused")
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [34], shadows = [
@@ -74,8 +76,7 @@ class MirrorInputServiceTest {
         // Load the real manifest metadata. A hand-built fixture missed the zero-event mask
         // that makes Android refuse touch exploration even when the capability is declared.
         service.serviceInfo = manifestServiceInfo()
-        shadowOf(service.getSystemService(AccessibilityManager::class.java))
-            .setTouchExplorationEnabled(true)
+        setTouchExplorationEnabled(true)
         windows = Shadow.extract(service.getSystemService(WindowManager::class.java))
         shadowOf(service).setCanDispatchGestures(true)
         touch = Shadow.extract(service.getTouchInteractionController(0))
@@ -433,8 +434,7 @@ class MirrorInputServiceTest {
     @Test
     fun inactiveTouchInterceptionCannotStartAnUntouchableMirror() {
         service.hideMirror()
-        shadowOf(service.getSystemService(AccessibilityManager::class.java))
-            .setTouchExplorationEnabled(false)
+        setTouchExplorationEnabled(false)
         assertFalse(service.showMirror(TextureView(service)) {})
         assertTrue(windows.views.isEmpty())
         assertTrue(touch.callback == null)
@@ -494,7 +494,14 @@ class MirrorInputServiceTest {
         assertTrue(windows.views.isEmpty())
     }
 
-    private fun startIntent(context: android.content.Context) = Intent().apply {
+    // The Java setter is public, but the shadow's synthetic property has a protected getter.
+    @Suppress("UsePropertyAccessSyntax")
+    private fun setTouchExplorationEnabled(enabled: Boolean) {
+        shadowOf(service.getSystemService(AccessibilityManager::class.java))
+            .setTouchExplorationEnabled(enabled)
+    }
+
+    private fun startIntent(context: Context) = Intent().apply {
         action = MirrorService.ACTION_START_OVERLAY
         putExtra(MirrorService.EXTRA_RESULT_CODE, Activity.RESULT_OK)
         putExtra(MirrorService.EXTRA_RESULT_INTENT, Intent())
@@ -600,7 +607,10 @@ class MirrorInputServiceTest {
         var delegations = 0
 
         @Implementation
-        fun registerCallback(executor: Executor?, callback: TouchInteractionController.Callback) {
+        fun registerCallback(
+            @Suppress("UNUSED_PARAMETER") executor: Executor?,
+            callback: TouchInteractionController.Callback
+        ) {
             this.callback = callback
         }
 
