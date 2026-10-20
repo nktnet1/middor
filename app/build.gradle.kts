@@ -12,8 +12,8 @@ android {
         applicationId = "org.nktnet.middor"
         minSdk = 34
         targetSdk = 37
-        versionCode = 8
-        versionName = "0.1.7"
+        versionCode = 9
+        versionName = "0.2.0"
     }
 
     buildFeatures {

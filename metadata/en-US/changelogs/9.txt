@@ -1,0 +1,5 @@
+## Changes
+
+- feat: support user interactions through mirror display
+    - requires accesibility permissions
+    - allow touches on the overlay to be passed to the application
