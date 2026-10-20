@@ -13,13 +13,13 @@ import androidx.compose.ui.res.stringResource
 import org.nktnet.middor.R
 
 @Composable
-fun PermissionSetting(label: String, granted: Boolean, onClick: () -> Unit) {
+fun PermissionSetting(label: String, granted: Boolean, info: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label)
+        SettingLabel(label, modifier = Modifier.weight(1f), info = info)
         TextButton(onClick = onClick) {
             Text(
                 if (granted) {

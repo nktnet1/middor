@@ -24,6 +24,10 @@ object UserSettings {
         val UPSIDE_DOWN_KEY = booleanPreferencesKey("user_settings.upside_down")
         val REMOVE_SYSTEM_BARS_KEY = booleanPreferencesKey("user_settings.remove_system_bars")
         val START_DELAY_SECONDS_KEY = intPreferencesKey("user_settings.start_delay_seconds")
+        val TOUCH_CONTROLS_KEY = booleanPreferencesKey("user_settings.touch_controls")
+        val TOUCH_FEEDBACK_KEY = booleanPreferencesKey("user_settings.touch_feedback")
+        val CLOSE_BUTTON_POSITION_KEY = stringPreferencesKey("user_settings.close_button_position")
+        val TAP_DURATION_KEY = intPreferencesKey("user_settings.tap_duration")
     }
 
     private object Defaults {
@@ -33,6 +37,10 @@ object UserSettings {
         const val ROTATE_180 = false
         const val REMOVE_SYSTEM_BARS = false
         const val START_DELAY_SECONDS = 0
+        const val TOUCH_CONTROLS = true
+        const val TOUCH_FEEDBACK = false
+        val CLOSE_BUTTON_POSITION = CloseButtonPosition.TOP_RIGHT
+        const val TAP_DURATION = 40
     }
 
     val currentTheme: MutableState<ThemeOption> = mutableStateOf(Defaults.THEME)
@@ -41,6 +49,11 @@ object UserSettings {
     val rotate180: MutableState<Boolean> = mutableStateOf(Defaults.ROTATE_180)
     val removeSystemBars: MutableState<Boolean> = mutableStateOf(Defaults.REMOVE_SYSTEM_BARS)
     val startDelaySeconds: MutableState<Int> = mutableIntStateOf(Defaults.START_DELAY_SECONDS)
+    val touchControls: MutableState<Boolean> = mutableStateOf(Defaults.TOUCH_CONTROLS)
+    val touchFeedback: MutableState<Boolean> = mutableStateOf(Defaults.TOUCH_FEEDBACK)
+    val closeButtonPosition: MutableState<CloseButtonPosition> =
+        mutableStateOf(Defaults.CLOSE_BUTTON_POSITION)
+    val tapDuration: MutableState<Int> = mutableIntStateOf(Defaults.TAP_DURATION)
 
     fun setTheme(context: Context, theme: ThemeOption) {
         currentTheme.value = theme
@@ -85,6 +98,24 @@ object UserSettings {
             delayMs
         )
 
+    fun setTouchControls(context: Context, value: Boolean) =
+        setPreference(context, Keys.TOUCH_CONTROLS_KEY, touchControls, value)
+
+    fun setTouchFeedback(context: Context, value: Boolean) =
+        setPreference(context, Keys.TOUCH_FEEDBACK_KEY, touchFeedback, value)
+
+    fun setCloseButtonPosition(context: Context, value: CloseButtonPosition) {
+        closeButtonPosition.value = value
+        CoroutineScope(Dispatchers.IO).launch {
+            context.dataStore.edit { prefs ->
+                prefs[Keys.CLOSE_BUTTON_POSITION_KEY] = value.name
+            }
+        }
+    }
+
+    fun setTapDuration(context: Context, value: Int) =
+        setPreference(context, Keys.TAP_DURATION_KEY, tapDuration, value.coerceIn(16, 200))
+
     fun resetSettings(context: Context) {
         setTheme(context, Defaults.THEME)
         setStartOnLaunch(context, Defaults.START_ON_LAUNCH)
@@ -92,6 +123,10 @@ object UserSettings {
         setRotate180(context, Defaults.ROTATE_180)
         setRemoveSystemBars(context, Defaults.REMOVE_SYSTEM_BARS)
         setStartDelay(context, Defaults.START_DELAY_SECONDS)
+        setTouchControls(context, Defaults.TOUCH_CONTROLS)
+        setTouchFeedback(context, Defaults.TOUCH_FEEDBACK)
+        setCloseButtonPosition(context, Defaults.CLOSE_BUTTON_POSITION)
+        setTapDuration(context, Defaults.TAP_DURATION)
     }
 
     fun init(context: Context) {
@@ -108,6 +143,13 @@ object UserSettings {
                     ?: Defaults.REMOVE_SYSTEM_BARS
                 startDelaySeconds.value = prefs[Keys.START_DELAY_SECONDS_KEY]
                     ?: Defaults.START_DELAY_SECONDS
+                touchControls.value = prefs[Keys.TOUCH_CONTROLS_KEY] ?: Defaults.TOUCH_CONTROLS
+                touchFeedback.value = prefs[Keys.TOUCH_FEEDBACK_KEY] ?: Defaults.TOUCH_FEEDBACK
+                closeButtonPosition.value = CloseButtonPosition.entries.find {
+                    it.name == prefs[Keys.CLOSE_BUTTON_POSITION_KEY]
+                } ?: Defaults.CLOSE_BUTTON_POSITION
+                tapDuration.value = (prefs[Keys.TAP_DURATION_KEY] ?: Defaults.TAP_DURATION)
+                    .coerceIn(16, 200)
             }
         }
     }

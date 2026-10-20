@@ -48,6 +48,7 @@ import org.nktnet.middor.config.Screen
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ScreenCaptureManager
 import org.nktnet.middor.managers.ToastManager
+import org.nktnet.middor.services.MirrorInputService
 import org.nktnet.middor.states.SystemState
 import org.nktnet.middor.ui.ThemeDropdownIcon
 import org.nktnet.middor.ui.components.Android14Qpr2Note
@@ -65,6 +66,21 @@ fun LandingScreen(
     var countdownRunnable by remember { mutableStateOf<Runnable?>(null) }
 
     fun startMirrorOverlay() {
+        if (UserSettings.touchControls.value && !MirrorInputService.isEnabled(context)) {
+            ToastManager.show(
+                context,
+                resources.getString(R.string.settings_accessibility_permission_error)
+            )
+            navController.navigate(Screen.Settings.route)
+            return
+        }
+        if (UserSettings.touchControls.value && MirrorInputService.connected == null) {
+            ToastManager.show(
+                context,
+                resources.getString(R.string.settings_accessibility_not_connected)
+            )
+            return
+        }
         if (!Settings.canDrawOverlays(context)) {
             ToastManager.show(
                 context,

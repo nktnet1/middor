@@ -24,6 +24,13 @@ relies on the single app screen sharing feature.
 For more details, see
 [Android 14 - App Screen Sharing](https://developer.android.com/about/versions/14/features/app-screen-sharing).
 
+## Touch controls
+
+To tap, swipe, or use multitouch on the mirror, turn on **Enable Touch Controls**
+in Settings and enable **Middor Touch** in Android Accessibility settings.
+Gestures follow flips and rotations and replay when you lift your fingers.
+Touch controls are optional for view-only mirroring.
+
 For usage instructions, see [Discussion #2](https://github.com/nktnet1/middor/discussions/2).
 
 ## Permissions
@@ -31,6 +38,7 @@ For usage instructions, see [Discussion #2](https://github.com/nktnet1/middor/di
 - <b>SYSTEM_ALERT_WINDOW</b>: to draw a mirror overlay on top of other apps
 - <b>FOREGROUND_SERVICE</b>: to run the mirror service continuously while the overlay is active
 - <b>FOREGROUND_SERVICE_MEDIA_PROJECTION</b>: for capturing the screen content of the underlying app
+- <b>BIND_ACCESSIBILITY_SERVICE</b>: (optional) for touch controls with user-enabled gesture replay
 - <b>POST_NOTIFICATIONS</b>: (optional) to display the mirror service notification with additional actions
 
 ## Contact

@@ -4,28 +4,25 @@ import android.app.Activity
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.graphics.Color
-import android.graphics.PixelFormat
-import android.graphics.drawable.GradientDrawable
 import android.hardware.display.VirtualDisplay
 import android.media.projection.MediaProjection
 import android.os.IBinder
-import android.view.Gravity
-import android.view.Surface
+import android.util.Log
 import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.ImageButton
 import androidx.core.graphics.toColorInt
 import org.nktnet.middor.R
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.CustomNotificationManager
+import org.nktnet.middor.managers.ToastManager
 import org.nktnet.middor.utils.MirrorUtils
 
 class MirrorService : Service() {
 
     private var projection: MediaProjection? = null
-    private var overlayView: FrameLayout? = null
+    private var inputService: MirrorInputService? = null
     private var virtualDisplay: VirtualDisplay? = null
+    private var viewOnlyOverlay: MirrorOverlayView? = null
+    private val windowManager by lazy { getSystemService(WINDOW_SERVICE) as WindowManager }
 
     private var cropTop = 0
     private var cropBottom = 0
@@ -33,6 +30,7 @@ class MirrorService : Service() {
     private var cropRight = 0
 
     companion object {
+        private const val TAG = "MirrorService"
         val CLOSE_BUTTON_COLOUR = "#80FF0000".toColorInt()
         const val ACTION_STOP_SERVICE = "org.nktnet.middor.action.STOP_SERVICE"
         const val ACTION_START_OVERLAY = "org.nktnet.middor.action.START_OVERLAY"
@@ -70,7 +68,10 @@ class MirrorService : Service() {
                 )
                 val data = intent.getParcelableExtra(
                     EXTRA_RESULT_INTENT, Intent::class.java
-                ) ?: return START_NOT_STICKY
+                ) ?: run {
+                    stopSelf()
+                    return START_NOT_STICKY
+                }
 
                 if (UserSettings.removeSystemBars.value) {
                     cropTop = intent.getIntExtra(EXTRA_CROP_TOP, 0)
@@ -80,7 +81,7 @@ class MirrorService : Service() {
                 }
 
                 startFullScreenOverlay(resultCode, data)
-                return START_STICKY
+                return START_NOT_STICKY
             }
             else -> Unit
         }
@@ -88,6 +89,13 @@ class MirrorService : Service() {
     }
 
     private fun startFullScreenOverlay(resultCode: Int, data: Intent) {
+        val accessibility = MirrorInputService.connected
+        if (UserSettings.touchControls.value && accessibility == null) {
+            ToastManager.show(this, getString(R.string.settings_accessibility_not_connected))
+            stopSelf()
+            return
+        }
+
         val textureView = MirrorUtils.setupTextureView(
             context = this,
             cropTop = cropTop,
@@ -100,11 +108,7 @@ class MirrorService : Service() {
                     it,
                     tv,
                     VIRTUAL_DISPLAY_NAME,
-                    resources.displayMetrics.densityDpi,
-                    cropTop,
-                    cropBottom,
-                    cropLeft,
-                    cropRight
+                    resources.displayMetrics.densityDpi
                 )
             }
         }
@@ -114,72 +118,35 @@ class MirrorService : Service() {
             context = this,
             resultCode = resultCode,
             data = data,
-            cropTop = cropTop,
-            cropBottom = cropBottom,
-            cropLeft = cropLeft,
-            cropRight = cropRight,
             onStop = { stopSelf() },
             onResize = { w, h ->
                 virtualDisplay?.resize(w, h, densityDpi)
-                textureView.surfaceTexture?.let { st ->
-                    virtualDisplay?.surface = Surface(st)
+                textureView.surfaceTexture?.setDefaultBufferSize(w, h)
+            }
+        )
+
+        if (!UserSettings.touchControls.value) {
+            try {
+                val overlay = MirrorOverlayView(this).apply {
+                    setup(textureView) { stopSelf() }
                 }
-            }
-        )
-
-        val ov = FrameLayout(this)
-        overlayView = ov
-        ov.addView(
-            textureView,
-            FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        )
-
-        val closeButton = ImageButton(this).apply {
-            val shape = GradientDrawable().apply {
-                shape = GradientDrawable.OVAL
-                setColor(CLOSE_BUTTON_COLOUR)
-            }
-            background = shape
-            setImageResource(R.drawable.close_24px)
-            setColorFilter(Color.WHITE)
-            setOnClickListener { stopSelf() }
-        }
-        ov.addView(
-            closeButton,
-            FrameLayout.LayoutParams(120, 120).apply {
-                gravity = Gravity.END or Gravity.TOP
-                // To keep old behaviour for v0.1.4 and below
-                topMargin = if (UserSettings.removeSystemBars.value) 40 else 90
-                rightMargin = 40
-            }
-        )
-
-        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        wm.addView(
-            ov,
-            WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT
-            ).apply {
-                layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
-
-                if (!UserSettings.removeSystemBars.value) {
-                    // To keep old behaviour for v0.1.4 and below
-                    flags = (
-                        flags
-                            or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                            or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                viewOnlyOverlay = overlay
+                windowManager.addView(
+                    overlay,
+                    MirrorOverlayView.layoutParams(
+                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY, touchable = true
                     )
-                }
+                )
+                return
+            } catch (e: RuntimeException) {
+                Log.e(TAG, "Unable to attach view-only mirror", e)
             }
-        )
+        } else if (accessibility?.showMirror(textureView) { stopSelf() } == true) {
+            inputService = accessibility
+            return
+        }
+        ToastManager.show(this, getString(R.string.settings_accessibility_overlay_error))
+        stopSelf()
     }
 
     override fun onDestroy() {
@@ -190,10 +157,14 @@ class MirrorService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun removeOverlay() {
-        val wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        inputService?.hideMirror()
+        inputService = null
+        viewOnlyOverlay?.let {
+            if (it.parent != null) windowManager.removeViewImmediate(it)
+            it.removeAllViews()
+        }
+        viewOnlyOverlay = null
         MirrorUtils.releaseProjection(projection, virtualDisplay)
-        overlayView?.let { wm.removeView(it) }
-        overlayView = null
         virtualDisplay = null
         projection = null
     }

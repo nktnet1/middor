@@ -53,11 +53,14 @@ import org.nktnet.middor.R
 import org.nktnet.middor.config.Screen
 import org.nktnet.middor.config.UserSettings
 import org.nktnet.middor.managers.ToastManager
+import org.nktnet.middor.services.MirrorInputService
 import org.nktnet.middor.ui.ThemeDropdownIcon
 import org.nktnet.middor.ui.components.settings.BooleanSetting
+import org.nktnet.middor.ui.components.settings.CloseButtonPositionSetting
 import org.nktnet.middor.ui.components.settings.IntSetting
 import org.nktnet.middor.ui.components.settings.PermissionSetting
 import org.nktnet.middor.ui.components.settings.ResetPreferencesDialog
+import org.nktnet.middor.ui.components.settings.SettingLabel
 
 @Composable
 fun SettingsScreen(navController: NavController) {
@@ -69,6 +72,7 @@ fun SettingsScreen(navController: NavController) {
     var overlayGranted by remember {
         mutableStateOf(Settings.canDrawOverlays(context))
     }
+    var accessibilityGranted by remember { mutableStateOf(MirrorInputService.isEnabled(context)) }
     var notificationsGranted by remember {
         mutableStateOf(
             nm.areNotificationsEnabled()
@@ -89,6 +93,7 @@ fun SettingsScreen(navController: NavController) {
             val observer = object : DefaultLifecycleObserver {
                 override fun onStart(owner: LifecycleOwner) {
                     overlayGranted = Settings.canDrawOverlays(activity)
+                    accessibilityGranted = MirrorInputService.isEnabled(activity)
                     notificationsGranted = nm.areNotificationsEnabled()
                 }
             }
@@ -199,7 +204,8 @@ fun SettingsScreen(navController: NavController) {
 
             PermissionSetting(
                 stringResource(R.string.settings_overlay_permission_label),
-                overlayGranted
+                overlayGranted,
+                info = stringResource(R.string.settings_overlay_permission_info)
             ) {
                 val intent = Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
@@ -208,8 +214,16 @@ fun SettingsScreen(navController: NavController) {
                 activity?.startActivity(intent)
             }
             PermissionSetting(
+                stringResource(R.string.settings_accessibility_permission_label),
+                accessibilityGranted,
+                info = stringResource(R.string.settings_accessibility_permission_info)
+            ) {
+                activity?.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            }
+            PermissionSetting(
                 stringResource(R.string.settings_notifications_permission_label),
-                notificationsGranted
+                notificationsGranted,
+                info = stringResource(R.string.settings_notifications_permission_info)
             ) {
                 activity?.let {
                     val granted = activity.checkSelfPermission(
@@ -267,32 +281,62 @@ fun SettingsScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    stringResource(R.string.settings_theme_label)
+                SettingLabel(
+                    stringResource(R.string.settings_theme_label),
+                    modifier = Modifier.weight(1f),
+                    info = stringResource(R.string.settings_theme_info)
                 )
                 ThemeDropdownIcon()
             }
             BooleanSetting(
                 stringResource(R.string.settings_start_on_launch_label),
-                UserSettings.startOnLaunch.value
+                UserSettings.startOnLaunch.value,
+                info = stringResource(R.string.settings_start_on_launch_info)
             ) { newValue ->
                 UserSettings.setStartOnLaunch(context, newValue)
             }
             BooleanSetting(
                 stringResource(R.string.settings_flip_horizontally_label),
-                UserSettings.flipHorizontally.value
+                UserSettings.flipHorizontally.value,
+                info = stringResource(R.string.settings_flip_horizontally_info)
             ) { newValue ->
                 UserSettings.setFlipHorizontally(context, newValue)
             }
             BooleanSetting(
                 stringResource(R.string.settings_rotate_180_label),
-                UserSettings.rotate180.value
+                UserSettings.rotate180.value,
+                info = stringResource(R.string.settings_rotate_180_info)
             ) { newValue ->
                 UserSettings.setRotate180(context, newValue)
             }
             BooleanSetting(
+                stringResource(R.string.settings_touch_controls_label),
+                UserSettings.touchControls.value,
+                info = stringResource(R.string.settings_touch_controls_note)
+            ) { newValue ->
+                UserSettings.setTouchControls(context, newValue)
+            }
+            BooleanSetting(
+                stringResource(R.string.settings_touch_feedback_label),
+                UserSettings.touchFeedback.value,
+                info = stringResource(R.string.settings_touch_feedback_info)
+            ) { newValue ->
+                UserSettings.setTouchFeedback(context, newValue)
+            }
+            IntSetting(
+                label = stringResource(R.string.settings_tap_duration_label),
+                value = UserSettings.tapDuration.value,
+                min = 16,
+                max = 200,
+                steps = 0,
+                info = stringResource(R.string.settings_tap_duration_info),
+                onValueChange = { UserSettings.setTapDuration(context, it) }
+            )
+            CloseButtonPositionSetting()
+            BooleanSetting(
                 stringResource(R.string.settings_remove_system_bars),
-                UserSettings.removeSystemBars.value
+                UserSettings.removeSystemBars.value,
+                info = stringResource(R.string.settings_remove_system_bars_info)
             ) { newValue ->
                 UserSettings.setRemoveSystemBars(context, newValue)
             }
@@ -303,6 +347,7 @@ fun SettingsScreen(navController: NavController) {
                 min = 0,
                 max = 60,
                 steps = 60,
+                info = stringResource(R.string.settings_start_delay_info),
             )
 
             Spacer(Modifier.height(32.dp))
